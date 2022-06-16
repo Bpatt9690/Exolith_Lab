@@ -1,1 +1,2 @@
-# Exolith
+# Exolith Lab
+
