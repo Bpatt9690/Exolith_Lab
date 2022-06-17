@@ -1,0 +1,15 @@
+DMT 1
+
+
+Purple -> GND
+Blue -> 6     (RPI 17) Direction
+Grey -> GND
+Green -> 5	   (RPI 18) Step pin
+
+
+DMT 2
+
+1st from left (Orange) GND
+3rd from left (Black) GND
+2nd from left (Orange) Direction -> (RPI 22)
+4th form left (Yellow) Step pin -> (RPI 23)
