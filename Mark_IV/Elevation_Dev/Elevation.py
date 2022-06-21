@@ -1,9 +1,17 @@
 import serial
 import time
 import math
+from datetime import date, datetime
+import pytz
+
 
 gps_dict = {}
 
+#Get current date
+today = date.today()
+year = int(today.strftime("%Y"))
+day = int(today.strftime("%d"))
+month = int(today.strftime("%m").replace("0",""))
 
 def gpsData():
 
@@ -13,19 +21,23 @@ def gpsData():
 
     while True:
         line = gps.readline()
-        line = line.decode("utf-8")
 
-        sline = line.split(',')
+        try:
+            line = line.decode("utf-8")
+            sline = line.split(',')
 
-        if sline[0] == '$GPGGA':
-            gps_dict['Time UTC'] = sline[1]
-            gps_dict['Lattitude'] = sline[2]
-            gps_dict['Lattitude Direction'] = sline[3]
-            gps_dict['Longitude'] = sline[4]
-            gps_dict['Longitude Direction'] = sline[5]
-            gps_dict['Number Satellites'] = sline[7]
-            gps_dict['Alt Above Sea Level'] = sline[9]
-            break
+            if sline[0] == '$GPGGA':
+                gps_dict['Time UTC'] = sline[1]
+                gps_dict['Lattitude'] = float(sline[2])/100
+                gps_dict['Lattitude Direction'] = sline[3]
+                gps_dict['Longitude'] = float(sline[4])/100
+                gps_dict['Longitude Direction'] = sline[5]
+                gps_dict['Number Satellites'] = sline[7]
+                gps_dict['Alt Above Sea Level'] = sline[9]
+                break
+
+        except:
+            print("Byte recieve issue")
 
 
 def sunpos(when, location, refraction):
@@ -103,19 +115,40 @@ def into_range(x, range_min, range_max):
 
 
 
+def logs(str):
+    #log timestamp,event, process
+    print(str)
+
+
 
 def main():
-    gpsData()
-    print(gps_dict)
-    #Close Encounters latitude, longitude
-    location = (28.332315, 81.111895)
-    #Fourth of July, 2022 at 11:20 am MDT (-6 hours) (-0 for UTC)
-    when = (2022, 6, 21, 12, 45, 0, 0) #(year,month,date,hour,minue,sec,timezone adj)
-    #Get the Sun's apparent location in the sky
-    azimuth, elevation = sunpos(when, location, True)
-    #sunpos(when,location,True)
-    print(azimuth)
-    print(elevation)
+
+    global year, month, day
+
+    while True:
+
+        gpsData()
+        print("GPS Data: ",gps_dict)
+
+        hour = str(gps_dict['Time UTC'][0:2])
+        minutes = str(gps_dict['Time UTC'][2:4])
+        seconds = str(gps_dict['Time UTC'][4:6])
+
+        #if west negative
+      
+        location = (gps_dict['Lattitude'], -gps_dict['Longitude'])
+        when = (year, month, day,int(hour),int(minutes),int(seconds), 0) #(year,month,date,hour,minue,sec,timezone adj)
+   
+        azimuth, elevation = sunpos(when, location, True)
+
+        tz_NY = pytz.timezone('America/New_York') 
+        datetime_NY = datetime.now(tz_NY)
+
+        print("EST time:", datetime_NY.strftime("%H:%M:%S"))
+        print("Current Azimuth: ",azimuth)
+        print("Current Elevation: ",elevation)
+
+        time.sleep(1 * 60)
 
 if __name__ == '__main__':
     main()
