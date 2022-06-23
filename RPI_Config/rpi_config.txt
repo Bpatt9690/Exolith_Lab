@@ -1,7 +1,7 @@
 #RPI Config
 
 
-#Install Raspian OS on SD card
+#Install Raspian OS(Buster Legacy) on SD card
 
 #Config WiFi:
 
@@ -26,3 +26,8 @@ Save empty ssh.txt file to sd card
 ssh pi@<ip>
 
 default password: raspberry
+
+
+sudo apt-get install i2c-tools python-smbus
+
+sudo-raspi config -> Enable i2c and spi
