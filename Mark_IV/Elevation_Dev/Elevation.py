@@ -7,6 +7,9 @@ from Kalman import KalmanAngle
 import smbus
 import time
 import math
+import RPi.GPIO as GPIO
+from time import sleep
+GPIO.setwarnings(False) 
 
 gps_dict = {}
 
@@ -205,7 +208,7 @@ def tiltAngle():
     flag = 0
     while True:
         if(flag >100): #Problem with the connection
-            print("There is a problem with the connection")
+            print("Cannot get angle value")
             flag=0
             continue
         try:
@@ -277,41 +280,155 @@ def tiltAngle():
             flag += 1
 
 
+def elevationMovement(elevation):
 
-#Need
+    #GPIO Setup
 
+    # Direction pin from controller
+    AZ_DIR = 25
+
+    # Step pin from controller
+    AZ_STEP = 24
+
+    # 0/1 used to signify clockwise or counterclockwise.
+    CW = 1
+    CCW = 0
+
+    # Setup pin layout on PI
+    GPIO.setmode(GPIO.BCM)
+
+    # Establish Pins in software
+    GPIO.setup(AZ_DIR, GPIO.OUT)
+    GPIO.setup(AZ_STEP, GPIO.OUT)
+
+
+    # Set the first direction you want it to spin
+    currentTiltAngle = tiltAngle()
+
+    logs("Current Tilt Angle: "+str(currentTiltAngle))
+    logs("Current Solar Elevation: "+str(elevation))
+
+    accuracy = 3.0
+
+    #Used for angle adjustment
+    if float(currentTiltAngle) < 0:
+        currentTiltAngle = float(currentTiltAngle) * (-1)
+
+    degreeDifference = float(elevation) - float(currentTiltAngle)
+    logs("Current Degree Difference: "+str(degreeDifference))
+    
+    try:
+
+        while degreeDifference > accuracy or degreeDifference < 0:
+
+            logs(" ")
+            logs("Adjusting Elevation Angle")
+            logs("Current Degree Difference: "+str(degreeDifference))
+
+            sleep(.005)
+            # Esablish the direction you want to go
+            if degreeDifference > 0:
+                GPIO.output(AZ_DIR, CW)
+                logs("CW Rotation")
+            else:
+                GPIO.output(AZ_DIR, CCW)
+                logs("CWw Rotation")
+
+            GPIO.output(AZ_STEP,GPIO.HIGH)
+
+            # Allow it to get there.
+            sleep(.00001) # Dictates how fast stepper motor will run
+            # Set coil winding to low
+            GPIO.output(AZ_STEP,GPIO.LOW)
+
+            sleep(.005)
+            
+            #sleep(.00001)
+            #GPIO.output(AZ_DIR, CW)
+            #GPIO.output(AZ_STEP,GPIO.HIGH)
+
+            #Allow it to get there.
+            #sleep(.0005) # Dictates how fast stepper motor will run
+            #Set coil winding to low
+            #GPIO.output(AZ_STEP,GPIO.LOW)
+            #Dictates how fast stepper motor will run
+
+
+
+             #new readings
+
+            currentTiltAngle = tiltAngle()
+            degreeDifference = float(elevation) - float(currentTiltAngle)
+
+            #changing dir
+            #GPIO.cleanup()
+
+            #   """Change Direction: Changing direction requires time to switch. The
+            #   time is dictated by the stepper motor and controller. """
+            #   sleep(1.0)
+            #   GPIO.output(DIR,CCW)
+            #   for x in range(200):
+            #       GPIO.output(STEP,GPIO.HIGH)
+            #       sleep(.005)
+            #       GPIO.output(STEP,GPIO.LOW)
+            #       sleep(.005)
+
+        
+        logs('Tilt angle reached, stopping adjustment')
+
+    except KeyboardInterrupt:
+        print("cleanup")
+        GPIO.cleanup()
+
+
+def cleanup():
+    print("cleanup")
+    GPIO.cleanup()
+    exit()
 
 
 def main():
 
     global year, month, day
 
-    while True:
-
+    try:
         gpsData()
-        print("GPS Data: ",gps_dict)
+        logs(str(gps_dict))
 
-        hour = str(gps_dict['Time UTC'][0:2])
-        minutes = str(gps_dict['Time UTC'][2:4])
-        seconds = str(gps_dict['Time UTC'][4:6])
+        while True:
 
-        #if west negative
-      
-        location = (gps_dict['Lattitude'], -gps_dict['Longitude'])
-        when = (year, month, day,int(hour),int(minutes),int(seconds), 0) #(year,month,date,hour,minue,sec,timezone adj)
-   
-        azimuth, elevation = sunpos(when, location, True)
+            now = datetime.utcnow().strftime("%H:%M:%S").replace(":","")
+            
+            hour = str(now[0:2])
+            minutes = str(now[2:4])
+            seconds = str(now[4:6])
 
-        tz_NY = pytz.timezone('America/New_York') 
-        datetime_NY = datetime.now(tz_NY)
+            if gps_dict['Longitude Direction'] == 'W':
+                longitude = -gps_dict['Longitude']
+            else:
+                longitude = gps_dict['Longitude']
+          
+            location = (gps_dict['Lattitude'], longitude)
+            when = (year, month, day,int(hour),int(minutes),int(seconds), 0) #(year,month,date,hour,minue,sec,timezone adj)
+       
+            azimuth, elevation = sunpos(when, location, True)
 
-        print("EST time:", datetime_NY.strftime("%H:%M:%S"))
-        print("Current Azimuth: ",azimuth)
-        print("Current Elevation: ",elevation)
-        print("Current Angle: ",tiltAngle())
-        print()
+            tz_NY = pytz.timezone('America/New_York') 
+            datetime_NY = datetime.now(tz_NY)
 
-        time.sleep(1)
+            logs("Current UTC: "+str(now))
+            logs("EST time: "+str(datetime_NY.strftime("%H:%M:%S")))
+            logs("Current Solar Azimuth: "+str(azimuth))
+            elevationMovement(elevation)
+            print()
+
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        print("cleanup")
+        GPIO.cleanup()
 
 if __name__ == '__main__':
     main()
+
+        
