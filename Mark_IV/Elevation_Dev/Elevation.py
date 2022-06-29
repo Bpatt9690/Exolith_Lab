@@ -46,6 +46,7 @@ def gpsData():
 
     while True:
         line = gps.readline()
+        print('Data:',line)
 
         try:
             line = line.decode("utf-8")
@@ -325,7 +326,7 @@ def elevationMovement(elevation):
             logs("Adjusting Elevation Angle")
             logs("Current Degree Difference: "+str(degreeDifference))
 
-            sleep(.005)
+            sleep(1.0)
             # Esablish the direction you want to go
             if degreeDifference > 0:
                 GPIO.output(AZ_DIR, CW)
@@ -334,14 +335,60 @@ def elevationMovement(elevation):
                 GPIO.output(AZ_DIR, CCW)
                 logs("CWw Rotation")
 
-            GPIO.output(AZ_STEP,GPIO.HIGH)
+                 # Run for 200 steps. This will change based on how you set you controller
+            for x in range(200):
 
-            # Allow it to get there.
-            sleep(.00001) # Dictates how fast stepper motor will run
-            # Set coil winding to low
-            GPIO.output(AZ_STEP,GPIO.LOW)
+                # Set one coil winding to high
+                GPIO.output(AZ_STEP,GPIO.HIGH)
+        #         GPIO.output(STEP_2,GPIO.HIGH)
+                # Allow it to get there.
+                sleep(.005) # Dictates how fast stepper motor will run
+                # Set coil winding to low
+                GPIO.output(AZ_STEP,GPIO.LOW)
+        #        GPIO.output(STEP_2,GPIO.LOW)
 
-            sleep(.005)
+
+                #sleep(.005) # Dictates how fast stepper motor will run
+
+                #GPIO.output(AZ_STEP,GPIO.HIGH)
+
+                # Allow it to get there.
+                #sleep(.00001) # Dictates how fast stepper motor will run
+                # Set coil winding to low
+                #GPIO.output(AZ_STEP,GPIO.LOW)
+
+                #sleep(.005)
+
+
+    #   """Change Direction: Changing direction requires time to switch. The
+    #   time is dictated by the stepper motor and controller. """
+    #   sleep(1.0)
+    #   GPIO.output(DIR,CCW)
+    #   for x in range(200):
+    #       GPIO.output(STEP,GPIO.HIGH)
+    #       sleep(.005)
+    #       GPIO.output(STEP,GPIO.LOW)
+    #       sleep(.005)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             
             #sleep(.00001)
             #GPIO.output(AZ_DIR, CW)
@@ -352,11 +399,8 @@ def elevationMovement(elevation):
             #Set coil winding to low
             #GPIO.output(AZ_STEP,GPIO.LOW)
             #Dictates how fast stepper motor will run
-
-
-
-             #new readings
-
+            
+            #new readings
             currentTiltAngle = tiltAngle()
             degreeDifference = float(elevation) - float(currentTiltAngle)
 

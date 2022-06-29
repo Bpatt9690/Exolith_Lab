@@ -1,42 +1,63 @@
-#######################################
-# Copyright (c) 2021 Maker Portal LLC
-# Author: Joshua Hrisko
-#######################################
-#
-# NEMA 17 (17HS4023) Raspberry Pi Tests
-# --- rotating the NEMA 17 to test
-# --- wiring and motor functionality
-#
-#
-#######################################
-#
 import RPi.GPIO as GPIO
-from RpiMotorLib import RpiMotorLib
-import time
+from time import sleep
 
-################################
-# RPi and Motor Pre-allocations
-################################
-#
-#define GPIO pins
-direction= 22 # Direction (DIR) GPIO Pin
-step = 23 # Step GPIO Pin
-EN_pin = 24 # enable pin (LOW to enable)
+# Direction pin from controller
+DIR_1 = 25
+#DIR_2 = 2
+# Step pin from controller
+STEP_1 = 24
+#STEP_2 = 24
+# 0/1 used to signify clockwise or counterclockwise.
+CW = 1
+CCW = 0
 
-# Declare a instance of class pass GPIO pins numbers and the motor type
-mymotortest = RpiMotorLib.A4988Nema(direction, step, (21,21,21), "DRV8825")
-GPIO.setup(EN_pin,GPIO.OUT) # set enable pin as output
+# Setup pin layout on PI
+GPIO.setmode(GPIO.BCM)
 
-###########################
-# Actual motor control
-###########################
-#
-GPIO.output(EN_pin,GPIO.LOW) # pull enable to low to enable motor
-mymotortest.motor_go(False, # True=Clockwise, False=Counter-Clockwise
-                     "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                     200, # number of steps
-                     .0005, # step delay [sec]
-                     False, # True = print verbose output 
-                     .05) # initial delay [sec]
+# Establish Pins in software
+GPIO.setup(DIR_1, GPIO.OUT)
+GPIO.setup(STEP_1, GPIO.OUT)
+#GPIO.setup(DIR_2, GPIO.OUT)
+#GPIO.setup(STEP_2, GPIO.OUT)
 
-GPIO.cleanup() # clear GPIO allocations after run
+# Set the first direction you want it to spin
+GPIO.output(DIR_1, CW)
+#GPIO.output(DIR_2, CW)
+try:
+    # Run forever.
+    while True:
+
+        """Change Direction: Changing direction requires time to switch. The
+        time is dictated by the stepper motor and controller. """
+        sleep(1.0)
+        # Esablish the direction you want to go
+        GPIO.output(DIR_1,CW)
+  #      GPIO.output(DIR_2,CW)
+
+        # Run for 200 steps. This will change based on how you set you controller
+        for x in range(200):
+
+            # Set one coil winding to high
+            GPIO.output(STEP_1,GPIO.HIGH)
+   #         GPIO.output(STEP_2,GPIO.HIGH)
+            # Allow it to get there.
+            sleep(.005) # Dictates how fast stepper motor will run
+            # Set coil winding to low
+            GPIO.output(STEP_1,GPIO.LOW)
+    #        GPIO.output(STEP_2,GPIO.LOW)
+            sleep(.005) # Dictates how fast stepper motor will run
+
+    #   """Change Direction: Changing direction requires time to switch. The
+    #   time is dictated by the stepper motor and controller. """
+    #   sleep(1.0)
+    #   GPIO.output(DIR,CCW)
+    #   for x in range(200):
+    #       GPIO.output(STEP,GPIO.HIGH)
+    #       sleep(.005)
+    #       GPIO.output(STEP,GPIO.LOW)
+    #       sleep(.005)
+
+# Once finished clean everything up
+except KeyboardInterrupt:
+    print("cleanup")
+    GPIO.cleanup()

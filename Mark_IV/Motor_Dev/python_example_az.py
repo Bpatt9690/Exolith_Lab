@@ -31,10 +31,9 @@ try:
 	GPIO.output(AZ_STEP,GPIO.HIGH)
 
 	# Allow it to get there.
-	sleep(.0001) # Dictates how fast stepper motor will run
+	sleep(5) # Dictates how fast stepper motor will run
 	# Set coil winding to low
 	GPIO.output(AZ_STEP,GPIO.LOW)
-	
 	sleep(.5)
 
 
