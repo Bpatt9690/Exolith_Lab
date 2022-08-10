@@ -8,8 +8,8 @@ DIR_1 = 25
 STEP_1 = 24
 #STEP_2 = 24
 # 0/1 used to signify clockwise or counterclockwise.
-CW = 1
-CCW = 0
+CW = 0
+CCW = 1
 
 # Setup pin layout on PI
 GPIO.setmode(GPIO.BCM)
@@ -41,11 +41,11 @@ try:
             GPIO.output(STEP_1,GPIO.HIGH)
    #         GPIO.output(STEP_2,GPIO.HIGH)
             # Allow it to get there.
-            sleep(.005) # Dictates how fast stepper motor will run
+            sleep(.5) # Dictates how fast stepper motor will run
             # Set coil winding to low
             GPIO.output(STEP_1,GPIO.LOW)
     #        GPIO.output(STEP_2,GPIO.LOW)
-            sleep(.005) # Dictates how fast stepper motor will run
+            sleep(.5) # Dictates how fast stepper motor will run
 
     #   """Change Direction: Changing direction requires time to switch. The
     #   time is dictated by the stepper motor and controller. """
