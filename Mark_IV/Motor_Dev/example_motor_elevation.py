@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 # Direction pin from controller
+GPIO.cleanup()
 DIR_1 = 25
 #DIR_2 = 2
 # Step pin from controller
@@ -10,6 +11,7 @@ STEP_1 = 24
 # 0/1 used to signify clockwise or counterclockwise.
 CW = 0
 CCW = 1
+#CCW = pulling
 
 # Setup pin layout on PI
 GPIO.setmode(GPIO.BCM)
@@ -21,7 +23,7 @@ GPIO.setup(STEP_1, GPIO.OUT)
 #GPIO.setup(STEP_2, GPIO.OUT)
 
 # Set the first direction you want it to spin
-GPIO.output(DIR_1, CW)
+GPIO.output(DIR_1, CCW)
 #GPIO.output(DIR_2, CW)
 try:
     # Run forever.
@@ -29,9 +31,9 @@ try:
 
         """Change Direction: Changing direction requires time to switch. The
         time is dictated by the stepper motor and controller. """
-        sleep(1.0)
+        #sleep()
         # Esablish the direction you want to go
-        GPIO.output(DIR_1,CW)
+        GPIO.output(DIR_1,CCW)
   #      GPIO.output(DIR_2,CW)
 
         # Run for 200 steps. This will change based on how you set you controller
@@ -41,11 +43,13 @@ try:
             GPIO.output(STEP_1,GPIO.HIGH)
    #         GPIO.output(STEP_2,GPIO.HIGH)
             # Allow it to get there.
-            sleep(.5) # Dictates how fast stepper motor will run
+            #.5 == super slow
+            # .00005 == breaking
+            sleep(.005) # Dictates how fast stepper motor will run
             # Set coil winding to low
             GPIO.output(STEP_1,GPIO.LOW)
     #        GPIO.output(STEP_2,GPIO.LOW)
-            sleep(.5) # Dictates how fast stepper motor will run
+            sleep(.005) # Dictates how fast stepper motor will run
 
     #   """Change Direction: Changing direction requires time to switch. The
     #   time is dictated by the stepper motor and controller. """

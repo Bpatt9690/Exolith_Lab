@@ -31,3 +31,5 @@ default password: raspberry
 sudo apt-get install i2c-tools python-smbus
 
 sudo-raspi config -> Enable i2c and spi
+
+pip3 install pytz
