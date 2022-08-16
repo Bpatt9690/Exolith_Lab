@@ -47,7 +47,7 @@ def gpsData():
     while True:
         line = gps.readline()
         print('Data:',line)
-
+     
         try:
             line = line.decode("utf-8")
             sline = line.split(',')
@@ -158,33 +158,37 @@ def logs(str):
 
 def read_raw_data(addr):
     #Accelero and Gyro value are 16-bit
-        high = bus.read_byte_data(DeviceAddress, addr)
-        low = bus.read_byte_data(DeviceAddress, addr+1)
 
-        #concatenate higher and lower value
-        value = ((high << 8) | low)
+    while(1):
+        try:
+            high = bus.read_byte_data(DeviceAddress, addr)
+            low = bus.read_byte_data(DeviceAddress, addr+1)
 
-        #to get signed value from mpu6050
-        if(value > 32768):
-                value = value - 65536
+            #concatenate higher and lower value
+            value = ((high << 8) | low)
 
-        print("The return value");
-        return value
+            #to get signed value from mpu6050
+            if(value > 32768):
+                    value = value - 65536
 
-
-
+            return value
+        except:
+            pass
 
 
  #Read the gyro and acceleromater values from MPU6050
 def MPU_Init():
+    time.sleep(1)
     #write to sample rate register
     bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
 
     #Write to power management register
+
     bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
 
     #Write to Configuration register
     #Setting DLPF (last three bit of 0X1A to 6 i.e '110' It removes the noise due to vibration.) https://ulrichbuschbaum.wordpress.com/2015/01/18/using-the-mpu6050s-dlpf/
+
     bus.write_byte_data(DeviceAddress, CONFIG, int('0000110',2))
 
     #Write to Gyro configuration register
@@ -206,9 +210,9 @@ def tiltAngle():
     accY = read_raw_data(ACCEL_YOUT_H)
     accZ = read_raw_data(ACCEL_ZOUT_H)
 
-    print('here')
-    print(accX,accY,accZ)
-    print(math.sqrt((accY**2)+(accZ**2)))
+    #print('here')
+    #print(accX,accY,accZ)
+    #print(math.sqrt((accY**2)+(accZ**2)))
     if (RestrictPitch):
         roll = math.atan2(accY,accZ) * radToDeg
         pitch = math.atan(-accX/math.sqrt((accY**2)+(accZ**2))) * radToDeg
@@ -313,7 +317,7 @@ def elevationMovement(elevation):
     CW = 0
     CCW = 1
 
-    accuracy = 3.0
+    accuracy = 10.0
 
     # Setup pin layout on PI
     GPIO.setmode(GPIO.BCM)
@@ -323,20 +327,24 @@ def elevationMovement(elevation):
     GPIO.setup(AZ_STEP, GPIO.OUT)
 
     #gathering current tilt angle from sensor
-    #currentTiltAngle = tiltAngle()
+    currentTiltAngle = 90 - float(tiltAngle())
     #bypassing for testing reasons
 
-    userInput = input("Enter angle:")
-    print("Angle in use is: ",userInput)
-    currentTiltAngle = str(userInput)
+    #userInput = input("Enter angle:")
+    #print("Angle in use is: ",userInput)
+    #currentTiltAngle = str(userInput)
     ###############
+    #currentTiltAngle = 9float(currentTiltAngle)
 
     logs("Current Tilt Angle: "+str(currentTiltAngle))
     logs("Current Solar Elevation: "+str(elevation))
+    time.sleep(1)
+
+    #currentTiltAngle 
 
     #Used for angle adjustment
     if float(currentTiltAngle) < 0:
-        currentTiltAngle = float(currentTiltAngle) * (-1)
+        currentTiltAngle = 90 - float(currentTiltAngle) * (-1)
 
     degreeDifference = float(elevation) - float(currentTiltAngle)
     logs("Current Degree Difference: "+str(degreeDifference))
@@ -373,11 +381,11 @@ def elevationMovement(elevation):
 
             
             #new readings
-            #currentTiltAngle = tiltAngle()
+            currentTiltAngle = 90 - float(tiltAngle())
             #bypassing for testing reasons
-            userInput = input("Enter angle:")
-            print("Angle in use is: ",userInput)
-            currentTiltAngle = str(userInput)
+            #userInput = input("Enter angle:")
+            #print("Angle in use is: ",userInput)
+            #currentTiltAngle = str(userInput)
             ###############
             degreeDifference = float(elevation) - float(currentTiltAngle)
 
