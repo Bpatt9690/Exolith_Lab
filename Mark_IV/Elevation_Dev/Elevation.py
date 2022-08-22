@@ -39,7 +39,7 @@ def gpsData():
 
     while True:
         line = gps.readline()
-        logs('GPS Data:',line)
+        logs('GPS Data:  '+str(line))
      
         try:
             line = line.decode("utf-8")
@@ -165,7 +165,6 @@ def read_raw_data(addr):
 
  #Read the gyro and acceleromater values from MPU6050
 def MPU_Init():
-    time.sleep(1)
     #write to sample rate register
     bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
     bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
@@ -177,15 +176,20 @@ def MPU_Init():
 
 def tiltAngle():
 
+    kalAngleY = 0
+
     kalmanX = KalmanAngle()
     kalmanY = KalmanAngle()
    
     MPU_Init()
 
+    time.sleep(1)
+
     #Read Accelerometer raw value
     accX = read_raw_data(ACCEL_XOUT_H)
     accY = read_raw_data(ACCEL_YOUT_H)
     accZ = read_raw_data(ACCEL_ZOUT_H)
+
 
     if (RestrictPitch):
         roll = math.atan2(accY,accZ) * radToDeg
@@ -272,10 +276,14 @@ def tiltAngle():
             if ((gyroYAngle < -180) or (gyroYAngle > 180)):
                 gyroYAngle = kalAngleY
 
-            return str(kalAngleX), str(kalAngleY)
-            time.sleep(0.5)
+
+            #print("Angle X: " + str(kalAngleX)+"   " +"Angle Y: " + str(kalAngleY))
+
+            return str(kalAngleX) ,str(kalAngleY)
+            time.sleep(0.005)
 
         except Exception as exc:
+            print("The Exception",exc)
             flag += 1
 
 
@@ -293,7 +301,7 @@ def solarTracking(elevation):
     CCW = 1
 
     #Should be set by user, either via flag or direct input
-    accuracy = 10.0
+    accuracy = 5.0
 
     # Setup pin layout on RPI
     GPIO.setmode(GPIO.BCM)
@@ -301,31 +309,49 @@ def solarTracking(elevation):
     GPIO.setup(AZ_STEP, GPIO.OUT)
 
     currentTiltAngleX,currentTiltAngleY = tiltAngle()
-
+   
 
     #Gathering current tilt angle from sensor
     currentTiltAngleX = 90 - float(currentTiltAngleX)
     currentTiltAngleY = 360 - float(currentTiltAngleY)
 
-    logs("Current Tilt Angle: "+str(currentTiltAngle))
+    logs("Current Tilt Elevation Angle: "+str(currentTiltAngleX))
+    logs("Current Azimuth Elevation Angle: "+str(currentTiltAngleY))
+
     logs("Current Solar Elevation: "+str(elevation))
     time.sleep(1)
 
     #Need to reevaluate whats happening here in testing
     #Used for angle adjustment
-    if float(currentTiltAngle) < 0:
+    if float(currentTiltAngleX) < 0:
         currentTiltAngleX = 90 - float(currentTiltAngleX) * (-1)
 
     degreeDifferenceX = float(elevation) - float(currentTiltAngleX)
 
+
     logs("Current Degree Difference in elevation: "+str(degreeDifferenceX))
+
+    #100 = 4 degreee movement
+    #25 = degree
     
     try:
 
-        while degreeDifferenceX > accuracy or degreeDifferenceX < 0:
+        while degreeDifferenceX > accuracy or (degreeDifferenceX*(-1)) > accuracy:
 
             logs("Adjusting Elevation Angle")
             logs("Current Degree Difference in elevation: "+str(degreeDifferenceX))
+
+    
+
+            if degreeDifferenceX < 0:
+                #print(degreeDifferenceX)
+                #print((int(degreeDifferenceX) * (-1)))
+                degreeDev = ((int(degreeDifferenceX) * (-1)) - accuracy) * 25
+            else:
+                #print(degreeDifferenceX)
+                degreeDev = (int(degreeDifferenceX) - accuracy ) * 25
+
+            degreeDev = math.floor(degreeDev)
 
             sleep(1.0)
 
@@ -338,13 +364,13 @@ def solarTracking(elevation):
                 logs("CWW Rotation")
 
             # Run for 200 steps. This will change based on how you set you controller
-            for x in range(200):
+            for x in range(int(degreeDev)):
                 GPIO.output(AZ_STEP,GPIO.HIGH)
                 sleep(.05) # Dictates how fast stepper motor will run
                 GPIO.output(AZ_STEP,GPIO.LOW)
 
             #New Angle Readings
-            currentTiltAngleX, currentTiltAngleY = tiltAngle()
+            currentTiltAngleX,currentTiltAngleY = tiltAngle()
             currentTiltAngleX = 90 - float(currentTiltAngleX)
             currentTiltAngleY = 360 - float(currentTiltAngleY)
 
@@ -361,6 +387,7 @@ def solarTracking(elevation):
 #Logging method, need to add timestamp and structure to logging objects
 def logs(str):
     print("log entry: "+str)
+    print()
     f = open("gpsData.txt", "a")
     f.write(str)
     f.close()
