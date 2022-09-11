@@ -398,6 +398,9 @@ def cleanup():
     GPIO.cleanup()
     exit()
 
+def sync():
+    print('Syncing')
+
 def main():
     #Get current date
     today = date.today()
@@ -443,4 +446,5 @@ def main():
         GPIO.cleanup()
 
 if __name__ == '__main__':
+    sync()
     main()
