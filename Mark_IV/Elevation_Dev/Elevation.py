@@ -289,7 +289,6 @@ def tiltAngle():
 
 def solarTracking(elevation):
 
-
     # Direction pin from controller
     AZ_DIR = 25
 
@@ -297,8 +296,8 @@ def solarTracking(elevation):
     AZ_STEP = 24
 
     # 0/1 used to signify clockwise or counterclockwise.
-    CW = 0
-    CCW = 1
+    CW = 1
+    CCW = 0
 
     #Should be set by user, either via flag or direct input
     accuracy = 5.0
@@ -308,26 +307,19 @@ def solarTracking(elevation):
     GPIO.setup(AZ_DIR, GPIO.OUT)
     GPIO.setup(AZ_STEP, GPIO.OUT)
 
-    currentTiltAngleX,currentTiltAngleY = tiltAngle()
-   
 
+    time.sleep(1)
+    
+    currentTiltAngleX,currentTiltAngleY = tiltAngle()
+  
     #Gathering current tilt angle from sensor
-    currentTiltAngleX = 90 - float(currentTiltAngleX)
-    currentTiltAngleY = 360 - float(currentTiltAngleY)
+    currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
 
     logs("Current Tilt Elevation Angle: "+str(currentTiltAngleX))
-    logs("Current Azimuth Elevation Angle: "+str(currentTiltAngleY))
-
     logs("Current Solar Elevation: "+str(elevation))
     time.sleep(1)
 
-    #Need to reevaluate whats happening here in testing
-    #Used for angle adjustment
-    if float(currentTiltAngleX) < 0:
-        currentTiltAngleX = 90 - float(currentTiltAngleX) * (-1)
-
-    degreeDifferenceX = float(elevation) - float(currentTiltAngleX)
-
+    degreeDifferenceX =   float(currentTiltAngleX) -float(elevation)
 
     logs("Current Degree Difference in elevation: "+str(degreeDifferenceX))
 
@@ -341,15 +333,7 @@ def solarTracking(elevation):
             logs("Adjusting Elevation Angle")
             logs("Current Degree Difference in elevation: "+str(degreeDifferenceX))
 
-    
-
-            if degreeDifferenceX < 0:
-                #print(degreeDifferenceX)
-                #print((int(degreeDifferenceX) * (-1)))
-                degreeDev = ((int(degreeDifferenceX) * (-1)) - accuracy) * 25
-            else:
-                #print(degreeDifferenceX)
-                degreeDev = (int(degreeDifferenceX) - accuracy ) * 25
+            degreeDev = (int(degreeDifferenceX)) * 25
 
             degreeDev = math.floor(degreeDev)
 
@@ -363,6 +347,7 @@ def solarTracking(elevation):
                 GPIO.output(AZ_DIR,CCW)
                 logs("CWW Rotation")
 
+      
             # Run for 200 steps. This will change based on how you set you controller
             for x in range(int(degreeDev)):
                 GPIO.output(AZ_STEP,GPIO.HIGH)
@@ -371,11 +356,12 @@ def solarTracking(elevation):
 
             #New Angle Readings
             currentTiltAngleX,currentTiltAngleY = tiltAngle()
-            currentTiltAngleX = 90 - float(currentTiltAngleX)
-            currentTiltAngleY = 360 - float(currentTiltAngleY)
+            logs("tilt angle "+str(currentTiltAngleX))
+            currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
+            logs("tilt angle "+str(currentTiltAngleX))
+            logs("elevation "+str(elevation))
 
-            degreeDifferenceX = float(elevation) - float(currentTiltAngleX)
-            degreeDifferenceY = float(elevation) - float(currentTiltAngleY)
+            degreeDifferenceX =  float(currentTiltAngleX) - float(elevation)
 
         logs('Elevation Angle Reached, Stopping Adjustment')
 
@@ -400,6 +386,42 @@ def cleanup():
 
 def sync():
     print('Syncing')
+    GPIO.setmode(GPIO.BCM)
+    switch=6
+    GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+        # Direction pin from controller
+    AZ_DIR = 25
+
+    # Step pin from controller
+    AZ_STEP = 24
+
+    # 0/1 used to signify clockwise or counterclockwise.
+    CW = 0
+    CCW = 1
+
+    #Should be set by user, either via flag or direct input
+    accuracy = 5.0
+
+    # Setup pin layout on RPI
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(AZ_DIR, GPIO.OUT)
+    GPIO.setup(AZ_STEP, GPIO.OUT)
+    GPIO.output(AZ_DIR, CW)
+
+    while(1):
+        
+             # Run for 200 steps. This will change based on how you set you controller
+        for x in range(200):
+            GPIO.output(AZ_STEP,GPIO.HIGH)
+            sleep(.05) # Dictates how fast stepper motor will run
+            GPIO.output(AZ_STEP,GPIO.LOW)
+
+            if GPIO.input(switch)==1:
+                print('Sync finished')
+                sleep(1)
+                return
+
+    sleep(.1)
 
 def main():
     #Get current date
