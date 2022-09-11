@@ -9,8 +9,8 @@ DIR_1 = 25
 STEP_1 = 24
 #STEP_2 = 24
 # 0/1 used to signify clockwise or counterclockwise.
-CW = 1
-CCW = 0
+CW = 0
+CCW = 1
 #CCW = pulling
 
 # Setup pin layout on PI
