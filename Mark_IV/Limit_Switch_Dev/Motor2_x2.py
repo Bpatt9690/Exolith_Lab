@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 GPIO.setmode(GPIO.BCM)
-switch=17
+switch=16
 GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 x = 0
 
