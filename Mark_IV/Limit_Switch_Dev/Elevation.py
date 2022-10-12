@@ -6,7 +6,6 @@ switch=17
 GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 x = 0
 
-
 try:
 
 	while(1):

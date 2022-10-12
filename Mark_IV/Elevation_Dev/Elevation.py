@@ -4,11 +4,12 @@ import math
 from datetime import date, datetime
 import pytz
 from Kalman import KalmanAngle
+from GPS import GPS_Data
 import smbus
 import RPi.GPIO as GPIO
 from time import sleep
 
-GPIO.setwarnings(False) 
+GPIO.setwarnings(False)
 gps_dict = {}
 bus = smbus.SMBus(1) 
 
@@ -17,6 +18,7 @@ RestrictPitch = True
 radToDeg = 57.2957786
 kalAngleX = 0
 kalAngleY = 0
+
 
 #MPU6050 Registers and their Address
 PWR_MGMT_1   = 0x6B
@@ -30,42 +32,6 @@ ACCEL_ZOUT_H = 0x3F
 GYRO_XOUT_H  = 0x43
 GYRO_YOUT_H  = 0x45
 GYRO_ZOUT_H  = 0x47
-
-def gpsData():
-
-    global gps_dict
-
-    gps = serial.Serial("/dev/ttyUSB0", timeout=None, baudrate=4800, xonxoff=False, rtscts=False, dsrdtr=False)
-
-    while True:
-        line = gps.readline()
-        logs('GPS Data:  '+str(line))
-     
-        try:
-            line = line.decode("utf-8")
-            sline = line.split(',')
-
-            if sline[0] == '$GPGGA':
-                gps_dict['Time UTC'] = sline[1]
-                gps_dict['Lattitude'] = float(sline[2])/100
-                gps_dict['Lattitude Direction'] = sline[3]
-                gps_dict['Longitude'] = float(sline[4])/100
-                gps_dict['Longitude Direction'] = sline[5]
-                gps_dict['Number Satellites'] = sline[7]
-                gps_dict['Alt Above Sea Level'] = sline[9]
-                break
-
-        except:
-            logs("GPS Data Issue")
-            logs("Manually Inserting Data for Testing")
-            gps_dict['Time UTC'] = '181735.00'
-            gps_dict['Lattitude'] = float(2833.2327)/100
-            gps_dict['Lattitude Direction'] = 'N'
-            gps_dict['Longitude'] = float(8111.11886)/100
-            gps_dict['Longitude Direction'] = 'W'
-            gps_dict['Number Satellites'] = '09'
-            gps_dict['Alt Above Sea Level'] = '34.2'
-            break
 
 
 def sunpos(when, location, refraction):
@@ -144,6 +110,8 @@ def sunpos(when, location, refraction):
 
     #Return azimuth and elevation in degrees
     return (round(azimuth, 2), round(elevation, 2))
+
+
 def into_range(x, range_min, range_max):
     shiftedx = x - range_min
     delta = range_max - range_min
@@ -323,7 +291,7 @@ def solarTracking(elevation):
 
     logs("Current Degree Difference in elevation: "+str(degreeDifferenceX))
 
-    #100 = 4 degreee movement
+    #100 = 4 degree movement
     #25 = degree
     
     try:
@@ -384,14 +352,20 @@ def cleanup():
     GPIO.cleanup()
     exit()
 
-def sync():
-    print('Syncing')
+
+#Responsible for resetting the elevation axis.
+#Returns elevation boom until limit switch is triggered
+def elevationReset():
+
+    logs('Resetting Elevation')
+
+    #setup limit switch
     GPIO.setmode(GPIO.BCM)
     switch=6
     GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
-        # Direction pin from controller
-    AZ_DIR = 25
 
+    # Direction pin from controller
+    AZ_DIR = 25
     # Step pin from controller
     AZ_STEP = 24
 
@@ -399,8 +373,6 @@ def sync():
     CW = 0
     CCW = 1
 
-    #Should be set by user, either via flag or direct input
-    accuracy = 5.0
 
     # Setup pin layout on RPI
     GPIO.setmode(GPIO.BCM)
@@ -409,38 +381,55 @@ def sync():
     GPIO.output(AZ_DIR, CW)
 
     while(1):
-        
-             # Run for 200 steps. This will change based on how you set you controller
+
+        # Run for 200 steps. This will change based on how you set you controller
         for x in range(200):
             GPIO.output(AZ_STEP,GPIO.HIGH)
-            sleep(.05) # Dictates how fast stepper motor will run
+            # Dictates how fast stepper motor will run
+            sleep(.05)
             GPIO.output(AZ_STEP,GPIO.LOW)
 
-            if GPIO.input(switch)==1:
-                print('Sync finished')
+            if GPIO.input(switch) == 1:
+                print('Elevation Reset')
                 sleep(1)
                 return
 
     sleep(.1)
 
-def main():
-    #Get current date
+
+
+def getDate():
     today = date.today()
     year = int(today.strftime("%Y"))
     day = int(today.strftime("%d"))
     month = int(today.strftime("%m").replace("0",""))
 
+    return today,year,day,month
+
+def getTime():
+    now = datetime.utcnow().strftime("%H:%M:%S").replace(":","")
+    hour = str(now[0:2])
+    minutes = str(now[2:4])
+    seconds = str(now[4:6])
+    return now, hour, minutes, seconds
+
+
+def main():
+
+    global gps_dict
+
+    #Get current date
+    today, year, day, month = getDate()
+
     try:
-        gpsData()
+        gps_dict = GPS_Data.getCurrentCoordinates()
 
         logs(str(gps_dict))
 
         while True:
 
-            now = datetime.utcnow().strftime("%H:%M:%S").replace(":","")
-            hour = str(now[0:2])
-            minutes = str(now[2:4])
-            seconds = str(now[4:6])
+            #Get current time
+            now, hour, minutes, seconds = getTime()
 
             if gps_dict['Longitude Direction'] == 'W':
                 longitude = -gps_dict['Longitude']
@@ -455,7 +444,6 @@ def main():
             tz_NY = pytz.timezone('America/New_York') 
             datetime_NY = datetime.now(tz_NY)
 
-
             #Logging current UTC/EST time and Solar Azimuth#
             logs("Current UTC: "+str(now))
             logs("EST time: "+str(datetime_NY.strftime("%H:%M:%S")))
@@ -468,5 +456,5 @@ def main():
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    sync()
+    elevationReset()
     main()
