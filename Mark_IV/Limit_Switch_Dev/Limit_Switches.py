@@ -30,16 +30,16 @@ class limitSwitches:
             GPIO.cleanup()
 
     def motorx1(self):
-        self.limitLogic(27)
+        return self.limitLogic(27)
 
     def motorx2(self):
-        self.limitLogic(16)
+        return self.limitLogic(16)
 
     def motory1(self):
-        self.limitLogic(18)
+        return self.limitLogic(18)
 
     def motory2(self):
-        self.limitLogic(12)
+        return self.limitLogic(12)
 
 
 
