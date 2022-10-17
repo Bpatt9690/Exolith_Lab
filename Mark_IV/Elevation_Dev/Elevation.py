@@ -8,6 +8,10 @@ from GPS import GPS_Data
 import smbus
 import RPi.GPIO as GPIO
 from time import sleep
+#from Limit_Switches import limitSwitches
+from Logging import logger
+
+
 
 GPIO.setwarnings(False)
 gps_dict = {}
@@ -19,7 +23,7 @@ radToDeg = 57.2957786
 kalAngleX = 0
 kalAngleY = 0
 
-Changing code here
+#Changing code here
 #MPU6050 Registers and their Address
 PWR_MGMT_1   = 0x6B
 SMPLRT_DIV   = 0x19
@@ -244,14 +248,11 @@ def tiltAngle():
             if ((gyroYAngle < -180) or (gyroYAngle > 180)):
                 gyroYAngle = kalAngleY
 
-
-            #print("Angle X: " + str(kalAngleX)+"   " +"Angle Y: " + str(kalAngleY))
-
             return str(kalAngleX) ,str(kalAngleY)
             time.sleep(0.005)
 
         except Exception as exc:
-            print("The Exception",exc)
+            print("Exception:",exc)
             flag += 1
 
 
@@ -275,7 +276,6 @@ def solarTracking(elevation):
     GPIO.setup(AZ_DIR, GPIO.OUT)
     GPIO.setup(AZ_STEP, GPIO.OUT)
 
-
     time.sleep(1)
     
     currentTiltAngleX,currentTiltAngleY = tiltAngle()
@@ -283,7 +283,7 @@ def solarTracking(elevation):
     #Gathering current tilt angle from sensor
     currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
 
-    logs("Current Tilt Elevation Angle: "+str(currentTiltAngleX))
+    logger.logInfo("x30","Current Tilt Elevation Angle: "+str(currentTiltAngleX))
     logs("Current Solar Elevation: "+str(elevation))
     time.sleep(1)
 
@@ -352,7 +352,6 @@ def cleanup():
     GPIO.cleanup()
     exit()
 
-
 #Responsible for resetting the elevation axis.
 #Returns elevation boom until limit switch is triggered
 def elevationReset():
@@ -372,7 +371,6 @@ def elevationReset():
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
-
 
     # Setup pin layout on RPI
     GPIO.setmode(GPIO.BCM)
@@ -395,7 +393,6 @@ def elevationReset():
                 return
 
     sleep(.1)
-
 
 
 def getDate():
@@ -456,5 +453,5 @@ def main():
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    elevationReset()
+    #elevationReset()
     main()

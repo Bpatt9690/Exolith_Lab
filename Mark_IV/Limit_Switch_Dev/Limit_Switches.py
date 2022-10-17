@@ -5,7 +5,7 @@ class limitSwitches:
     def __init__(self):
         pass
 
-    def limitLogic(switch):
+    def limitLogic(self, switch):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
         flag = 0
