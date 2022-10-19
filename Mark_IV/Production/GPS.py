@@ -1,4 +1,3 @@
-
 import serial
 
 class GPS_Data:
