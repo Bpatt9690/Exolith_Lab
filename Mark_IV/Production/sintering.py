@@ -1,4 +1,5 @@
 import serial
+import sys
 import time
 import math
 from datetime import date, datetime
@@ -8,7 +9,7 @@ from GPS import GPS_Data
 import smbus
 import RPi.GPIO as GPIO
 from time import sleep
-#from Limit_Switch_Dev.Limit_Switches import limitSwitches
+from Limit_Switches import limitSwitches
 from Logging import logger
 
 
