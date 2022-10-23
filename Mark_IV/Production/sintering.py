@@ -321,11 +321,11 @@ def solarTracking(elevation):
 
             if degreeDifferenceX > 0:
                 GPIO.output(AZ_DIR, CW)
-                logs("CW Rotation")
+                logger.logInfo(timeStamp(),"CW Rotation")
             else:
                 sleep(1.0)
                 GPIO.output(AZ_DIR,CCW)
-                logs("CWW Rotation")
+                logger.logInfo(timeStamp(),"CWW Rotation")
 
       
             for x in range(int(degreeDev)):

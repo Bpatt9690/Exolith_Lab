@@ -1,9 +1,10 @@
 from Limit_Switches import limitSwitches
 
+ls = limitSwitches()
 
 while(1):
 
-    if limitSwitches.motorx2() is True:
+    if ls.motorx2() is True:
         print("Pressed")
     else:
         pass
