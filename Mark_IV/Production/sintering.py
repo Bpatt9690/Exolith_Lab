@@ -119,8 +119,10 @@ def sunpos(when, location, refraction):
         targ = rad((elevation + (10.3 / (elevation + 5.11))))
         elevation += (1.02 / tan(targ)) / 60
 
+    print("Calculated elevation:",elevation)
+
     #Return azimuth and elevation in degrees
-    return (round(azimuth, 2), round(elevation, 2)+10) #+10 accounts for errors
+    return (round(azimuth, 2), round(elevation, 2)) #+10 accounts for errors
 
 
 def into_range(x, range_min, range_max):
@@ -267,17 +269,17 @@ def tiltAngle():
 #Current timeStamps in EST can change
 def timeStamp():
     tz_NY = pytz.timezone('America/New_York') 
-    datetime_NY = datetime.now(tz_NY)
+    datetime_NY = datetime.now(tz=tz_NY)
     return str(datetime_NY.strftime("%H:%M:%S"))
 
 
 def solarTracking(elevation):
 
     # Direction pin from controller
-    AZ_DIR = 25
+    AZ_DIR = 16
 
     # Step pin from controller
-    AZ_STEP = 24
+    AZ_STEP = 4
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 1
@@ -285,6 +287,7 @@ def solarTracking(elevation):
 
     #Should be set by user, either via flag or direct input
     accuracy = 5.0
+    elevation = elevation + 10
 
     # Setup pin layout on RPI
     GPIO.setmode(GPIO.BCM)
@@ -337,7 +340,6 @@ def solarTracking(elevation):
 
             #New Angle Readings
             currentTiltAngleX,currentTiltAngleY = tiltAngle()
-            logger.logInfo(timeStamp(),"tilt angle "+str(currentTiltAngleX))
             currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
             logger.logInfo(timeStamp(),"tilt angle "+str(currentTiltAngleX))
             logger.logInfo(timeStamp(),"elevation "+str(elevation))
@@ -365,13 +367,13 @@ def elevationReset():
 
     #setup limit switch
     GPIO.setmode(GPIO.BCM)
-    switch=6
+    switch=17
     GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
     # Direction pin from controller
-    AZ_DIR = 25
+    AZ_DIR = 16
     # Step pin from controller
-    AZ_STEP = 24
+    AZ_STEP = 4
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
@@ -392,7 +394,7 @@ def elevationReset():
             sleep(.05)
             GPIO.output(AZ_STEP,GPIO.LOW)
 
-            if GPIO.input(switch) == 1:
+            if GPIO.input(switch) == 0:
                 print('Elevation Reset')
                 sleep(1)
                 return
@@ -437,6 +439,8 @@ def main():
                 longitude = -gps_dict['Longitude']
             else:
                 longitude = gps_dict['Longitude']
+
+            print(longitude)
        
             location = (gps_dict['Lattitude'], longitude)
             when = (year, month, day,int(hour),int(minutes),int(seconds), 0)
@@ -458,5 +462,5 @@ def main():
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    #elevationReset()
+    elevationReset()
     main()

@@ -5,7 +5,7 @@ from Limit_Switches import limitSwitches
 ls = limitSwitches()
 
 
-def xHoming():
+def xMovement():
     # Direction pin from controller
     GPIO.cleanup()
     DIR_1 = 6 #DIR+
@@ -37,8 +37,9 @@ def xHoming():
     GPIO.setup(STEP_2, GPIO.OUT)
 
     # Set the first direction you want it to spin
-    GPIO.output(DIR_1, CCW)
-    GPIO.output(DIR_2, CCW)
+    GPIO.output(DIR_1, CW)
+    GPIO.output(DIR_2, CW)
+    #CW Away from limit switch
     try:
         # Run forever.
         while(1):
@@ -67,18 +68,6 @@ def xHoming():
 
 
                 
-                if GPIO.input(motor2_switch) == 0:
-                    flag += 1
-                elif GPIO.input(motor1_switch) == 0:
-                    flag +=1
-                else:
-                    flag = 0
-
-                if flag >= 5:
-                    print('X Homing')
-                    sleep(1)
-                    return
-                    
 
 
     # Once finished clean everything up
@@ -87,10 +76,8 @@ def xHoming():
         GPIO.cleanup()
 
 
-
-
 def main():
-    xHoming()
+    xMovement()
 
 
 if __name__ == '__main__':
