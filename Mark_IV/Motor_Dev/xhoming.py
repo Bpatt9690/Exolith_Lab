@@ -77,15 +77,15 @@ def xHoming():
 
                 if motor2_flag >= 5:
                     print('X Homing')
-                    print('motor2_flag')
-                    calibration(1,motor1_switch,STEP_1,DIR_1)
+                    #print('motor2_flag')
+                    #calibration(1,motor1_switch,STEP_1,DIR_1)
                     sleep(1)
                     return
 
                 elif motor1_flag >= 5:
                     print('X Homing')
-                    print('motor1_flag')
-                    calibration(2,motor2_switch,STEP_2,DIR_2)
+                    #print('motor1_flag')
+                    #calibration(2,motor2_switch,STEP_2,DIR_2)
                     sleep(1)
                     return
                 

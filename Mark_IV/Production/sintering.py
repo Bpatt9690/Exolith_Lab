@@ -287,7 +287,7 @@ def solarTracking(elevation):
 
     #Should be set by user, either via flag or direct input
     accuracy = 5.0
-    elevation = elevation + 10
+
 
     # Setup pin layout on RPI
     GPIO.setmode(GPIO.BCM)
@@ -331,7 +331,7 @@ def solarTracking(elevation):
                 logger.logInfo(timeStamp(),"CWW Rotation")
 
       
-            for x in range(int(degreeDev)):
+            for x in range(100):
                 GPIO.output(AZ_STEP,GPIO.HIGH)
                 sleep(.05) # Dictates how fast stepper motor will run
                 GPIO.output(AZ_STEP,GPIO.LOW)
@@ -434,6 +434,9 @@ def main():
 
             #Get current time
             now, hour, minutes, seconds = getTime()
+
+            print(hour)
+            print(minutes)
         
             if gps_dict['Longitude Direction'] == 'W':
                 longitude = -gps_dict['Longitude']
@@ -443,7 +446,7 @@ def main():
             print(longitude)
        
             location = (gps_dict['Lattitude'], longitude)
-            when = (year, month, day,int(hour),int(minutes),int(seconds), 0)
+            when = (year, month, day,int(hour)-2,int(minutes),int(seconds), 0)
        
             azimuth, elevation = sunpos(when, location, True)
 

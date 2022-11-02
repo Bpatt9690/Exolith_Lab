@@ -62,11 +62,11 @@ def xMovement():
                 # Allow it to get there.
                 #.5 == super slow
                 # .00005 == breaking
-                sleep(.005) # Dictates how fast stepper motor will run
+                sleep(.0005) # Dictates how fast stepper motor will run
                 # Set coil winding to low
                 GPIO.output(STEP_1,GPIO.LOW)
                 GPIO.output(STEP_2,GPIO.LOW)
-                sleep(.005) # Dictates how fast stepper motor will run
+                sleep(.0005) # Dictates how fast stepper motor will run
 
                 
     # Once finished clean everything up

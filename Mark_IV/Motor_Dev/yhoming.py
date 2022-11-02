@@ -44,13 +44,6 @@ def xHoming():
         # Run forever.
         while(1):
 
-            """Change Direction: Changing direction requires time to switch. The
-            time is dictated by the stepper motor and controller. """
-            #sleep()
-            # Esablish the direction you want to go
-            #GPIO.output(DIR_1,CCW)
-            #GPIO.output(DIR_2,CCW)
-
             # Run for 200 steps. This will change based on how you set you controller
             for x in range(MAX):
 
@@ -77,15 +70,15 @@ def xHoming():
 
                 if motor2_flag >= 5:
                     print('X Homing')
-                    print('motor2_flag')
-                    calibration(1,motor1_switch,STEP_1,DIR_1)
+                    #print('motor2_flag')
+                    #calibration(1,motor1_switch,STEP_1,DIR_1)
                     sleep(1)
                     return
 
                 elif motor1_flag >= 5:
                     print('X Homing')
-                    print('motor1_flag')
-                    calibration(2,motor2_switch,STEP_2,DIR_2)
+                    #print('motor1_flag')
+                    #calibration(2,motor2_switch,STEP_2,DIR_2)
                     sleep(1)
                     return
                 
@@ -126,13 +119,6 @@ def calibration(motor_number,switch,STEP,DIR):
         # Run forever.
         while(1):
 
-            """Change Direction: Changing direction requires time to switch. The
-            time is dictated by the stepper motor and controller. """
-            #sleep()
-            # Esablish the direction you want to go
-            #GPIO.output(DIR_1,CCW)
-            #GPIO.output(DIR_2,CCW)
-
             # Run for 200 steps. This will change based on how you set you controller
             for x in range(MAX):
 
@@ -157,15 +143,11 @@ def calibration(motor_number,switch,STEP,DIR):
                     print('calibrated')
                     return
         
-        
-                
-                    
+                       
     # Once finished clean everything up
     except KeyboardInterrupt:
         print("cleanup")
         GPIO.cleanup()
-
-   
 
 def main():
     xHoming()
