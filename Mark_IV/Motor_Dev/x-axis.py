@@ -44,13 +44,6 @@ def xMovement():
         # Run forever.
         while(1):
 
-            """Change Direction: Changing direction requires time to switch. The
-            time is dictated by the stepper motor and controller. """
-            #sleep()
-            # Esablish the direction you want to go
-            #GPIO.output(DIR_1,CCW)
-            #GPIO.output(DIR_2,CCW)
-
             # Run for 200 steps. This will change based on how you set you controller
             for x in range(MAX):
 
@@ -67,9 +60,7 @@ def xMovement():
                 sleep(.0005) # Dictates how fast stepper motor will run
 
 
-                
-
-
+    
     # Once finished clean everything up
     except KeyboardInterrupt:
         print("cleanup")
@@ -78,7 +69,6 @@ def xMovement():
 
 def main():
     xMovement()
-
 
 if __name__ == '__main__':
     main()
