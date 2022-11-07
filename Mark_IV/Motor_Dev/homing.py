@@ -2,8 +2,12 @@ import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
 
-ls = limitSwitches()
 
+'''
+Used to home both the X and Y axis, moves X and Y axis until limit switch is triggered
+'''
+
+ls = limitSwitches()
 
 def Homing(DIR1,DIR2,STEP1,STEP2,ms1,ms2):
     # Direction pin from controller
@@ -44,14 +48,6 @@ def Homing(DIR1,DIR2,STEP1,STEP2,ms1,ms2):
         # Run forever.
         while(1):
 
-            """Change Direction: Changing direction requires time to switch. The
-            time is dictated by the stepper motor and controller. """
-            #sleep()
-            # Esablish the direction you want to go
-            #GPIO.output(DIR_1,CCW)
-            #GPIO.output(DIR_2,CCW)
-
-            # Run for 200 steps. This will change based on how you set you controller
             for x in range(MAX):
 
                 # Set one coil winding to high
@@ -89,12 +85,10 @@ def Homing(DIR1,DIR2,STEP1,STEP2,ms1,ms2):
         print("cleanup")
         GPIO.cleanup()
 
-
 def main():
     xhoming = Homing(6,22,5,23,27,21)
-    print(xhoming)
     yhoming = Homing(19,25,20,24,18,12)
-
+    print('Homing Complete')
 
 if __name__ == '__main__':
     main()

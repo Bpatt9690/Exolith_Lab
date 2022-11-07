@@ -2,8 +2,12 @@ import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
 
-ls = limitSwitches()
 
+'''
+Moves both motor 3 and motor 4 of the Y axis. Currently CWW || 1 moves the y axis toward home (limitswitches)
+'''
+
+ls = limitSwitches()
 
 def xHoming():
     # Direction pin from controller
