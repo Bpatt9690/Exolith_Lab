@@ -2,8 +2,13 @@ import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
 
-ls = limitSwitches()
 
+'''
+Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
+DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
+'''
+
+ls = limitSwitches()
 
 def xMovement():
     # Direction pin from controller
@@ -24,8 +29,6 @@ def xMovement():
     motor2_switch=21
     GPIO.setup(motor1_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
     GPIO.setup(motor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
-
-
 
     # Setup pin layout on PI
     GPIO.setmode(GPIO.BCM)
