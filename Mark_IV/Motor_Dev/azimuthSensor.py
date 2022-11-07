@@ -11,6 +11,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
 from Logging import logger
+from Compass_Data import Compassdata
 
 
 ###NOTES###
@@ -272,7 +273,7 @@ def timeStamp():
     datetime_NY = datetime.now(tz=tz_NY)
     return str(datetime_NY.strftime("%H:%M:%S"))
 
-
+'''
 def solarTracking(elevation):
 
     # Direction pin from controller
@@ -351,6 +352,19 @@ def solarTracking(elevation):
     except KeyboardInterrupt:
         logger.logInfo(timeStamp(),"GPIO Cleanup")
         GPIO.cleanup()
+
+'''
+
+
+
+def azimuthTracking(azimuth):
+
+    while(1):
+        print(azimuth)
+        print(Compassdata.getGPSData())
+        print()
+        time.sleep(1)
+
 
 
 #Used to cleanup GPIO pins on a keyboard hault
@@ -458,12 +472,13 @@ def main():
             logger.logInfo(timeStamp(),"EST time: "+str(datetime_NY.strftime("%H:%M:%S")))
             logger.logInfo(timeStamp(),"Current Solar Azimuth: "+str(azimuth))
 
-            solarTracking(elevation)
+            #solarTracking(elevation)
+            azimuthTracking(azimuth)
 
     except KeyboardInterrupt:
         logs("GPIO Cleanup")
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    elevationReset()
+    #elevationReset()
     main()

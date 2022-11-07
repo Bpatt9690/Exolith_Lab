@@ -5,14 +5,14 @@ from Limit_Switches import limitSwitches
 ls = limitSwitches()
 
 
-def xMovement():
+def azimuth():
     # Direction pin from controller
     GPIO.cleanup()
     DIR_1 = 6 #DIR+
-    DIR_2 = 22 #DIR+
+  #  DIR_2 = 22 #DIR+
     # Step pin from controller
     STEP_1 = 5 #PULL+
-    STEP_2 = 23 #PULL+
+  #  STEP_2 = 23 #PULL+
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
@@ -21,9 +21,9 @@ def xMovement():
 
     GPIO.setmode(GPIO.BCM)
     motor1_switch=27
-    motor2_switch=21
+  #  motor2_switch=21
     GPIO.setup(motor1_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
-    GPIO.setup(motor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+ #   GPIO.setup(motor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
 
 
@@ -33,12 +33,12 @@ def xMovement():
     # Establish Pins in software
     GPIO.setup(DIR_1, GPIO.OUT)
     GPIO.setup(STEP_1, GPIO.OUT)
-    GPIO.setup(DIR_2, GPIO.OUT)
-    GPIO.setup(STEP_2, GPIO.OUT)
+   # GPIO.setup(DIR_2, GPIO.OUT)
+   # GPIO.setup(STEP_2, GPIO.OUT)
 
     # Set the first direction you want it to spin
     GPIO.output(DIR_1, CW)
-    GPIO.output(DIR_2, CW)
+  #  GPIO.output(DIR_2, CW)
     #CW Away from limit switch
     try:
         # Run forever.
@@ -56,14 +56,14 @@ def xMovement():
 
                 # Set one coil winding to high
                 GPIO.output(STEP_1,GPIO.HIGH)
-                GPIO.output(STEP_2,GPIO.HIGH)
+             #   GPIO.output(STEP_2,GPIO.HIGH)
                 # Allow it to get there.
                 #.5 == super slow
                 # .00005 == breaking
                 sleep(.0005) # Dictates how fast stepper motor will run
                 # Set coil winding to low
                 GPIO.output(STEP_1,GPIO.LOW)
-                GPIO.output(STEP_2,GPIO.LOW)
+            #    GPIO.output(STEP_2,GPIO.LOW)
                 sleep(.0005) # Dictates how fast stepper motor will run
 
 
@@ -77,7 +77,7 @@ def xMovement():
 
 
 def main():
-    xMovement()
+    azimuth()
 
 
 if __name__ == '__main__':
