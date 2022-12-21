@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import serial
 import time
 
@@ -41,4 +42,5 @@ class GPS_Data:
                 gps_dict['Longitude Direction'] = 'W'
                 gps_dict['Number Satellites'] = '09'
                 gps_dict['Alt Above Sea Level'] = '34.2'
-                return gps_dict
+
+                #return gps_dict

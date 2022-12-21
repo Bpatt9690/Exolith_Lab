@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from i2clibraries import i2c_hmc5883l
 from time import sleep
  
@@ -17,3 +16,5 @@ class Compassdata:
 			hmc5883l.setDeclination(-10, 4)
 				 
 			print(hmc5883l.getHeadingString())
+
+			sleep(.5)
