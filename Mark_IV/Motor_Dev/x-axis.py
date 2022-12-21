@@ -2,8 +2,13 @@ import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
 
-ls = limitSwitches()
 
+'''
+Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
+DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
+'''
+
+ls = limitSwitches()
 
 def xMovement():
     # Direction pin from controller
@@ -25,8 +30,6 @@ def xMovement():
     GPIO.setup(motor1_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
     GPIO.setup(motor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
-
-
     # Setup pin layout on PI
     GPIO.setmode(GPIO.BCM)
 
@@ -44,13 +47,6 @@ def xMovement():
         # Run forever.
         while(1):
 
-            """Change Direction: Changing direction requires time to switch. The
-            time is dictated by the stepper motor and controller. """
-            #sleep()
-            # Esablish the direction you want to go
-            #GPIO.output(DIR_1,CCW)
-            #GPIO.output(DIR_2,CCW)
-
             # Run for 200 steps. This will change based on how you set you controller
             for x in range(MAX):
 
@@ -67,9 +63,7 @@ def xMovement():
                 sleep(.0005) # Dictates how fast stepper motor will run
 
 
-                
-
-
+    
     # Once finished clean everything up
     except KeyboardInterrupt:
         print("cleanup")
@@ -78,7 +72,6 @@ def xMovement():
 
 def main():
     xMovement()
-
 
 if __name__ == '__main__':
     main()

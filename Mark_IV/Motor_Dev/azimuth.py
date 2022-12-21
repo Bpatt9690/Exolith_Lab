@@ -1,31 +1,32 @@
 import RPi.GPIO as GPIO
 from time import sleep
-from Limit_Switches import limitSwitches
+import time
+import SI1145.SI1145 as SI1145
 
-ls = limitSwitches()
+
+sensor = SI1145.SI1145()
 
 
-def azimuth():
+def stepMovement(direction,steps):
+    GPIO.setwarnings(False) 
     # Direction pin from controller
     GPIO.cleanup()
-    DIR_1 = 6 #DIR+
-  #  DIR_2 = 22 #DIR+
+    DIR_1 = 13 #DIR+
+
     # Step pin from controller
-    STEP_1 = 5 #PULL+
-  #  STEP_2 = 23 #PULL+
+    STEP_1 = 26 #PULL+
+
     # 0/1 used to signify clockwise or counterclockwise.
-    CW = 0
-    CCW = 1
-    MAX = 10000
-    flag = 0
+    CW = direction
+
+    if direction is 1:
+        CCW = 0
+    else:
+        CCW = 1
+
+    MAX = 100
 
     GPIO.setmode(GPIO.BCM)
-    motor1_switch=27
-  #  motor2_switch=21
-    GPIO.setup(motor1_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
- #   GPIO.setup(motor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
-
-
 
     # Setup pin layout on PI
     GPIO.setmode(GPIO.BCM)
@@ -33,41 +34,29 @@ def azimuth():
     # Establish Pins in software
     GPIO.setup(DIR_1, GPIO.OUT)
     GPIO.setup(STEP_1, GPIO.OUT)
-   # GPIO.setup(DIR_2, GPIO.OUT)
-   # GPIO.setup(STEP_2, GPIO.OUT)
 
     # Set the first direction you want it to spin
     GPIO.output(DIR_1, CW)
-  #  GPIO.output(DIR_2, CW)
-    #CW Away from limit switch
+
     try:
-        # Run forever.
-        while(1):
 
-            """Change Direction: Changing direction requires time to switch. The
-            time is dictated by the stepper motor and controller. """
-            #sleep()
-            # Esablish the direction you want to go
-            #GPIO.output(DIR_1,CCW)
-            #GPIO.output(DIR_2,CCW)
+        for x in range(steps):
+            print('Adjusting....')
+ 
+            GPIO.output(STEP_1,GPIO.HIGH)
+            #.5 == super slow
+            # .00005 == breaking
+            sleep(.5) 
+            GPIO.output(STEP_1,GPIO.LOW)
+            sleep(.5)
 
-            # Run for 200 steps. This will change based on how you set you controller
-            for x in range(MAX):
+        #rotate opposite way; used as break
+        GPIO.output(DIR_1, CCW)
 
-                # Set one coil winding to high
-                GPIO.output(STEP_1,GPIO.HIGH)
-             #   GPIO.output(STEP_2,GPIO.HIGH)
-                # Allow it to get there.
-                #.5 == super slow
-                # .00005 == breaking
-                sleep(.0005) # Dictates how fast stepper motor will run
-                # Set coil winding to low
-                GPIO.output(STEP_1,GPIO.LOW)
-            #    GPIO.output(STEP_2,GPIO.LOW)
-                sleep(.0005) # Dictates how fast stepper motor will run
-
-
-                
+        GPIO.output(STEP_1,GPIO.HIGH)
+        sleep(.5)
+        GPIO.output(STEP_1,GPIO.LOW)
+        sleep(.5)
 
 
     # Once finished clean everything up
@@ -76,9 +65,49 @@ def azimuth():
         GPIO.cleanup()
 
 
-def main():
-    azimuth()
 
+def uv_sensor():
+    global sensor
+    uvAverage = 0
+    for i in range(10):
+            UV = sensor.readUV()
+            uvIndex = UV
+            uvAverage += uvIndex
+            time.sleep(.1)
+    return (uvAverage/10)
+    
+def main():
+
+    uv_current = uv_sensor()
+    print('Stationary UV value: ', uv_current)
+
+
+
+    uv_high = uv_current
+    uv_low = uv_current 
+
+    while(1):
+
+        #move clockwise
+        stepMovement(1,2)
+        uv = uv_sensor()
+
+        if uv > uv_high:
+            uv_low = uv_high
+            uv_high = uv
+
+        print("UV High: ", uv_high)
+        print("UV Low: ", uv_low) 
+
+        if uv_high > uv:
+            uv_max = uv_high
+            print('We need to pause')
+            stepMovement(0,2)
+
+
+            break
+    print('current uv:',uv_sensor())
+    print('uv high', uv_high)
 
 if __name__ == '__main__':
     main()

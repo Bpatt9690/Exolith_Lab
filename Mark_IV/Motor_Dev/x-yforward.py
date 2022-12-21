@@ -2,8 +2,14 @@ import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
 
-ls = limitSwitches()
 
+'''
+Moves both X and Y axis. Currently CW || 0 moves both axis forward
+DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
+'''
+
+
+ls = limitSwitches()
 
 def Movement():
     # Direction pin from controller
@@ -34,8 +40,6 @@ def Movement():
     GPIO.setup(ymotor1_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
     GPIO.setup(ymotor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
-
-
     # Setup pin layout on PI
     GPIO.setmode(GPIO.BCM)
 
@@ -64,13 +68,6 @@ def Movement():
         # Run forever.
         while(1):
 
-            """Change Direction: Changing direction requires time to switch. The
-            time is dictated by the stepper motor and controller. """
-            #sleep()
-            # Esablish the direction you want to go
-            #GPIO.output(DIR_1,CCW)
-            #GPIO.output(DIR_2,CCW)
-
             # Run for 200 steps. This will change based on how you set you controller
             for x in range(MAX):
 
@@ -91,9 +88,6 @@ def Movement():
                 sleep(.005) # Dictates how fast stepper motor will run
 
 
-                
-
-
     # Once finished clean everything up
     except KeyboardInterrupt:
         print("cleanup")
@@ -102,7 +96,6 @@ def Movement():
 
 def main():
     Movement()
-
 
 if __name__ == '__main__':
     main()

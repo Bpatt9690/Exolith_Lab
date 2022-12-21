@@ -1,15 +1,10 @@
 from i2clibraries import i2c_hmc5883l
 from time import sleep
  
-
 class Compassdata:
-
 
 	def __init__(self):
 		pass
-
-
-
 
 	def getGPSData():
 

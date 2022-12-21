@@ -1,7 +1,6 @@
 import serial
 import time
 
-
 class GPS_Data:
 
     def __init__(self):
