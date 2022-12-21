@@ -8,7 +8,6 @@ from GPS import GPS_Data
 import smbus
 import RPi.GPIO as GPIO
 from time import sleep
-#from Limit_Switch_Dev.Limit_Switches import limitSwitches
 from Logging import logger
 
 
@@ -119,7 +118,7 @@ def sunpos(when, location, refraction):
         elevation += (1.02 / tan(targ)) / 60
 
     #Return azimuth and elevation in degrees
-    return (round(azimuth, 2), round(elevation, 2)+10) #+10 accounts for errors
+    return (round(azimuth, 2), round(elevation, 2)) #+10 accounts for errors
 
 
 def into_range(x, range_min, range_max):
@@ -128,29 +127,39 @@ def into_range(x, range_min, range_max):
     return (((shiftedx % delta) + delta) % delta) + range_min
 
 def read_raw_data(addr):
-    #Accelero and Gyro value are 16-bit
-    high = bus.read_byte_data(DeviceAddress, addr)
-    low = bus.read_byte_data(DeviceAddress, addr+1)
 
-    #concatenate higher and lower value
-    value = ((high << 8) | low)
+    while(1):
+        try:
+            #Accelero and Gyro value are 16-bit
+            high = bus.read_byte_data(DeviceAddress, addr)
+            low = bus.read_byte_data(DeviceAddress, addr+1)
 
-    #to get signed value from mpu6050
-    if(value > 32768):
-            value = value - 65536
+            #concatenate higher and lower value
+            value = ((high << 8) | low)
 
-    return value
+            #to get signed value from mpu6050
+            if(value > 32768):
+                    value = value - 65536
+
+            return value
+        except:
+            print('failed to find data')
 
  #Read the gyro and acceleromater values from MPU6050
 def MPU_Init():
-    #write to sample rate register
-    bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
-    bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
-    bus.write_byte_data(DeviceAddress, CONFIG, int('0000110',2))
-    #Write to Gyro configuration register
-    bus.write_byte_data(DeviceAddress, GYRO_CONFIG, 24)
-    #Write to interrupt enable register
-    bus.write_byte_data(DeviceAddress, INT_ENABLE, 1)
+    while(1):
+        try:
+            #write to sample rate register
+            bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
+            bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
+            bus.write_byte_data(DeviceAddress, CONFIG, int('0000110',2))
+            #Write to Gyro configuration register
+            bus.write_byte_data(DeviceAddress, GYRO_CONFIG, 24)
+            #Write to interrupt enable register
+            bus.write_byte_data(DeviceAddress, INT_ENABLE, 1)
+            return 
+        except:
+            print('issue')
 
 def tiltAngle():
 
@@ -283,7 +292,7 @@ def solarTracking(elevation):
     CCW = 0
 
     #Should be set by user, either via flag or direct input
-    accuracy = 5.0
+    accuracy = 20.0
 
     # Setup pin layout on RPI
     GPIO.setmode(GPIO.BCM)
@@ -301,9 +310,9 @@ def solarTracking(elevation):
     logger.logInfo(timeStamp(),"Current Solar Elevation: "+str(elevation))
     time.sleep(1)
 
-    degreeDifferenceX =   float(currentTiltAngleX) -float(elevation)
+    degreeDifferenceX = float(currentTiltAngleX) -float(elevation)
 
-    logger.logInfo(timeStamp(),"Current Degree Difference in elevation: "+str(degreeDifferenceX))
+    #logger.logInfo(timeStamp(),"Current Degree Difference in elevation: "+str(degreeDifferenceX))
  
     try:
 
@@ -312,19 +321,21 @@ def solarTracking(elevation):
             logger.logInfo(timeStamp(),"Adjusting Elevation Angle")
             logger.logInfo(timeStamp(),"Current Degree Difference in elevation: "+str(degreeDifferenceX))
 
-            degreeDev = (int(degreeDifferenceX)) * 25
+            degreeDev = (int(degreeDifferenceX)) * 10
 
             degreeDev = math.floor(degreeDev)
+
+            print(degreeDev)
 
             sleep(1.0)
 
             if degreeDifferenceX > 0:
                 GPIO.output(AZ_DIR, CW)
-                logs("CW Rotation")
+                logger.logInfo(timeStamp(),"CW Rotation")
             else:
                 sleep(1.0)
                 GPIO.output(AZ_DIR,CCW)
-                logs("CWW Rotation")
+                logger.logInfo(timeStamp(),"CWW Rotation")
 
       
             for x in range(int(degreeDev)):
@@ -336,7 +347,6 @@ def solarTracking(elevation):
 
             #New Angle Readings
             currentTiltAngleX,currentTiltAngleY = tiltAngle()
-            logger.logInfo(timeStamp(),"tilt angle "+str(currentTiltAngleX))
             currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
             logger.logInfo(timeStamp(),"tilt angle "+str(currentTiltAngleX))
             logger.logInfo(timeStamp(),"elevation "+str(elevation))
@@ -364,7 +374,7 @@ def elevationReset():
 
     #setup limit switch
     GPIO.setmode(GPIO.BCM)
-    switch=6
+    switch=17
     GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
     # Direction pin from controller
@@ -391,19 +401,19 @@ def elevationReset():
             sleep(.05)
             GPIO.output(AZ_STEP,GPIO.LOW)
 
-            if GPIO.input(switch) == 1:
+            if GPIO.input(switch) == 0:
                 print('Elevation Reset')
                 sleep(1)
                 return
 
-    sleep(.1)
+    sleep(.5)
 
 
 def getDate():
     today = date.today()
-    year = int(today.strftime("%Y"))
-    day = int(today.strftime("%d"))
-    month = int(today.strftime("%m").replace("0",""))
+    year = 2022#int(today.strftime("%Y"))
+    day = 21#int(today.strftime("%d"))
+    month = 12#int(today.strftime("%m").replace("0",""))
 
     return today,year,day,month
 
@@ -453,9 +463,9 @@ def main():
             solarTracking(elevation)
 
     except KeyboardInterrupt:
-        logs("GPIO Cleanup")
+        logger.logInfo(timeStamp(),"GPIO Cleanup")
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    #elevationReset()
+    elevationReset()
     main()
