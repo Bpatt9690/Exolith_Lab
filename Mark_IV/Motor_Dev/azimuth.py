@@ -1,21 +1,15 @@
-#prod ready
-
 import RPi.GPIO as GPIO
 from time import sleep
 import time
 import SI1145.SI1145 as SI1145
 
-
 sensor = SI1145.SI1145()
-
 
 def stepMovement(direction,steps):
     GPIO.setwarnings(False) 
-    # Direction pin from controller
     GPIO.cleanup()
-    DIR_1 = 13 #DIR+
 
-    # Step pin from controller
+    DIR_1 = 13 #DIR+
     STEP_1 = 26 #PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
@@ -66,8 +60,6 @@ def stepMovement(direction,steps):
         print("cleanup")
         GPIO.cleanup()
 
-
-
 def uv_sensor():
     global sensor
     uvAverage = 0
@@ -103,9 +95,8 @@ def main():
             uv_max = uv_high
             print('We need to pause')
             stepMovement(0,2)
-
-
             break
+
     print('current uv:',uv_sensor())
     print('uv high', uv_high)
 
