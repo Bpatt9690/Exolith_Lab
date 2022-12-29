@@ -9,26 +9,27 @@ import math
 class sensor_group:
 
 	def __init__(self):
-        pass
+        	pass
 
-    def light_sensor_health():
+	def light_sensor_health(self):
+		sensor = SI1145.SI1145()
 
-    	uvAverage = 0
+		uvAverage = 0
 
-	    for i in range(10):
-	            UV = sensor.readUV()
-	            uvIndex = UV
-	            uvAverage += uvIndex
-	            time.sleep(.1)
+		for i in range(10):
+			UV = sensor.readUV()
+			uvIndex = UV
+			uvAverage += uvIndex
+			time.sleep(.1)
 
-	    if uvAverage/10 > 0:
-	    	print('UV Sensor Healthy')
-	    	return True
-	    else:
-	    	print('UV Sensor Failure')
-	    	return False
+		if uvAverage/10 > 0:
+			print('UV Sensor Healthy')
+			return True
+		else:
+			print('UV Sensor Failure')
+			return False
 
-    def orientation_sensor_health():
+	def orientation_sensor_health(self):
 
 		PWR_MGMT_1   = 0x6B
 		SMPLRT_DIV   = 0x19
@@ -51,17 +52,17 @@ class sensor_group:
 		bus.write_byte_data(DeviceAddress, INT_ENABLE, 1)
 
 
-        high = bus.read_byte_data(DeviceAddress, ACCEL_YOUT_H)
-        low = bus.read_byte_data(DeviceAddress, ACCEL_YOUT_H)
+		high = bus.read_byte_data(DeviceAddress, ACCEL_YOUT_H)
+		low = bus.read_byte_data(DeviceAddress, ACCEL_YOUT_H)
 
-        #concatenate higher and lower value
-        value = ((high << 8) | low)
+		#concatenate higher and lower value
+		value = ((high << 8) | low)
 
-        #to get signed value from mpu6050
-        if(value > 32768):
-                value = value - 65536
-        print('The value is:',value)
+		#to get signed value from mpu6050
+		if(value > 32768):
+			value = value - 65536
+			print('The value is:',value)
 
-        if value > 0:
-        	return True
+		if value is not 0:
+			return True
 

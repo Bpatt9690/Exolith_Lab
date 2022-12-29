@@ -181,8 +181,8 @@ def solarPositioning(uvMax):
 
     #uv_current = uv_sensor()
 
-    uvUpper = uvMax + uvMax*(.5)
-    uvLower = uvMax - (uvMax*(.5))
+    uvUpper = uvMax + uvMax*(.10)
+    uvLower = uvMax - (uvMax*(.10))
 
     print(uvMax)
     print(uvUpper)

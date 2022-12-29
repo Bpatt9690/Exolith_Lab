@@ -1,11 +1,13 @@
+import os 
+
 class logger:
 
 	def __init__(self):
 		pass
 
-	def logInfo(timestamp,str):
-		print(timestamp+" INFO: "+str)
+	def logInfo(timestamp,st):
+		print(timestamp+" INFO: "+str(st))
 		print()
-		f = open("gpsData.txt","a")
-		f.write(str+"\n")
+		f = open("uvsensor.txt","a")
+		f.write(str(st)+"\n")
 		f.close()

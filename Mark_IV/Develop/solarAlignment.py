@@ -12,18 +12,21 @@ import smbus
 from Logging import logger
 from axisReset import axis_reset
 from sensorGroup import sensor_group
+import os
 
 
 def sensorGroupCheck():
 
 	sg = sensor_group()
+	light_sensor_status = False
+	orientation_sensor_status = False
 
 	try:
 		light_sensor_status = sg.light_sensor_health()
 		orientation_sensor_status = sg.orientation_sensor_health()
 
 	except Exception as e:
-		print('Fail')
+		print('Fail',e)
 
 
 	print('Orienatation Sensor, Light Sensor',light_sensor_status,orientation_sensor_status)
@@ -40,6 +43,9 @@ def sensorGroupCheck():
 def axisResets():
 
 	ar = axis_reset()
+	x_axis_status = False
+	y_axis_status = False
+	ev_status = False
 
 	try:
 
@@ -47,8 +53,8 @@ def axisResets():
 		y_axis_status = ar.y_axis_reset()
 		ev_status = ar.elevation_reset()
 
- 	except Exception as e:
-	    print("Fail")
+	except Exception as e:
+		print("Fail",e)
 
 	print('X,Y,EV',x_axis_status,y_axis_status,ev_status)
 
@@ -63,13 +69,12 @@ def axisResets():
 def main():
 
 	#step 1 (reset axis, check sensor health)
+
 	axisStatus = axisResets()
 	sensorStatus = sensorGroupCheck()
 
-
-
-
-
+	while not sensorStatus:
+		sensorStatus = sensorGroupCheck()
 
 if __name__ == '__main__':
     main()
