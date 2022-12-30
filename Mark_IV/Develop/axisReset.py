@@ -10,13 +10,16 @@ from Limit_Switches import limitSwitches
 class axis_reset:
 
 	def __init__(self):
+		self.logger = logger()
 		pass
+		
 
 #Responsible for resetting the elevation axis.
 #Retracts elevation boom until limit switch is triggered
 	def elevation_reset(self):
+	
 		GPIO.setwarnings(False)
-		logger.logInfo(self.timeStamp(),'Resetting Elevation')
+		self.logger.logInfo('Resetting Elevation')
 
 		GPIO.setmode(GPIO.BCM)
 		switch=17
@@ -195,9 +198,3 @@ class axis_reset:
 		    GPIO.cleanup()
 		    return False
 
-
-#Current timeStamps in EST; Configurable
-	def timeStamp(self):
-		tz_NY = pytz.timezone('America/New_York') 
-		datetime_NY = datetime.now(tz_NY)
-		return str(datetime_NY.strftime("%H:%M:%S"))

@@ -16,6 +16,10 @@ import os
 from elevationTracking import elevation_tracker
 from azimuthTracking import azimuth_tracker
 
+logger = logger()
+elevation_tracker = elevation_tracker()
+azimuth_tracker = azimuth_tracker()
+
 
 def axisResets():
 
@@ -31,7 +35,7 @@ def axisResets():
 		ev_status = ar.elevation_reset()
 
 	except Exception as e:
-		logger.logInfo("Axis Reset Failure: "+e)
+		logger.logInfo("Axis Reset Failure: "+str(e))
 	
 	if x_axis_status and y_axis_status and ev_status:
 		logger.logInfo("Successful reset")
@@ -39,7 +43,7 @@ def axisResets():
 		
 	else:
 		logger.logInfo("Axis Reset Failure")
-		logger.logInfo("x_axis_status: "+x_axis_status+" y_axis_status: "+y_axis_status+" ev_status: "+ev_status)
+		logger.logInfo("x_axis_status: "+str(x_axis_status)+"\ny_axis_status: "+str(y_axis_status)+"\nev_status: "+str(ev_status))
 		return False
 
 
@@ -54,14 +58,14 @@ def sensorGroupCheck():
 		orientation_sensor_status = sg.orientation_sensor_health()
 
 	except Exception as e:
-		logger.logInfo("Sensor Group Failure: "+e)
+		logger.logInfo("Sensor Group Failure: "+str(e))
 
 	if light_sensor_status and orientation_sensor_status:
 		logger.logInfo("Sensor Group Healthy")
 		return True
 
 	else:
-		logger.logInfo("Sensor Group Failure, light_sensor_status: "+light_sensor_status+" orientation_sensor_status: "+orientation_sensor_status)
+		logger.logInfo("Sensor Group Failure, light_sensor_status: "+str(light_sensor_status)+"\norientation_sensor_status: "+str(orientation_sensor_status))
 		return False
 
 
@@ -82,30 +86,34 @@ def solarElevationLogic():
 
 
 	if gps_dict['Longitude Direction'] == 'W':
-        longitude = -gps_dict['Longitude']
+		longitude = -gps_dict['Longitude']
 	else:
-        longitude = gps_dict['Longitude']
+		longitude = gps_dict['Longitude']
 
-    location = (gps_dict['Lattitude'], longitude)
-    when = (year, month, day,int(hour),int(minutes),int(seconds), 0)
+	location = (gps_dict['Lattitude'], longitude)
+	when = (year, month, day,int(hour),int(minutes),int(seconds), 0)
 
 	tz_NY = pytz.timezone('America/New_York') 
 	datetime_NY = datetime.now(tz_NY)
 
 	azimuth, elevation = elevation_tracker.sunpos(when, location, True)
 
-    logger.logInfo("Current UTC: "+str(now))
-    logger.logInfo("EST time: "+str(datetime_NY.strftime("%H:%M:%S")))
-    logger.logInfo("Current Solar Azimuth: "+str(azimuth))
+	logger.logInfo("Current UTC: "+str(now))
+	logger.logInfo("EST time: "+str(datetime_NY.strftime("%H:%M:%S")))
+	logger.logInfo("Current Solar Azimuth: "+str(azimuth))
 
-    elevation_tracker.solarTracking(elevation)
+	status = elevation_tracker.solarTracking(elevation)
+
+	return status
 
 
 def main():
 
-	logger.logInfo("Step 1: Reset all axis, check sensor health")
+	logger.logInfo('Step 1: Reset all axis, check sensor health')
 	axisStatus = axisResets()
 	sensorStatus = sensorGroupCheck()
+
+	print(axisStatus)
 
 	#Need to add fail flag to prevent endless loop on failure
 	while not sensorStatus:
@@ -124,13 +132,13 @@ def main():
 			azimuth_tracker.azimuthPosition(uvMax)
 
 		else:
-			logger.logInfo('Solar Elvation Status Failure: '+solar_elevation_status)
+			logger.logInfo("Solar Elvation Status Failure: "+str(solar_elevation_status))
 
 
 	else:
-		logger.logInfo("Step 1 Failure: axisStatus: "+axisStatus+" sensorStatus: "+sensorStatus)
+		logger.logInfo("Step 1 Failure: axisStatus: "+str(axisStatus)+"\nsensorStatus: "+str(sensorStatus))
 
 
 if __name__ == '__main__':
 	os.remove("uvsensor.txt")
-    main()
+	main()

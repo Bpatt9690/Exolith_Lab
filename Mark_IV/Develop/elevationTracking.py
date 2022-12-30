@@ -33,9 +33,10 @@ class elevation_tracker:
 		self.GYRO_XOUT_H  = 0x43
 		self.GYRO_YOUT_H  = 0x45
 		self.GYRO_ZOUT_H  = 0x47
+		self.logger = logger()
 
 
-	def sunpos(self,when, location, refraction):
+	def sunpos(self, when, location, refraction):
 
 		#Extract the passed data
 		year, month, day, hour, minute, second, timezone = when
@@ -120,82 +121,81 @@ class elevation_tracker:
 		GPIO.setwarnings(False)
 
 	    # Direction pin from controller
-	    DIR = 25
+		DIR = 25
 
 	    # Step pin from controller
-	    STEP = 24
+		STEP = 24
 
-	    # 0/1 used to signify clockwise or counterclockwise.
-	    CW = 1
-	    CCW = 0
+		# 0/1 used to signify clockwise or counterclockwise.
+		CW = 1
+		CCW = 0
 
-	    #Should be set by user, either via flag or direct input
-	    accuracy = 20.0
+		#Should be set by user, either via flag or direct input
+		accuracy = 40.0
 
-	    # Setup pin layout on RPI
-	    GPIO.setmode(GPIO.BCM)
-	    GPIO.setup(DIR, GPIO.OUT)
-	    GPIO.setup(STEP, GPIO.OUT)
+		# Setup pin layout on RPI
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(DIR, GPIO.OUT)
+		GPIO.setup(STEP, GPIO.OUT)
 
-	    time.sleep(1)
-	    
-	    currentTiltAngleX,currentTiltAngleY = self.tiltAngle()
-	  
-	    #Gathering current tilt angle from sensor
-	    currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
+		time.sleep(1)
 
-	    logger.logInfo("Current Tilt Elevation Angle: "+str(currentTiltAngleX))
-	    logger.logInfo("Current Solar Elevation: "+str(elevation))
-	    time.sleep(1)
+		currentTiltAngleX,currentTiltAngleY = self.tiltAngle()
 
-	    degreeDifferenceX = float(currentTiltAngleX) -float(elevation)
-	 
-	    try:
+		#Gathering current tilt angle from sensor
+		currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
 
-	        while degreeDifferenceX > accuracy or (degreeDifferenceX*(-1)) > accuracy:
+		self.logger.logInfo("Current Tilt Elevation Angle: "+str(currentTiltAngleX))
+		self.logger.logInfo("Current Solar Elevation: "+str(elevation))
+		time.sleep(1)
 
-	            logger.logInfo("Adjusting Elevation Angle")
-	            logger.logInfo("Current Degree Difference in elevation: "+str(degreeDifferenceX))
+		degreeDifferenceX = float(currentTiltAngleX) -float(elevation)
 
-	            degreeDev = (int(degreeDifferenceX)) * 10
+		try:
 
-	            degreeDev = math.floor(degreeDev)
+			while degreeDifferenceX > accuracy or (degreeDifferenceX*(-1)) > accuracy:
 
-	            print(degreeDev)
+				self.logger.logInfo("Adjusting Elevation Angle")
+				self.logger.logInfo("Current Degree Difference in elevation: "+str(degreeDifferenceX))
 
-	            sleep(1.0)
+				degreeDev = (int(degreeDifferenceX)) * 10
 
-	            if degreeDifferenceX > 0:
-	                GPIO.output(DIR, CW)
-	                logger.logInfo("CW Rotation")
-	            else:
-	                sleep(1.0)
-	                GPIO.output(DIR,CCW)
-	                logger.logInfo("CWW Rotation")
+				degreeDev = math.floor(degreeDev)
 
-	      
-	            for x in range(int(degreeDev)):
-	                GPIO.output(STEP,GPIO.HIGH)
-	                sleep(.05) # Dictates how fast stepper motor will run
-	                GPIO.output(STEP,GPIO.LOW)
-	            
-	            time.sleep(1)
+				sleep(1.0)
 
-	            #New Angle Readings
-	            currentTiltAngleX,currentTiltAngleY = self.tiltAngle()
-	            currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
-	            logger.logInfo("tilt angle "+str(currentTiltAngleX))
-	            logger.logInfo("elevation "+str(elevation))
+				if degreeDifferenceX > 0:
+					GPIO.output(DIR, CW)
+					self.logger.logInfo("CW Rotation")
+				else:
+					sleep(1.0)
+					GPIO.output(DIR,CCW)
+					self.logger.logInfo("CWW Rotation")
 
-	            degreeDifferenceX =  float(currentTiltAngleX) - float(elevation)
 
-	        logger.logInfo('Elevation Angle Reached, Stopping Adjustment')
-	        return True
+				for x in range(int(degreeDev)):
 
-	    except Exception as e:
-	        logger.logInfo("Failure"+e)
-	        GPIO.cleanup()
-	        return False
+					GPIO.output(STEP,GPIO.HIGH)
+					sleep(.05) # Dictates how fast stepper motor will run
+					GPIO.output(STEP,GPIO.LOW)
+
+				time.sleep(1)
+
+				#New Angle Readings
+				currentTiltAngleX,currentTiltAngleY = self.tiltAngle()
+				currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
+				self.logger.logInfo("tilt angle "+str(currentTiltAngleX))
+				self.logger.logInfo("elevation "+str(elevation))
+
+				degreeDifferenceX =  float(currentTiltAngleX) - float(elevation)
+
+			self.logger.logInfo('Elevation Angle Reached, Stopping Adjustment')
+			return True
+
+		except Exception as e:
+			self.logger.logInfo("Failure"+str(e))
+			GPIO.cleanup()
+			return False
 
 
 	def tiltAngle(self):
@@ -234,7 +234,7 @@ class elevation_tracker:
 
 	    while True:
 	        if(flag >100): #Problem with the connection
-	            logger.logInfo('Failed to find data')
+	            self.logger.logInfo('Failed to find data')
 	            flag=0
 	            continue
 	        try:
@@ -302,10 +302,9 @@ class elevation_tracker:
 	                gyroYAngle = self.kalAngleY
 
 	            return str(self.kalAngleX) ,str(self.kalAngleY)
-	            time.sleep(0.005)
-
+	            
 	        except Exception as e:
-	            logger.logInfo('Tilt Angle Failure'+e)
+	            self.logger.logInfo('Tilt Angle Failure'+e)
 	            flag += 1
 
 
@@ -319,8 +318,8 @@ class elevation_tracker:
 	    while(1):
 	        try:
 	            #Accelero and Gyro value are 16-bit
-	            high = bus.read_byte_data(self.DeviceAddress, addr)
-	            low = bus.read_byte_data(self.DeviceAddress, addr+1)
+	            high = self.bus.read_byte_data(self.DeviceAddress, addr)
+	            low = self.bus.read_byte_data(self.DeviceAddress, addr+1)
 
 	            #concatenate higher and lower value
 	            value = ((high << 8) | low)
@@ -332,20 +331,20 @@ class elevation_tracker:
 	            return value
 
 	        except Exception as e:
-	            logger.logInfo('Failed to read raw data'+e)
+	            self.logger.logInfo('Failed to read raw data'+str(e))
 
 	 #Read the gyro and acceleromater values from MPU6050
-	def MPU_Init():
+	def MPU_Init(self):
 	    while(1):
 	        try:
 	            #write to sample rate register
-	            bus.write_byte_data(self.DeviceAddress, self.SMPLRT_DIV, 7)
-	            bus.write_byte_data(self.DeviceAddress, self.PWR_MGMT_1, 1)
-	            bus.write_byte_data(self.DeviceAddress, self.CONFIG, int('0000110',2))
+	            self.bus.write_byte_data(self.DeviceAddress, self.SMPLRT_DIV, 7)
+	            self.bus.write_byte_data(self.DeviceAddress, self.PWR_MGMT_1, 1)
+	            self.bus.write_byte_data(self.DeviceAddress, self.CONFIG, int('0000110',2))
 	            #Write to Gyro configuration register
-	            bus.write_byte_data(self.DeviceAddress, self.GYRO_CONFIG, 24)
+	            self.bus.write_byte_data(self.DeviceAddress, self.GYRO_CONFIG, 24)
 	            #Write to interrupt enable register
-	            bus.write_byte_data(self.DeviceAddress, self.INT_ENABLE, 1)
+	            self.bus.write_byte_data(self.DeviceAddress, self.INT_ENABLE, 1)
 	            return 
 	        except Exception as e:
-	            logger.logInfo('MPU Init Failure'+e)
+	            self.logger.logInfo('MPU Init Failure'+str(e))

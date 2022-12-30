@@ -1,5 +1,5 @@
-#prod ready
 import serial
+from datetime import date, datetime
 
 class GPS_Data:
 

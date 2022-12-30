@@ -2,10 +2,12 @@ import serial
 from Logging import logger
 import time
 from time import sleep
+from datetime import date, datetime
 
 class GPS_Data:
 
     def __init__(self):
+        self.logger = logger()
         pass
 
     def getCurrentCoordinates():
@@ -34,7 +36,7 @@ class GPS_Data:
                     return gps_dict
 
             except:
-                logger.logInfo('Failed to retrieve GPS Data....')
+                self.logger.logInfo('Failed to retrieve GPS Data....')
                 time.sleep(1)
 
     def userDefinedCoordinates():

@@ -8,23 +8,23 @@ class logger:
 	def __init__(self):
 		pass
 
-	def logUV(self,data):
-		timestamp = self.timestamp()
+	def logUV(self, data):
+		timestamp = self.timeStamp()
 		print(timestamp +" INFO: "+str(data))
 		print()
 		f = open("uvsensor.txt","a")
 		f.write(str(data)+"\n")
 		f.close()
 
-	def logInfo(self,data):
-		timestamp = self.timestamp()
+	def logInfo(self, data):
+		timestamp = self.timeStamp()
 		print(timestamp+" INFO: "+str(data))
 		print()
 		f = open(str(timestamp)+".txt","a")
 		f.write(str(data)+"\n")
 		f.close()
 
-	def timeStamp():
+	def timeStamp(self):
 	    tz_NY = pytz.timezone('America/New_York') 
 	    datetime_NY = datetime.now(tz_NY)
 	    return str(datetime_NY.strftime("%H:%M:%S"))

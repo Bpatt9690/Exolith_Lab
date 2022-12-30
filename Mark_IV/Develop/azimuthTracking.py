@@ -13,7 +13,8 @@ import os
 class azimuth_tracker:
 
 	def __init__(self):
-		sensor = SI1145.SI1145()
+		self.sensor = SI1145.SI1145()
+		self.logger = logger()
 
 
 	def stepMovement(self,direction,steps):
@@ -44,7 +45,7 @@ class azimuth_tracker:
 	    GPIO.output(DIR_1, CW)
 
 	    uv_current = self.uv_sensor()
-	    logger.logInfo('Stationary UV value: '+uv_current)
+	    self.logger.logInfo('Stationary UV value: '+str(uv_current))
 
 	    uv_high = uv_current
 	    uv_low = uv_current 
@@ -52,7 +53,7 @@ class azimuth_tracker:
 	    try:
 
 	        for x in range(steps):
-	            logger.logInfo('Adjusting....')
+	            self.logger.logInfo('Adjusting....')
 	 
 	            GPIO.output(STEP_1,GPIO.HIGH)
 	            #.5 == super slow
@@ -67,12 +68,12 @@ class azimuth_tracker:
 	                uv_low = uv_high
 	                uv_high = uv
 
-	            logger.logUV(uv_high)
-	            logger.logInfo('CUrrent UV High: '+uv_high)
+	            self.logger.logUV(uv_high)
+	            self.logger.logInfo('Current UV High: '+str(uv_high))
 
 	    # Once finished clean everything up
 	    except Exception as e:
-	        logger.logInfo("Step Movement Exception: "+e)
+	        self.logger.logInfo("Step Movement Exception: "+str(e))
 	        GPIO.cleanup()
 
 
@@ -87,7 +88,7 @@ class azimuth_tracker:
 	    max_val = max(num_list)
 	    min_val = min(num_list)
 
-	    logger.logInfo("Max UV Value: ",+max_val)
+	    self.logger.logInfo("Max UV Value: "+str(max_val))
 	    return max_val
 
 
@@ -106,14 +107,14 @@ class azimuth_tracker:
 	    uvUpper = uvMax + uvMax*(.10)
 	    uvLower = uvMax - (uvMax*(.10))
 
-	    logger.logInfo('UV Max: '+uvMax)
-	    logger.logInfo('UV Upper: '+uvUpper)
-	    logger.logInfo('UV Lower: '+uvLower)
+	    self.logger.logInfo('UV Max: '+str(uvMax))
+	    self.logger.logInfo('UV Upper: '+str(uvUpper))
+	    self.logger.logInfo('UV Lower: '+str(uvLower))
 
 	    self.track(1,25,uvMax,uvUpper,uvLower)
 
 
-	def track(direction,steps,uvMax,uvUpper,uvLower):
+	def track(self,direction,steps,uvMax,uvUpper,uvLower):
 	    GPIO.setwarnings(False) 
 	    GPIO.cleanup()
 
@@ -141,15 +142,15 @@ class azimuth_tracker:
 	    GPIO.output(DIR_1, CW)
 
 	    uv_current = self.uv_sensor()
-	    logger.logInfo('Stationary UV value: '+uv_current)
+	    self.logger.logInfo('Stationary UV value: '+str(uv_current))
 
-	    uv_high = uv_current
-	    uv_low = uv_current 
+	    self.logger.logInfo('uvLower'+str(uvLower))
+	    self.logger.logInfo('uvUpper'+str(uvUpper))
 
 	    try:
 
 	        for x in range(steps):
-	            logger.logInfo('Adjusting....')
+	            self.logger.logInfo('Azimuth Adjustment...')
 	 
 	            GPIO.output(STEP_1,GPIO.HIGH)
 	            #.5 == super slow
@@ -160,16 +161,14 @@ class azimuth_tracker:
 
 	            uv = self.uv_sensor()
 
-	            logger.logInfo('current uv:',uv)
-	            logger.logInfo('uvLower',uvLower)
-	            logger.logInfo('uvUpper',uvUpper)
+	            self.logger.logInfo('Current UV Value:'+str(uv))
 	           
 	            if uvLower <= uv < uvMax:
-	                logger.logInfo('Stopping here')
+	                self.logger.logInfo('Stopping here')
 	                self.stepMovement(0,1) #used as a brake
-	                break
+	                return
 
 	    # Once finished clean everything up
 	    except Exception as e:
-	        logger.logInfo('Exception in track: '+e)
+	        self.logger.logInfo("Exception in track: "+str(e))
 	        GPIO.cleanup()
