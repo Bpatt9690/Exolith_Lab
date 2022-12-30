@@ -118,7 +118,7 @@ def sunpos(when, location, refraction):
         elevation += (1.02 / tan(targ)) / 60
 
     #Return azimuth and elevation in degrees
-    return (round(azimuth, 2), round(elevation, 2)) #+10 accounts for errors
+    return (round(azimuth, 2), round(elevation, 2))
 
 
 def into_range(x, range_min, range_max):
@@ -272,13 +272,6 @@ def tiltAngle():
 
 
 
-#Current timeStamps in EST can change
-def timeStamp():
-    tz_NY = pytz.timezone('America/New_York') 
-    datetime_NY = datetime.now(tz_NY)
-    return str(datetime_NY.strftime("%H:%M:%S"))
-
-
 def solarTracking(elevation):
 
     # Direction pin from controller
@@ -360,96 +353,15 @@ def solarTracking(elevation):
         GPIO.cleanup()
 
 
-#Used to cleanup GPIO pins on a keyboard hault
-def cleanup():
-    logger.logInfo(timeStamp(),"GPIO Pin cleanup")
-    GPIO.cleanup()
-    exit()
-
-#Responsible for resetting the elevation axis.
-#Returns elevation boom until limit switch is triggered
-def elevationReset():
-
-    logger.logInfo(timeStamp(),'Resetting Elevation')
-
-    #setup limit switch
-    GPIO.setmode(GPIO.BCM)
-    switch=17
-    GPIO.setup(switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
-
-    # Direction pin from controller
-    AZ_DIR = 25
-    # Step pin from controller
-    AZ_STEP = 24
-
-    # 0/1 used to signify clockwise or counterclockwise.
-    CW = 0
-    CCW = 1
-
-    # Setup pin layout on RPI
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(AZ_DIR, GPIO.OUT)
-    GPIO.setup(AZ_STEP, GPIO.OUT)
-    GPIO.output(AZ_DIR, CW)
-
-    while(1):
-
-        # Run for 200 steps. This will change based on how you set you controller
-        for x in range(200):
-            GPIO.output(AZ_STEP,GPIO.HIGH)
-            # Dictates how fast stepper motor will run
-            sleep(.05)
-            GPIO.output(AZ_STEP,GPIO.LOW)
-
-            if GPIO.input(switch) == 0:
-                print('Elevation Reset')
-                sleep(1)
-                return
-
-    sleep(.5)
-
-
-def getDate():
-    today = date.today()
-    year = 2022#int(today.strftime("%Y"))
-    day = 21#int(today.strftime("%d"))
-    month = 12#int(today.strftime("%m").replace("0",""))
-
-    return today,year,day,month
-
-def getTime():
-    now = datetime.utcnow().strftime("%H:%M:%S").replace(":","")
-    hour = str(now[0:2])
-    minutes = str(now[2:4])
-    seconds = str(now[4:6])
-    return now, hour, minutes, seconds
 
 
 def main():
 
-    global gps_dict
-
-    #Get current date
-    today, year, day, month = getDate()
 
     try:
-        gps_dict = GPS_Data.getCurrentCoordinates()
-
-        logger.logInfo(timeStamp(),"GPS Data: "+str(gps_dict))
 
         while True:
-
-            #Get current time
-            now, hour, minutes, seconds = getTime()
-        
-            if gps_dict['Longitude Direction'] == 'W':
-                longitude = -gps_dict['Longitude']
-            else:
-                longitude = gps_dict['Longitude']
-       
-            location = (gps_dict['Lattitude'], longitude)
-            when = (year, month, day,int(hour),int(minutes),int(seconds), 0)
-       
+            
             azimuth, elevation = sunpos(when, location, True)
 
             tz_NY = pytz.timezone('America/New_York') 
@@ -467,5 +379,4 @@ def main():
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    elevationReset()
     main()

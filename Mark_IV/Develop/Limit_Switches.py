@@ -29,7 +29,6 @@ class limitSwitches:
                 sleep(.05)
 
         except KeyboardInterrupt:
-            print("GPIO Cleanup")
             GPIO.cleanup()
 
     def motorx1(self):

@@ -5,6 +5,7 @@ import SI1145.SI1145 as SI1145
 from Kalman import KalmanAngle
 import smbus
 import math
+from Logging import logger
 
 class sensor_group:
 
@@ -23,10 +24,8 @@ class sensor_group:
 			time.sleep(.1)
 
 		if uvAverage/10 > 0:
-			print('UV Sensor Healthy')
 			return True
 		else:
-			print('UV Sensor Failure')
 			return False
 
 	def orientation_sensor_health(self):
@@ -61,8 +60,9 @@ class sensor_group:
 		#to get signed value from mpu6050
 		if(value > 32768):
 			value = value - 65536
-			print('The value is:',value)
 
 		if value is not 0:
 			return True
+		else:
+			return False
 
