@@ -117,7 +117,7 @@ class elevation_tracker:
 		return (round(azimuth, 2), round(elevation, 2))
 
 
-	def solarTracking(self,elevation):
+	def solarElevationPositioning(self,elevation):
 		GPIO.setwarnings(False)
 
 	    # Direction pin from controller
@@ -348,3 +348,7 @@ class elevation_tracker:
 	            return 
 	        except Exception as e:
 	            self.logger.logInfo('MPU Init Failure'+str(e))
+
+
+    def tracking():
+    	pass

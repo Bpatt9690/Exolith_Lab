@@ -29,7 +29,6 @@ def axisResets():
 	ev_status = False
 
 	try:
-
 		x_axis_status = ar.x_axis_reset()
 		y_axis_status = ar.y_axis_reset()
 		ev_status = ar.elevation_reset()
@@ -71,14 +70,14 @@ def sensorGroupCheck():
 
 def solarElevationLogic():
 
-	response = input('User Provided GPS Data? (y/n)')
+	#response = input('User Provided GPS Data? (y/n)')
 	gps_dict = {}
 
-	if response is 'y':
-		gps_dict = GPS_Data.userDefinedCoordinates()
+	#if response is 'y':
+	gps_dict = GPS_Data.userDefinedCoordinates()
 
-	else:
-		gps_dict = GPS_Data.getCurrentCoordinates()
+	#else:
+	#	gps_dict = GPS_Data.getCurrentCoordinates()
 	
 	today, year, day, month = GPS_Data.getDate()
 
@@ -102,9 +101,33 @@ def solarElevationLogic():
 	logger.logInfo("EST time: "+str(datetime_NY.strftime("%H:%M:%S")))
 	logger.logInfo("Current Solar Azimuth: "+str(azimuth))
 
-	status = elevation_tracker.solarTracking(elevation)
+	status = elevation_tracker.solarElevationPositioning(elevation)
 
 	return status
+
+def azimuthLogic():
+
+	try:
+		azimuth_tracker.stepMovement(1,25)
+		sleep(1)
+		azimuth_tracker.stepMovement(0,25)
+		uvMax = azimuth_tracker.maxValue()
+		azimuth_status = azimuth_tracker.azimuthPositioning(uvMax)
+		return azimuth_status
+
+	except Exception as e:
+		logger.logInfo('Azimuth Logic Failure'+str(e))
+		return False
+
+
+def solarTracking():
+	logger.logInfo('Solar Tracking......')
+
+	while True:
+
+		azimuth_tracking_status = azimuth_tracker.tracking()
+		solar_elevation_status = solarElevationLogic()
+		time.sleep(10) #sleep for 10 seconds before checking positioning
 
 
 def main():
@@ -113,28 +136,28 @@ def main():
 	axisStatus = axisResets()
 	sensorStatus = sensorGroupCheck()
 
-	print(axisStatus)
-
 	#Need to add fail flag to prevent endless loop on failure
 	while not sensorStatus:
 		sensorStatus = sensorGroupCheck()
 
-	logger.logInfo("Step 2: Solar Elevation Logic, Solar Azimuth Logic")
-
 	if axisStatus and sensorStatus:
+		logger.logInfo("Step 2: Solar Elevation Logic, Solar Azimuth Logic")
+
 		solar_elevation_status = solarElevationLogic()
 
 		if solar_elevation_status:
-			azimuth_tracker.stepMovement(1,25)
-			sleep(1)
-			azimuth_tracker.stepMovement(0,25)
-			uvMax = azimuth_tracker.maxValue()
-			azimuth_tracker.azimuthPosition(uvMax)
-
+			azimuth_status = azimuthLogic()
+			
 		else:
 			logger.logInfo("Solar Elvation Status Failure: "+str(solar_elevation_status))
 
 
+		if solar_elevation_status and azimuth_status:
+			logger.logInfo('solar_elevation_status: '+str(solar_elevation_status)+'\n azimuth_status: '+str(azimuth_status))
+			solarTracking()
+
+		else:
+			logger.logInfo('Failure, solar_elevation_status: '+str(solar_elevation_status)+'\n azimuth_status: '+str(azimuth_status))
 	else:
 		logger.logInfo("Step 1 Failure: axisStatus: "+str(axisStatus)+"\nsensorStatus: "+str(sensorStatus))
 

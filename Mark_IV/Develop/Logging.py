@@ -20,7 +20,7 @@ class logger:
 		timestamp = self.timeStamp()
 		print(timestamp+" INFO: "+str(data))
 		print()
-		f = open(str(timestamp)+".txt","a")
+		f = open(str(timestamp)+".txt","a") #should be just date
 		f.write(str(data)+"\n")
 		f.close()
 
