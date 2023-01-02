@@ -49,7 +49,7 @@ class axis_reset:
 				GPIO.output(AZ_STEP,GPIO.LOW)
 
 				if GPIO.input(switch) == 0:
-					print('Elevation Reset')
+					self.logger.logInfo('Elevation Homing Successful')
 					GPIO.cleanup()
 					sleep(1)
 					return True
@@ -111,12 +111,12 @@ class axis_reset:
 		                motor1_flag = 0
 
 		            if motor2_flag >= 5:
-		                print('X Homing Complete')
+		                self.logger.logInfo('X Homing Successful')
 		                sleep(1)
 		                return True
 
 		            elif motor1_flag >= 5:
-		                print('X Homing Complete')
+		                self.logger.logInfo('X Homing Successful')
 		                sleep(1)
 		                return True
                               
@@ -183,12 +183,12 @@ class axis_reset:
 		                motor1_flag = 0
 
 		            if motor2_flag >= 5:
-		                print('Y Homing Complete')
+		                self.logger.logInfo('Y Homing Successful')
 		                sleep(1)
 		                return True
 
 		            elif motor1_flag >= 5:
-		                print('Y Homing Complete')
+		                self.logger.logInfo('Y Homing Successful')
 		                sleep(1)
 		                return True
 		                    

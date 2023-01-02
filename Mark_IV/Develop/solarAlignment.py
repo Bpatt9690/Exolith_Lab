@@ -92,20 +92,21 @@ def solarElevationLogic():
 	location = (gps_dict['Lattitude'], longitude)
 	when = (year, month, day,int(hour),int(minutes),int(seconds), 0)
 
+
 	tz_NY = pytz.timezone('America/New_York') 
 	datetime_NY = datetime.now(tz_NY)
 
 	azimuth, elevation = elevation_tracker.sunpos(when, location, True)
 
 	logger.logInfo("Current UTC: "+str(now))
-	logger.logInfo("EST time: "+str(datetime_NY.strftime("%H:%M:%S")))
-	logger.logInfo("Current Solar Azimuth: "+str(azimuth))
+	logger.logInfo("EST timezone: "+str(datetime_NY.strftime("%H:%M:%S")))
 
 	status = elevation_tracker.solarElevationPositioning(elevation)
 
 	return status
 
 def azimuthLogic():
+	azimuth_status = False
 
 	try:
 		azimuth_tracker.stepMovement(1,25)
@@ -131,6 +132,9 @@ def solarTracking():
 
 
 def main():
+	azimuth_status = False
+	sensorStatus = False
+	axisStatus = False
 
 	logger.logInfo('Step 1: Reset all axis, check sensor health')
 	axisStatus = axisResets()
@@ -153,7 +157,7 @@ def main():
 
 
 		if solar_elevation_status and azimuth_status:
-			logger.logInfo('solar_elevation_status: '+str(solar_elevation_status)+'\n azimuth_status: '+str(azimuth_status))
+			#logger.logInfo('solar_elevation_status: '+str(solar_elevation_status)+'\n azimuth_status: '+str(azimuth_status))
 			solarTracking()
 
 		else:
@@ -163,5 +167,8 @@ def main():
 
 
 if __name__ == '__main__':
-	os.remove("uvsensor.txt")
+
+	if os.path.exists("uvsensor.txt"):
+		os.remove("uvsensor.txt")
+		
 	main()

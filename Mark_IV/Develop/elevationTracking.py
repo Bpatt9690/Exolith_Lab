@@ -131,7 +131,7 @@ class elevation_tracker:
 		CCW = 0
 
 		#Should be set by user, either via flag or direct input
-		accuracy = 40.0
+		accuracy = 10.0
 
 		# Setup pin layout on RPI
 		GPIO.setmode(GPIO.BCM)
@@ -155,10 +155,9 @@ class elevation_tracker:
 
 			while degreeDifferenceX > accuracy or (degreeDifferenceX*(-1)) > accuracy:
 
-				self.logger.logInfo("Adjusting Elevation Angle")
-				self.logger.logInfo("Current Degree Difference in elevation: "+str(degreeDifferenceX))
+				self.logger.logInfo("Adjusting Elevation Angle...")
 
-				degreeDev = (int(degreeDifferenceX)) * 10
+				degreeDev = (int(degreeDifferenceX)) * 5
 
 				degreeDev = math.floor(degreeDev)
 
@@ -166,11 +165,9 @@ class elevation_tracker:
 
 				if degreeDifferenceX > 0:
 					GPIO.output(DIR, CW)
-					self.logger.logInfo("CW Rotation")
 				else:
 					sleep(1.0)
 					GPIO.output(DIR,CCW)
-					self.logger.logInfo("CWW Rotation")
 
 
 				for x in range(int(degreeDev)):
@@ -184,8 +181,8 @@ class elevation_tracker:
 				#New Angle Readings
 				currentTiltAngleX,currentTiltAngleY = self.tiltAngle()
 				currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
-				self.logger.logInfo("tilt angle "+str(currentTiltAngleX))
-				self.logger.logInfo("elevation "+str(elevation))
+				self.logger.logInfo("Lens Tilt angle: "+str(currentTiltAngleX))
+				self.logger.logInfo("Solar Elevation: "+str(elevation))
 
 				degreeDifferenceX =  float(currentTiltAngleX) - float(elevation)
 
@@ -331,7 +328,7 @@ class elevation_tracker:
 	            return value
 
 	        except Exception as e:
-	            self.logger.logInfo('Failed to read raw data'+str(e))
+	            self.logger.logInfo('Failed to read raw MPU data: '+str(e))
 
 	 #Read the gyro and acceleromater values from MPU6050
 	def MPU_Init(self):
@@ -348,7 +345,3 @@ class elevation_tracker:
 	            return 
 	        except Exception as e:
 	            self.logger.logInfo('MPU Init Failure'+str(e))
-
-
-    def tracking():
-    	pass

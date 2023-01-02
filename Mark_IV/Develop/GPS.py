@@ -42,7 +42,7 @@ class GPS_Data:
     def userDefinedCoordinates():
         gps_dict = {}
 
-        gps_dict['Time UTC'] = '213135.00'
+        gps_dict['Time UTC'] = '173651.00'
         gps_dict['Lattitude'] = float(2833.2327)/100
         gps_dict['Lattitude Direction'] = 'N'
         gps_dict['Longitude'] = float(8111.11886)/100
@@ -54,16 +54,16 @@ class GPS_Data:
 
     def getDate():
         today = date.today()
-        year = 2022#int(today.strftime("%Y"))
-        day = 30#int(today.strftime("%d"))
-        month = 12#int(today.strftime("%m").replace("0",""))
+        year = 2023#int(today.strftime("%Y"))
+        day = 2#int(today.strftime("%d"))
+        month = 1#int(today.strftime("%m").replace("0",""))
 
         return today,year,day,month
 
     def getTime():
         now = datetime.utcnow().strftime("%H:%M:%S").replace(":","")
-        hour = str(now[0:2])
-        minutes = str(now[2:4])
-        seconds = str(now[4:6])
+        hour = 20#str(now[0:2])
+        minutes = 36#str(now[2:4])
+        seconds = 51#str(now[4:6])
         return now, hour, minutes, seconds
 

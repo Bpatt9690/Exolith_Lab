@@ -47,7 +47,7 @@ class azimuth_tracker:
 	    GPIO.output(DIR_1, CW)
 
 	    uv_current = self.uv_sensor()
-	    self.logger.logInfo('Stationary UV value: '+str(uv_current))
+	    #self.logger.logInfo('Stationary UV value: '+str(uv_current))
 
 	    uv_high = uv_current
 	    uv_low = uv_current 
@@ -60,9 +60,9 @@ class azimuth_tracker:
 	            GPIO.output(STEP_1,GPIO.HIGH)
 	            #.5 == super slow
 	            # .00005 == breaking
-	            sleep(.05) 
+	            sleep(.005) 
 	            GPIO.output(STEP_1,GPIO.LOW)
-	            sleep(.05)
+	            sleep(.005)
 
 	            uv = self.uv_sensor()
 
@@ -70,8 +70,9 @@ class azimuth_tracker:
 	                uv_low = uv_high
 	                uv_high = uv
 
+
 	            self.logger.logUV(uv_high)
-	            self.logger.logInfo('Current UV High: '+str(uv_high))
+	            #self.logger.logInfo('Current UV High: '+str(uv_high))
 
 	    # Once finished clean everything up
 	    except Exception as e:
@@ -90,13 +91,13 @@ class azimuth_tracker:
 	    max_val = max(num_list)
 	    min_val = min(num_list)
 
-	    self.logger.logInfo("Max UV Value: "+str(max_val))
+	    #self.logger.logInfo("Max UV Value: "+str(max_val))
 	    return max_val
 
 
 	def uv_sensor(self):
 	    uvAverage = 0
-	    for i in range(10):
+	    for i in range(20):
 	            UV = self.sensor.readUV()
 	            uvIndex = UV
 	            uvAverage += uvIndex
@@ -109,97 +110,96 @@ class azimuth_tracker:
 		global uvLower
 		global uvUpper
 
-	    uvUpper = uvMax + uvMax*(.10)
-	    uvLower = uvMax - (uvMax*(.10))
+		uvUpper = uvMax + (uvMax*(.10))
+		uvLower = uvMax - (uvMax*(.10))
 
-	    self.logger.logInfo('UV Max: '+str(uvMax))
-	    self.logger.logInfo('UV Upper: '+str(uvUpper))
-	    self.logger.logInfo('UV Lower: '+str(uvLower))
+		self.logger.logInfo('UV Max: '+str(uvMax))
+		self.logger.logInfo('UV Upper: '+str(uvUpper))
+		self.logger.logInfo('UV Lower: '+str(uvLower))
 
-	    self.azimuthMaxPosition(1,25,uvMax,uvUpper,uvLower)
-
+		azstatus = self.azimuthMaxPosition(1,25,uvMax,uvUpper,uvLower)
+		return azstatus
 
 	def azimuthMaxPosition(self,direction,steps,uvMax,uvUpper,uvLower):
-	    GPIO.setwarnings(False) 
-	    GPIO.cleanup()
+		global uvVal
+		GPIO.setwarnings(False) 
+		GPIO.cleanup()
 
-	    DIR_1 = 13 #DIR+
-	    STEP_1 = 26 #PULL+
+		DIR_1 = 13 #DIR+
+		STEP_1 = 26 #PULL+
 
-	    # 0/1 used to signify clockwise or counterclockwise.
-	    CW = direction
+		# 0/1 used to signify clockwise or counterclockwise.
+		CW = direction
 
-	    if direction is 1:
-	        CCW = 0
-	    else:
-	        CCW = 1
+		if direction is 1:
+			CCW = 0
+		else:
+			CCW = 1
 
-	    MAX = 100
+		MAX = 100
 
-	    # Setup pin layout on PI
-	    GPIO.setmode(GPIO.BCM)
+		# Setup pin layout on PI
+		GPIO.setmode(GPIO.BCM)
 
-	    # Establish Pins in software
-	    GPIO.setup(DIR_1, GPIO.OUT)
-	    GPIO.setup(STEP_1, GPIO.OUT)
+		# Establish Pins in software
+		GPIO.setup(DIR_1, GPIO.OUT)
+		GPIO.setup(STEP_1, GPIO.OUT)
 
-	    # Set the first direction you want it to spin
-	    GPIO.output(DIR_1, CW)
+		# Set the first direction you want it to spin
+		GPIO.output(DIR_1, CW)
 
-	    uv_current = self.uv_sensor()
-	    self.logger.logInfo('Stationary UV value: '+str(uv_current))
+		uv_current = self.uv_sensor()
+		self.logger.logInfo('Stationary UV value: '+str(uv_current))
 
-	    self.logger.logInfo('uvLower'+str(uvLower))
-	    self.logger.logInfo('uvUpper'+str(uvUpper))
+		self.logger.logInfo('UV Lower: '+str(uvLower))
+		self.logger.logInfo('UV Upper: '+str(uvUpper))
 
-	    try:
+		try:
 
-	        for x in range(steps):
-	            self.logger.logInfo('Azimuth Adjustment...')
-	 
-	            GPIO.output(STEP_1,GPIO.HIGH)
-	            #.5 == super slow
-	            # .00005 == breaking
-	            sleep(.05) 
-	            GPIO.output(STEP_1,GPIO.LOW)
-	            sleep(.05)
+			for x in range(steps):
+				self.logger.logInfo('Azimuth Adjustment...')
 
-	            uv = self.uv_sensor()
+				GPIO.output(STEP_1,GPIO.HIGH)
+			#.5 == super slow
+			# .00005 == breaking
+				sleep(.005) 
+				GPIO.output(STEP_1,GPIO.LOW)
+				sleep(.005)
 
-	            self.logger.logInfo('Current UV Value:'+str(uv))
-	           
-	            if uvLower <= uv <= uvMax:
-	            	global uvVal
-	            	uvVal = uv
-	                self.logger.logInfo('Stopping here')
-	                self.stepMovement(0,1) #used as a brake
-	                return True
+				uv = self.uv_sensor()
 
-            return False
+				if uvLower <= uv:
 
-	    # Once finished clean everything up
-	    except Exception as e:
-	        self.logger.logInfo("Exception in track: "+str(e))
-	        GPIO.cleanup()
+					uvVal = uv
+					self.logger.logInfo('Azimuth Reached,stopping here...')
+					self.stepMovement(0,1) #used as a brake
+					return True
+
+			return False
+
+		# Once finished clean everything up
+		except Exception as e:
+			self.logger.logInfo("Exception in track: "+str(e))
+			GPIO.cleanup()
 
 
-#simple tracking solution that relies on UV values being close
-   	def tracking(self):
-   		global uvVal
-   		global uvLower
-   		global uvUpper
+	#simple tracking solution that relies on UV values being close
+	def tracking(self):
+		global uvVal
+		global uvLower
+		global uvUpper
 
-   		uvVal = self.uv_sensor()
+		uvVal = self.uv_sensor()
+	
+		print(uvLower,uvVal,uvUpper)
 
-   		print(uvVal,uvLower,uvUpper)
+		if uvLower <= uvVal:
+			self.logger.logInfo('Azimuth adjustment reached...')
+			return True
 
-   		if uvLower <= uvVal <= uvMax:
-   			logger.logInfo('Azimuth adjustment reached...')
-   			return True
+		else:
 
-   		else:
-
-   			logger.logInfo('Azimuth adjustment required...')
+			self.logger.logInfo('Azimuth adjustment required...')
 
 			GPIO.setwarnings(False) 
 			GPIO.cleanup()
@@ -211,7 +211,7 @@ class azimuth_tracker:
 			CW = 1
 			CCW = 0
 			steps = 10 #small increment of search
-	
+
 			# Setup pin layout on PI
 			GPIO.setmode(GPIO.BCM)
 
@@ -225,23 +225,23 @@ class azimuth_tracker:
 			try:
 
 				for x in range(steps):
-					self.logger.logInfo('Adjusting....')
+					self.logger.logInfo('Adjusting azimuth....')
 
 					GPIO.output(STEP_1,GPIO.HIGH)
-					#.5 == super slow
-					# .00005 == breaking
-					sleep(.05) 
+				#.5 == super slow
+				# .00005 == breaking
+					sleep(.005) 
 					GPIO.output(STEP_1,GPIO.LOW)
-					sleep(.05)
+					sleep(.005)
 
 					uvVal = self.uv_sensor()
 
-					if uvLower <= uvVal <= uvUpper:
+					if uvLower <= uvVal:
 						uvUpper = uvVal + uvVal*(.10)
 						uvLower = uvVal - (uvVal*(.10))
-						logger.logInfo('Azimuth Adjusted')
+						self.logger.logInfo('Azimuth Adjusted')
 						return True
-		
+
 				return False
 
 			# Once finished clean everything up
