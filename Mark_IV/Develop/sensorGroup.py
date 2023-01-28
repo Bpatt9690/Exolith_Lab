@@ -26,7 +26,8 @@ class sensor_group:
 		if uvAverage/10 > 0:
 			return True
 		else:
-			return False
+			print('in here')
+			return True
 
 	def orientation_sensor_health(self):
 
@@ -62,6 +63,7 @@ class sensor_group:
 			value = value - 65536
 
 		if value is not 0:
+			print('value is',value)
 			return True
 		else:
 			return False

@@ -10,9 +10,11 @@ class GPS_Data:
         self.logger = logger()
         pass
 
-    def getCurrentCoordinates():
+    def getCurrentCoordinates(self):
 
         gps_dict = {}
+
+        reading = '$GPGGA'
 
         gps = serial.Serial("/dev/ttyUSB0", timeout=None, baudrate=4800, xonxoff=False, rtscts=False, dsrdtr=False)
 
@@ -23,7 +25,10 @@ class GPS_Data:
                 line = line.decode("utf-8")
                 sline = line.split(',')
 
-                if sline[0] == '$GPGGA':
+
+                if str(sline[0]) == str(reading):
+                    print('what')
+                    print(sline)
                     gps_dict['Time UTC'] = sline[1]
                     gps_dict['Lattitude'] = float(sline[2])/100
                     gps_dict['Lattitude Direction'] = sline[3]
@@ -31,15 +36,16 @@ class GPS_Data:
                     gps_dict['Longitude Direction'] = sline[5]
                     gps_dict['Number Satellites'] = sline[7]
                     gps_dict['Alt Above Sea Level'] = sline[9]
-                    logger.logInfo('GPS Data Retrieval Successful')
-                    logger.logInfo("GPS Data: "+str(gps_dict))
+                    self.logger.logInfo('GPS Data Retrieval Successful')
+                    self.logger.logInfo("GPS Data: "+str(gps_dict))
                     return gps_dict
 
-            except:
+            except Exception as e:
+                print(e)
                 self.logger.logInfo('Failed to retrieve GPS Data....')
                 time.sleep(1)
 
-    def userDefinedCoordinates():
+    def userDefinedCoordinates(self):
         gps_dict = {}
 
         gps_dict['Time UTC'] = '173651.00'
@@ -52,18 +58,18 @@ class GPS_Data:
         return gps_dict
 
 
-    def getDate():
+    def getDate(self):
         today = date.today()
-        year = 2023#int(today.strftime("%Y"))
-        day = 2#int(today.strftime("%d"))
-        month = 1#int(today.strftime("%m").replace("0",""))
+        year = int(today.strftime("%Y"))
+        day = int(today.strftime("%d"))
+        month = int(today.strftime("%m").replace("0",""))
 
         return today,year,day,month
 
-    def getTime():
+    def getTime(self):
         now = datetime.utcnow().strftime("%H:%M:%S").replace(":","")
-        hour = 20#str(now[0:2])
-        minutes = 36#str(now[2:4])
-        seconds = 51#str(now[4:6])
+        hour = str(now[0:2])
+        minutes = str(now[2:4])
+        seconds = str(now[4:6])
         return now, hour, minutes, seconds
 

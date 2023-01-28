@@ -131,7 +131,7 @@ class elevation_tracker:
 		CCW = 0
 
 		#Should be set by user, either via flag or direct input
-		accuracy = 10.0
+		accuracy = 5.0
 
 		# Setup pin layout on RPI
 		GPIO.setmode(GPIO.BCM)

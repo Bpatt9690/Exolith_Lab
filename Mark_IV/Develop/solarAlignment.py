@@ -19,6 +19,7 @@ from azimuthTracking import azimuth_tracker
 logger = logger()
 elevation_tracker = elevation_tracker()
 azimuth_tracker = azimuth_tracker()
+gps = GPS_Data()
 
 
 def axisResets():
@@ -74,14 +75,19 @@ def solarElevationLogic():
 	gps_dict = {}
 
 	#if response is 'y':
-	gps_dict = GPS_Data.userDefinedCoordinates()
+	#gps_dict = GPS_Data.userDefinedCoordinates()
+
+	#used for outside testing
+	gps_dict = gps.getCurrentCoordinates()
 
 	#else:
 	#	gps_dict = GPS_Data.getCurrentCoordinates()
 	
-	today, year, day, month = GPS_Data.getDate()
+	today, year, day, month = gps.getDate()
 
-	now, hour, minutes, seconds = GPS_Data.getTime()
+	now, hour, minutes, seconds = gps.getTime()
+
+
 
 
 	if gps_dict['Longitude Direction'] == 'W':
@@ -109,9 +115,10 @@ def azimuthLogic():
 	azimuth_status = False
 
 	try:
-		azimuth_tracker.stepMovement(1,25)
+		azimuth_tracker.stepMovement(1,100)
 		sleep(1)
-		azimuth_tracker.stepMovement(0,25)
+		print('sleepin')
+		azimuth_tracker.stepMovement(0,100)
 		uvMax = azimuth_tracker.maxValue()
 		azimuth_status = azimuth_tracker.azimuthPositioning(uvMax)
 		return azimuth_status
@@ -126,13 +133,13 @@ def solarTracking():
 
 	while True:
 
-		azimuth_tracking_status = azimuth_tracker.tracking()
+		#azimuth_tracking_status = azimuth_tracker.tracking()
 		solar_elevation_status = solarElevationLogic()
 		time.sleep(10) #sleep for 10 seconds before checking positioning
 
 
 def main():
-	azimuth_status = False
+	azimuth_status = True #change to false
 	sensorStatus = False
 	axisStatus = False
 
@@ -150,7 +157,8 @@ def main():
 		solar_elevation_status = solarElevationLogic()
 
 		if solar_elevation_status:
-			azimuth_status = azimuthLogic()
+			pass
+			#azimuth_status = azimuthLogic()
 			
 		else:
 			logger.logInfo("Solar Elvation Status Failure: "+str(solar_elevation_status))

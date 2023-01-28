@@ -101,7 +101,7 @@ class azimuth_tracker:
 	            UV = self.sensor.readUV()
 	            uvIndex = UV
 	            uvAverage += uvIndex
-	            time.sleep(.1)
+	            time.sleep(.001)
 	    return (uvAverage/10)
 
 
