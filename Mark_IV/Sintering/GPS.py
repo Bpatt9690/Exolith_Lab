@@ -1,7 +1,6 @@
 import serial
 from Logging import logger
 import time
-from time import sleep
 from datetime import date, datetime
 
 class GPS_Data:
@@ -16,34 +15,34 @@ class GPS_Data:
 
         reading = '$GPGGA'
 
-        gps = serial.Serial("/dev/ttyUSB0", timeout=None, baudrate=4800, xonxoff=False, rtscts=False, dsrdtr=False)
+        with serial.Serial("/dev/ttyUSB0", timeout=None, baudrate=4800, xonxoff=False, rtscts=False, dsrdtr=False) as gps:
 
-        while True:
-            line = gps.readline()
+           while True:
+                line = gps.readline()
 
-            try:
-                line = line.decode("utf-8")
-                sline = line.split(',')
+                try:
+                    line = line.decode("utf-8")
+                    sline = line.split(',')
 
 
-                if str(sline[0]) == str(reading):
-                    print('what')
-                    print(sline)
-                    gps_dict['Time UTC'] = sline[1]
-                    gps_dict['Lattitude'] = float(sline[2])/100
-                    gps_dict['Lattitude Direction'] = sline[3]
-                    gps_dict['Longitude'] = float(sline[4])/100
-                    gps_dict['Longitude Direction'] = sline[5]
-                    gps_dict['Number Satellites'] = sline[7]
-                    gps_dict['Alt Above Sea Level'] = sline[9]
-                    self.logger.logInfo('GPS Data Retrieval Successful')
-                    self.logger.logInfo("GPS Data: "+str(gps_dict))
-                    return gps_dict
+                    if str(sline[0]) == str(reading):
+                        print('what')
+                        print(sline)
+                        gps_dict['Time UTC'] = sline[1]
+                        gps_dict['Lattitude'] = float(sline[2])/100
+                        gps_dict['Lattitude Direction'] = sline[3]
+                        gps_dict['Longitude'] = float(sline[4])/100
+                        gps_dict['Longitude Direction'] = sline[5]
+                        gps_dict['Number Satellites'] = sline[7]
+                        gps_dict['Alt Above Sea Level'] = sline[9]
+                        self.logger.logInfo('GPS Data Retrieval Successful')
+                        self.logger.logInfo("GPS Data: {}".format(gps_dict))
+                        return gps_dict
 
-            except Exception as e:
-                print(e)
-                self.logger.logInfo('Failed to retrieve GPS Data....')
-                time.sleep(1)
+                except Exception as e:
+                    print(e)
+                    self.logger.logInfo('Failed to retrieve GPS Data....')
+                    time.sleep(1)
 
     def userDefinedCoordinates(self):
         gps_dict = {}
@@ -60,14 +59,14 @@ class GPS_Data:
 
     def getDate(self):
         today = date.today()
-        year = int(today.strftime("%Y"))
-        day = int(today.strftime("%d"))
-        month = int(today.strftime("%m").replace("0",""))
+        year = today.year
+        day = today.day
+        month = today.month
 
         return today,year,day,month
 
     def getTime(self):
-        now = datetime.utcnow().strftime("%H:%M:%S").replace(":","")
+        now = datetime.utcnow().strftime("%H%M%S")
         hour = str(now[0:2])
         minutes = str(now[2:4])
         seconds = str(now[4:6])

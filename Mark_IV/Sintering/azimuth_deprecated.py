@@ -9,16 +9,12 @@ import pytz
 import os
 
 
-
-
-
-
-def track(direction,steps,uvMax,uvUpper,uvLower):
-    GPIO.setwarnings(False) 
+def track(direction, steps, uvMax, uvUpper, uvLower):
+    GPIO.setwarnings(False)
     GPIO.cleanup()
 
-    DIR_1 = 13 #DIR+
-    STEP_1 = 26 #PULL+
+    DIR_1 = 13  # DIR+
+    STEP_1 = 26  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = direction
@@ -46,30 +42,30 @@ def track(direction,steps,uvMax,uvUpper,uvLower):
     print('Stationary UV value: ', uv_current)
 
     uv_high = uv_current
-    uv_low = uv_current 
+    uv_low = uv_current
 
     try:
 
         for x in range(steps):
             print('Adjusting....')
- 
-            GPIO.output(STEP_1,GPIO.HIGH)
-            #.5 == super slow
+
+            GPIO.output(STEP_1, GPIO.HIGH)
+            # .5 == super slow
             # .00005 == breaking
-            sleep(.05) 
-            GPIO.output(STEP_1,GPIO.LOW)
+            sleep(.05)
+            GPIO.output(STEP_1, GPIO.LOW)
             sleep(.05)
 
             uv = uv_sensor()
 
-            print('current uv:',uv)
-            print('uvLower',uvLower)
-            print('uvUpper',uvUpper)
+            print('current uv:', uv)
+            print('uvLower', uvLower)
+            print('uvUpper', uvUpper)
             print()
 
             if uvLower <= uv < uvMax:
                 print('Stopping here')
-                stepMovement(0,1)
+                stepMovement(0, 1)
                 break
 
 
@@ -79,14 +75,12 @@ def track(direction,steps,uvMax,uvUpper,uvLower):
         GPIO.cleanup()
 
 
-
-
-    
 def main():
     os.remove("uvsensor.txt")
-    stepMovement(1,25)
+    stepMovement(1, 25)
     uvMax = maxValue()
     solarPositioning(uvMax)
+
 
 if __name__ == '__main__':
     main()
