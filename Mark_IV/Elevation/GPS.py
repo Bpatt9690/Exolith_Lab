@@ -1,6 +1,7 @@
 import serial
 from datetime import date, datetime
 
+
 class GPS_Data:
 
     def __init__(self):
@@ -10,7 +11,8 @@ class GPS_Data:
 
         gps_dict = {}
 
-        gps = serial.Serial("/dev/ttyUSB0", timeout=None, baudrate=4800, xonxoff=False, rtscts=False, dsrdtr=False)
+        gps = serial.Serial("/dev/ttyUSB0", timeout=None,
+                            baudrate=4800, xonxoff=False, rtscts=False, dsrdtr=False)
 
         while True:
             line = gps.readline()
@@ -32,7 +34,7 @@ class GPS_Data:
 
             except:
                 print("Failed to retrieve GPS Data....")
-                
+
                 gps_dict['Time UTC'] = '213135.00'
                 gps_dict['Lattitude'] = float(2833.2327)/100
                 gps_dict['Lattitude Direction'] = 'N'
