@@ -4,7 +4,6 @@ import pytz
 
 
 class logger:
-
     def __init__(self):
         pass
 
@@ -19,10 +18,10 @@ class logger:
         print(timestamp + " INFO: " + str(data))
         print()
 
-        with open(f'{datetime.now().date()}.txt', 'a') as f:
-            f.write(f'{data}\n')
+        with open(f"{datetime.now().date()}.txt", "a") as f:
+            f.write(f"{data}\n")
 
     def timeStamp(self):
-        tz_NY = pytz.timezone('America/New_York')
+        tz_NY = pytz.timezone("America/New_York")
         datetime_NY = datetime.now(tz_NY)
         return str(datetime_NY.strftime("%H:%M:%S"))

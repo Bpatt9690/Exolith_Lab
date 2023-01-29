@@ -38,7 +38,10 @@ def axisResets():
     else:
         logger.logInfo("Axis Reset Failure")
         logger.logInfo(
-            "x_axis_status: {} \ny_axis_status: {} \nev_status: {}".format(x_axis_status, y_axis_status, ev_status))
+            "x_axis_status: {} \ny_axis_status: {} \nev_status: {}".format(
+                x_axis_status, y_axis_status, ev_status
+            )
+        )
         return False
 
 
@@ -52,7 +55,7 @@ def sensorGroupCheck():
         orientation_sensor_status = sg.orientation_sensor_health()
 
     except Exception as e:
-        logger.logInfo("Sensor Group Failure: {}".format(e)
+        logger.logInfo("Sensor Group Failure: {}".format(e))
 
         if light_sensor_status and orientation_sensor_status:
             logger.logInfo("Sensor Group Healthy")
@@ -60,8 +63,10 @@ def sensorGroupCheck():
 
     else:
         logger.logInfo(
-            "Sensor Group Failure: light_sensor_status: {} \norientation_sensor_status: {}".format(light_sensor_status,
-                                                                                                   orientation_sensor_status))
+            "Sensor Group Failure: light_sensor_status: {} \norientation_sensor_status: {}".format(
+                light_sensor_status, orientation_sensor_status
+            )
+        )
         return False
 
 
@@ -72,15 +77,15 @@ def solarElevationLogic():
 
     now, hour, minutes, seconds = gps.getTime()
 
-    if gps_dict['Longitude Direction'] == 'W':
-        longitude = -gps_dict['Longitude']
+    if gps_dict["Longitude Direction"] == "W":
+        longitude = -gps_dict["Longitude"]
     else:
-        longitude = gps_dict['Longitude']
+        longitude = gps_dict["Longitude"]
 
-    location = (gps_dict['Lattitude'], longitude)
+    location = (gps_dict["Lattitude"], longitude)
     when = (year, month, day, int(hour), int(minutes), int(seconds), 0)
 
-    tz_NY = pytz.timezone('America/New_York')
+    tz_NY = pytz.timezone("America/New_York")
     datetime_NY = datetime.now(tz_NY)
 
     azimuth, elevation = elevation_tracker.sunpos(when, location, True)
@@ -105,12 +110,12 @@ def azimuthLogic():
         return azimuth_status
 
     except Exception as e:
-        logger.logInfo('Azimuth Logic Failure {}'.format(e))
+        logger.logInfo("Azimuth Logic Failure {}".format(e))
         return False
 
 
 def solarTracking():
-    logger.logInfo('Solar Tracking......')
+    logger.logInfo("Solar Tracking......")
 
     while True:
         azimuth_tracking_status = azimuth_tracker.tracking()
@@ -123,7 +128,7 @@ def main():
     sensorStatus = False
     axisStatus = False
 
-    logger.logInfo('Step 1: Reset all axis, check sensor health')
+    logger.logInfo("Step 1: Reset all axis, check sensor health")
     axisStatus = axisResets()
     sensorStatus = sensorGroupCheck()
 
@@ -141,20 +146,29 @@ def main():
         # azimuth_status = azimuthLogic()
 
         else:
-            logger.logInfo("Solar Elvation Status Failure: {}".format(solar_elevation_status))
+            logger.logInfo(
+                "Solar Elvation Status Failure: {}".format(solar_elevation_status)
+            )
 
         if solar_elevation_status and azimuth_status:
-            logger.logInfo('Step 3: Solar Tracking')
+            logger.logInfo("Step 3: Solar Tracking")
             solarTracking()
 
         else:
-            logger.logInfo('Failure: solar_elevation_status: {} \n azimuth_status: {}'.format(solar_elevation_status,
-                                                                                              azimuth_status))
+            logger.logInfo(
+                "Failure: solar_elevation_status: {} \n azimuth_status: {}".format(
+                    solar_elevation_status, azimuth_status
+                )
+            )
     else:
-        logger.logInfo("Step 1 Failure: axisStatus: {} \nsensorStatus: {}".format(axisStatus, sensorStatus))
+        logger.logInfo(
+            "Step 1 Failure: axisStatus: {} \nsensorStatus: {}".format(
+                axisStatus, sensorStatus
+            )
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     if os.path.exists("uvsensor.txt"):
         os.remove("uvsensor.txt")

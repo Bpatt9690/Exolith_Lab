@@ -10,7 +10,6 @@ uvLower = None
 
 
 class azimuth_tracker:
-
     def __init__(self):
         self.sensor = SI1145.SI1145()
         self.logger = logger()
@@ -49,16 +48,16 @@ class azimuth_tracker:
 
         try:
 
-            self.logger.logInfo('Adjusting....')
+            self.logger.logInfo("Adjusting....")
 
             for x in range(steps):
 
                 GPIO.output(STEP_1, GPIO.HIGH)
                 # .5 == super slow
                 # .00005 == breaking
-                sleep(.005)
+                sleep(0.005)
                 GPIO.output(STEP_1, GPIO.LOW)
-                sleep(.005)
+                sleep(0.005)
 
                 uv = self.uv_sensor()
 
@@ -92,20 +91,20 @@ class azimuth_tracker:
             UV = self.sensor.readUV()
             uvIndex = UV
             uvAverage += uvIndex
-            time.sleep(.001)
-        return (uvAverage / 10)
+            time.sleep(0.001)
+        return uvAverage / 10
 
     def azimuthPositioning(self, uvMax):
 
         global uvLower
         global uvUpper
 
-        uvUpper = uvMax + (uvMax * (.10))
-        uvLower = uvMax - (uvMax * (.10))
+        uvUpper = uvMax + (uvMax * (0.10))
+        uvLower = uvMax - (uvMax * (0.10))
 
-        self.logger.logInfo('UV Max: ' + str(uvMax))
-        self.logger.logInfo('UV Upper: ' + str(uvUpper))
-        self.logger.logInfo('UV Lower: ' + str(uvLower))
+        self.logger.logInfo("UV Max: " + str(uvMax))
+        self.logger.logInfo("UV Upper: " + str(uvUpper))
+        self.logger.logInfo("UV Lower: " + str(uvLower))
 
         azstatus = self.azimuthMaxPosition(1, 25, uvMax, uvUpper, uvLower)
         return azstatus
@@ -139,28 +138,28 @@ class azimuth_tracker:
         GPIO.output(DIR_1, CW)
 
         uv_current = self.uv_sensor()
-        self.logger.logInfo('Stationary UV value: {}'.format(uv_current))
+        self.logger.logInfo("Stationary UV value: {}".format(uv_current))
 
-        self.logger.logInfo('UV Lower: {}'.format(uvLower))
-        self.logger.logInfo('UV Upper: {}'.format(uvUpper))
+        self.logger.logInfo("UV Lower: {}".format(uvLower))
+        self.logger.logInfo("UV Upper: {}".format(uvUpper))
 
         try:
 
             for x in range(steps):
-                self.logger.logInfo('Azimuth Adjustment...')
+                self.logger.logInfo("Azimuth Adjustment...")
 
                 GPIO.output(STEP_1, GPIO.HIGH)
                 # .5 == super slow
                 # .00005 == breaking
-                sleep(.005)
+                sleep(0.005)
                 GPIO.output(STEP_1, GPIO.LOW)
-                sleep(.005)
+                sleep(0.005)
 
                 uv = self.uv_sensor()
 
                 if uvLower <= uv:
                     uvVal = uv
-                    self.logger.logInfo('Azimuth Reached,stopping here...')
+                    self.logger.logInfo("Azimuth Reached,stopping here...")
                     self.stepMovement(0, 1)  # used as a brake
                     return True
 
@@ -168,7 +167,7 @@ class azimuth_tracker:
 
         # Once finished clean everything up
         except Exception as e:
-            self.logger.logInfo('Exception in track: {}'.format(e)
+            self.logger.logInfo("Exception in track: {}".format(e))
             GPIO.cleanup()
 
             # simple tracking solution that relies on UV values being close
@@ -183,12 +182,12 @@ class azimuth_tracker:
         print(uvLower, uvVal, uvUpper)
 
         if uvLower <= uvVal:
-            self.logger.logInfo('Azimuth adjustment reached...')
+            self.logger.logInfo("Azimuth adjustment reached...")
             return True
 
         else:
 
-            self.logger.logInfo('Azimuth adjustment required...')
+            self.logger.logInfo("Azimuth adjustment required...")
 
             GPIO.setwarnings(False)
             GPIO.cleanup()
@@ -214,26 +213,26 @@ class azimuth_tracker:
             try:
 
                 for x in range(steps):
-                    self.logger.logInfo('Adjusting azimuth....')
+                    self.logger.logInfo("Adjusting azimuth....")
 
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
-                    sleep(.005)
+                    sleep(0.005)
                     GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(.005)
+                    sleep(0.005)
 
                     uvVal = self.uv_sensor()
 
                     if uvLower <= uvVal:
-                        uvUpper = uvVal + uvVal * (.10)
-                        uvLower = uvVal - (uvVal * (.10))
-                        self.logger.logInfo('Azimuth Adjusted')
+                        uvUpper = uvVal + uvVal * (0.10)
+                        uvLower = uvVal - (uvVal * (0.10))
+                        self.logger.logInfo("Azimuth Adjusted")
                         return True
 
                 return False
 
             # Once finished clean everything up
             except Exception as e:
-                self.logger.logInfo('Tracking Exception: {}'.format(e))
+                self.logger.logInfo("Tracking Exception: {}".format(e))
                 GPIO.cleanup()

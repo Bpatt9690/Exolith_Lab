@@ -11,7 +11,7 @@ class limitSwitches:
         GPIO.setup(switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         flag = 0
 
-        while (1):
+        while 1:
 
             if GPIO.input(switch) == 0:
                 flag += 1
@@ -25,7 +25,7 @@ class limitSwitches:
             else:
                 return False
 
-            time.sleep(.05)
+            time.sleep(0.05)
 
     def motorx1(self):
         return self.limitLogic(27)

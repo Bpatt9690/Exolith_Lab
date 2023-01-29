@@ -4,7 +4,6 @@ import smbus
 
 
 class sensor_group:
-
     def __init__(self):
         pass
 
@@ -17,7 +16,7 @@ class sensor_group:
             UV = sensor.readUV()
             uvIndex = UV
             uvAverage += uvIndex
-            time.sleep(.1)
+            time.sleep(0.1)
 
         if uvAverage / 10 > 0:
             return True
@@ -42,7 +41,7 @@ class sensor_group:
         DeviceAddress = 0x68
         bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
         bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
-        bus.write_byte_data(DeviceAddress, CONFIG, int('0000110', 2))
+        bus.write_byte_data(DeviceAddress, CONFIG, int("0000110", 2))
         bus.write_byte_data(DeviceAddress, GYRO_CONFIG, 24)
         bus.write_byte_data(DeviceAddress, INT_ENABLE, 1)
 
@@ -50,14 +49,14 @@ class sensor_group:
         low = bus.read_byte_data(DeviceAddress, ACCEL_YOUT_H)
 
         # concatenate higher and lower value
-        value = ((high << 8) | low)
+        value = (high << 8) | low
 
         # to get signed value from mpu6050
-        if (value > 32768):
+        if value > 32768:
             value = value - 65536
 
         if value is not 0:
-            print('value is', value)
+            print("value is", value)
             return True
         else:
             return False
