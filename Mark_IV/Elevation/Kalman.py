@@ -8,7 +8,7 @@ class KalmanAngle:
         self.rate = 0.0
         self.P = [[0.0, 0.0], [0.0, 0.0]]
 
-    '''def kalman():
+    """def kalman():
         QAngle = 0.001
         QBias = 0.003
         RMeasure = 0.03
@@ -17,7 +17,7 @@ class KalmanAngle:
         P[0][0] = 0.0
         P[0][1] = 0.0
         P[1][0] = 0.0
-        P[1][1] = 0.0'''
+        P[1][1] = 0.0"""
 
     def getAngle(self, newAngle, newRate, dt):
         # step 1:
@@ -25,8 +25,9 @@ class KalmanAngle:
         self.angle += dt * self.rate
 
         # Step 2:
-        self.P[0][0] += dt * (dt*self.P[1][1] - self.P[0]
-                              [1] - self.P[1][0] + self.QAngle)
+        self.P[0][0] += dt * (
+            dt * self.P[1][1] - self.P[0][1] - self.P[1][0] + self.QAngle
+        )
         self.P[0][1] -= dt * self.P[1][1]
         self.P[1][0] -= dt * self.P[1][1]
         self.P[1][1] += self.QBias * dt
@@ -39,8 +40,8 @@ class KalmanAngle:
 
         # Step 5:    Kalman Gain
         K = [0.0, 0.0]
-        K[0] = self.P[0][0]/s
-        K[1] = self.P[1][0]/s
+        K[0] = self.P[0][0] / s
+        K[1] = self.P[1][0] / s
 
         # Step 6: Update the Angle
         self.angle += K[0] * y

@@ -34,7 +34,7 @@ def MPU_Init():
 
     # Write to Configuration register
     # Setting DLPF (last three bit of 0X1A to 6 i.e '110' It removes the noise due to vibration.) https://ulrichbuschbaum.wordpress.com/2015/01/18/using-the-mpu6050s-dlpf/
-    bus.write_byte_data(DeviceAddress, CONFIG, int('0000110', 2))
+    bus.write_byte_data(DeviceAddress, CONFIG, int("0000110", 2))
 
     # Write to Gyro configuration register
     bus.write_byte_data(DeviceAddress, GYRO_CONFIG, 24)
@@ -46,19 +46,19 @@ def MPU_Init():
 def read_raw_data(addr):
     # Accelero and Gyro value are 16-bit
     high = bus.read_byte_data(DeviceAddress, addr)
-    low = bus.read_byte_data(DeviceAddress, addr+1)
+    low = bus.read_byte_data(DeviceAddress, addr + 1)
 
     # concatenate higher and lower value
-    value = ((high << 8) | low)
+    value = (high << 8) | low
 
     # to get signed value from mpu6050
-    if (value > 32768):
+    if value > 32768:
         value = value - 65536
     return value
 
 
-bus = smbus.SMBus(1) 	# or bus = smbus.SMBus(0) for older version boards
-DeviceAddress = 0x68   # MPU6050 device address
+bus = smbus.SMBus(1)  # or bus = smbus.SMBus(0) for older version boards
+DeviceAddress = 0x68  # MPU6050 device address
 
 MPU_Init()
 
@@ -70,11 +70,11 @@ accZ = read_raw_data(ACCEL_ZOUT_H)
 
 # print(accX,accY,accZ)
 # print(math.sqrt((accY**2)+(accZ**2)))
-if (RestrictPitch):
+if RestrictPitch:
     roll = math.atan2(accY, accZ) * radToDeg
-    pitch = math.atan(-accX/math.sqrt((accY**2)+(accZ**2))) * radToDeg
+    pitch = math.atan(-accX / math.sqrt((accY**2) + (accZ**2))) * radToDeg
 else:
-    roll = math.atan(accY/math.sqrt((accX**2)+(accZ**2))) * radToDeg
+    roll = math.atan(accY / math.sqrt((accX**2) + (accZ**2))) * radToDeg
     pitch = math.atan2(-accX, accZ) * radToDeg
 print(roll)
 kalmanX.setAngle(roll)
@@ -87,7 +87,7 @@ compAngleY = pitch
 timer = time.time()
 flag = 0
 while True:
-    if (flag > 100):  # Problem with the connection
+    if flag > 100:  # Problem with the connection
         print("There is a problem with the connection")
         flag = 0
         continue
@@ -105,19 +105,19 @@ while True:
         dt = time.time() - timer
         timer = time.time()
 
-        if (RestrictPitch):
+        if RestrictPitch:
             roll = math.atan2(accY, accZ) * radToDeg
-            pitch = math.atan(-accX/math.sqrt((accY**2)+(accZ**2))) * radToDeg
+            pitch = math.atan(-accX / math.sqrt((accY**2) + (accZ**2))) * radToDeg
         else:
-            roll = math.atan(accY/math.sqrt((accX**2)+(accZ**2))) * radToDeg
+            roll = math.atan(accY / math.sqrt((accX**2) + (accZ**2))) * radToDeg
             pitch = math.atan2(-accX, accZ) * radToDeg
 
-        gyroXRate = gyroX/131
-        gyroYRate = gyroY/131
+        gyroXRate = gyroX / 131
+        gyroYRate = gyroY / 131
 
-        if (RestrictPitch):
+        if RestrictPitch:
 
-            if ((roll < -90 and kalAngleX > 90) or (roll > 90 and kalAngleX < -90)):
+            if (roll < -90 and kalAngleX > 90) or (roll > 90 and kalAngleX < -90):
                 kalmanX.setAngle(roll)
                 complAngleX = roll
                 kalAngleX = roll
@@ -125,12 +125,12 @@ while True:
             else:
                 kalAngleX = kalmanX.getAngle(roll, gyroXRate, dt)
 
-            if (abs(kalAngleX) > 90):
+            if abs(kalAngleX) > 90:
                 gyroYRate = -gyroYRate
                 kalAngleY = kalmanY.getAngle(pitch, gyroYRate, dt)
         else:
 
-            if ((pitch < -90 and kalAngleY > 90) or (pitch > 90 and kalAngleY < -90)):
+            if (pitch < -90 and kalAngleY > 90) or (pitch > 90 and kalAngleY < -90):
                 kalmanY.setAngle(pitch)
                 complAngleY = pitch
                 kalAngleY = pitch
@@ -138,7 +138,7 @@ while True:
             else:
                 kalAngleY = kalmanY.getAngle(pitch, gyroYRate, dt)
 
-            if (abs(kalAngleY) > 90):
+            if abs(kalAngleY) > 90:
                 gyroXRate = -gyroXRate
                 kalAngleX = kalmanX.getAngle(roll, gyroXRate, dt)
 
@@ -150,7 +150,7 @@ while True:
         compAngleX = 0.93 * (compAngleX + gyroXRate * dt) + 0.07 * roll
         compAngleY = 0.93 * (compAngleY + gyroYRate * dt) + 0.07 * pitch
 
-        if ((gyroXAngle < -180) or (gyroXAngle > 180)):
+        if (gyroXAngle < -180) or (gyroXAngle > 180):
             gyroXAngle = kalAngleX
 
         print("Angle X: " + str(kalAngleX))

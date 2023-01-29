@@ -1,5 +1,4 @@
-
-inputFile = open("uvsensor.txt","r")
+inputFile = open("uvsensor.txt", "r")
 num_list = [float(num) for num in inputFile.read().split()]
 # OR, num_list = map(float, inputFile.read().split())
 

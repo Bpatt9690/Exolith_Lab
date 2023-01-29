@@ -59,7 +59,7 @@ def sunpos(when, location, refraction):
     # Decimal hour of the day at Greenwich
     greenwichtime = hour - timezone + minute / 60 + second / 3600
 
-   # Days from J2000, accurate from 1901 to 2099
+    # Days from J2000, accurate from 1901 to 2099
     daynum = (
         367 * year
         - 7 * (year + (month + 9) // 12) // 4
@@ -98,8 +98,7 @@ def sunpos(when, location, refraction):
     hour_ang = sidereal - rasc
 
     # Local elevation of the sun
-    elevation = asin(sin(decl) * sin(rlat) + cos(decl)
-                     * cos(rlat) * cos(hour_ang))
+    elevation = asin(sin(decl) * sin(rlat) + cos(decl) * cos(rlat) * cos(hour_ang))
 
     # Local azimuth of the sun
     azimuth = atan2(
@@ -128,40 +127,41 @@ def into_range(x, range_min, range_max):
 
 def read_raw_data(addr):
 
-    while (1):
+    while 1:
         try:
             # Accelero and Gyro value are 16-bit
             high = bus.read_byte_data(DeviceAddress, addr)
-            low = bus.read_byte_data(DeviceAddress, addr+1)
+            low = bus.read_byte_data(DeviceAddress, addr + 1)
 
             # concatenate higher and lower value
-            value = ((high << 8) | low)
+            value = (high << 8) | low
 
             # to get signed value from mpu6050
-            if (value > 32768):
+            if value > 32768:
                 value = value - 65536
 
             return value
         except:
-            print('failed to find data')
+            print("failed to find data")
 
- # Read the gyro and acceleromater values from MPU6050
+
+# Read the gyro and acceleromater values from MPU6050
 
 
 def MPU_Init():
-    while (1):
+    while 1:
         try:
             # write to sample rate register
             bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
             bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
-            bus.write_byte_data(DeviceAddress, CONFIG, int('0000110', 2))
+            bus.write_byte_data(DeviceAddress, CONFIG, int("0000110", 2))
             # Write to Gyro configuration register
             bus.write_byte_data(DeviceAddress, GYRO_CONFIG, 24)
             # Write to interrupt enable register
             bus.write_byte_data(DeviceAddress, INT_ENABLE, 1)
             return
         except:
-            print('issue')
+            print("issue")
 
 
 def tiltAngle():
@@ -180,11 +180,11 @@ def tiltAngle():
     accY = read_raw_data(ACCEL_YOUT_H)
     accZ = read_raw_data(ACCEL_ZOUT_H)
 
-    if (RestrictPitch):
+    if RestrictPitch:
         roll = math.atan2(accY, accZ) * radToDeg
-        pitch = math.atan(-accX/math.sqrt((accY**2)+(accZ**2))) * radToDeg
+        pitch = math.atan(-accX / math.sqrt((accY**2) + (accZ**2))) * radToDeg
     else:
-        roll = math.atan(accY/math.sqrt((accX**2)+(accZ**2))) * radToDeg
+        roll = math.atan(accY / math.sqrt((accX**2) + (accZ**2))) * radToDeg
         pitch = math.atan2(-accX, accZ) * radToDeg
 
     kalmanX.setAngle(roll)
@@ -197,7 +197,7 @@ def tiltAngle():
     timer = time.time()
     flag = 0
     while True:
-        if (flag > 100):  # Problem with the connection
+        if flag > 100:  # Problem with the connection
             print("Cannot get angle value")
             flag = 0
             continue
@@ -215,21 +215,21 @@ def tiltAngle():
             dt = time.time() - timer
             timer = time.time()
 
-            if (RestrictPitch):
+            if RestrictPitch:
                 roll = math.atan2(accY, accZ) * radToDeg
-                pitch = math.atan(-accX/math.sqrt((accY**2) +
-                                  (accZ**2))) * radToDeg
+                pitch = (
+                    math.atan(-accX / math.sqrt((accY**2) + (accZ**2))) * radToDeg
+                )
             else:
-                roll = math.atan(
-                    accY/math.sqrt((accX**2)+(accZ**2))) * radToDeg
+                roll = math.atan(accY / math.sqrt((accX**2) + (accZ**2))) * radToDeg
                 pitch = math.atan2(-accX, accZ) * radToDeg
 
-            gyroXRate = gyroX/131
-            gyroYRate = gyroY/131
+            gyroXRate = gyroX / 131
+            gyroYRate = gyroY / 131
 
-            if (RestrictPitch):
+            if RestrictPitch:
 
-                if ((roll < -90 and kalAngleX > 90) or (roll > 90 and kalAngleX < -90)):
+                if (roll < -90 and kalAngleX > 90) or (roll > 90 and kalAngleX < -90):
                     kalmanX.setAngle(roll)
                     complAngleX = roll
                     kalAngleX = roll
@@ -237,12 +237,12 @@ def tiltAngle():
                 else:
                     kalAngleX = kalmanX.getAngle(roll, gyroXRate, dt)
 
-                if (abs(kalAngleX) > 90):
+                if abs(kalAngleX) > 90:
                     gyroYRate = -gyroYRate
                     kalAngleY = kalmanY.getAngle(pitch, gyroYRate, dt)
             else:
 
-                if ((pitch < -90 and kalAngleY > 90) or (pitch > 90 and kalAngleY < -90)):
+                if (pitch < -90 and kalAngleY > 90) or (pitch > 90 and kalAngleY < -90):
                     kalmanY.setAngle(pitch)
                     complAngleY = pitch
                     kalAngleY = pitch
@@ -250,7 +250,7 @@ def tiltAngle():
                 else:
                     kalAngleY = kalmanY.getAngle(pitch, gyroYRate, dt)
 
-                if (abs(kalAngleY) > 90):
+                if abs(kalAngleY) > 90:
                     gyroXRate = -gyroXRate
                     kalAngleX = kalmanX.getAngle(roll, gyroXRate, dt)
 
@@ -262,9 +262,9 @@ def tiltAngle():
             compAngleX = 0.93 * (compAngleX + gyroXRate * dt) + 0.07 * roll
             compAngleY = 0.93 * (compAngleY + gyroYRate * dt) + 0.07 * pitch
 
-            if ((gyroXAngle < -180) or (gyroXAngle > 180)):
+            if (gyroXAngle < -180) or (gyroXAngle > 180):
                 gyroXAngle = kalAngleX
-            if ((gyroYAngle < -180) or (gyroYAngle > 180)):
+            if (gyroYAngle < -180) or (gyroYAngle > 180):
                 gyroYAngle = kalAngleY
 
             return str(kalAngleX), str(kalAngleY)
@@ -303,8 +303,9 @@ def solarTracking(elevation):
     currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
 
     logger.logInfo(
-        timeStamp(), "Current Tilt Elevation Angle: "+str(currentTiltAngleX))
-    logger.logInfo(timeStamp(), "Current Solar Elevation: "+str(elevation))
+        timeStamp(), "Current Tilt Elevation Angle: " + str(currentTiltAngleX)
+    )
+    logger.logInfo(timeStamp(), "Current Solar Elevation: " + str(elevation))
     time.sleep(1)
 
     degreeDifferenceX = float(currentTiltAngleX) - float(elevation)
@@ -313,11 +314,13 @@ def solarTracking(elevation):
 
     try:
 
-        while degreeDifferenceX > accuracy or (degreeDifferenceX*(-1)) > accuracy:
+        while degreeDifferenceX > accuracy or (degreeDifferenceX * (-1)) > accuracy:
 
             logger.logInfo(timeStamp(), "Adjusting Elevation Angle")
             logger.logInfo(
-                timeStamp(), "Current Degree Difference in elevation: "+str(degreeDifferenceX))
+                timeStamp(),
+                "Current Degree Difference in elevation: " + str(degreeDifferenceX),
+            )
 
             degreeDev = (int(degreeDifferenceX)) * 10
 
@@ -337,7 +340,7 @@ def solarTracking(elevation):
 
             for x in range(int(degreeDev)):
                 GPIO.output(AZ_STEP, GPIO.HIGH)
-                sleep(.05)  # Dictates how fast stepper motor will run
+                sleep(0.05)  # Dictates how fast stepper motor will run
                 GPIO.output(AZ_STEP, GPIO.LOW)
 
             time.sleep(1)
@@ -345,13 +348,12 @@ def solarTracking(elevation):
             # New Angle Readings
             currentTiltAngleX, currentTiltAngleY = tiltAngle()
             currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
-            logger.logInfo(timeStamp(), "tilt angle "+str(currentTiltAngleX))
-            logger.logInfo(timeStamp(), "elevation "+str(elevation))
+            logger.logInfo(timeStamp(), "tilt angle " + str(currentTiltAngleX))
+            logger.logInfo(timeStamp(), "elevation " + str(elevation))
 
             degreeDifferenceX = float(currentTiltAngleX) - float(elevation)
 
-        logger.logInfo(
-            timeStamp(), 'Elevation Angle Reached, Stopping Adjustment')
+        logger.logInfo(timeStamp(), "Elevation Angle Reached, Stopping Adjustment")
 
     except KeyboardInterrupt:
         logger.logInfo(timeStamp(), "GPIO Cleanup")
@@ -366,14 +368,15 @@ def main():
 
             azimuth, elevation = sunpos(when, location, True)
 
-            tz_NY = pytz.timezone('America/New_York')
+            tz_NY = pytz.timezone("America/New_York")
             datetime_NY = datetime.now(tz_NY)
 
             # Logging current UTC/EST time and Solar Azimuth#
-            logger.logInfo(timeStamp(), "Current UTC: "+str(now))
-            logger.logInfo(timeStamp(), "EST time: " +
-                           str(datetime_NY.strftime("%H:%M:%S")))
-            logger.logInfo(timeStamp(), "Current Solar Azimuth: "+str(azimuth))
+            logger.logInfo(timeStamp(), "Current UTC: " + str(now))
+            logger.logInfo(
+                timeStamp(), "EST time: " + str(datetime_NY.strftime("%H:%M:%S"))
+            )
+            logger.logInfo(timeStamp(), "Current Solar Azimuth: " + str(azimuth))
 
             solarTracking(elevation)
 
@@ -382,5 +385,5 @@ def main():
         GPIO.cleanup()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

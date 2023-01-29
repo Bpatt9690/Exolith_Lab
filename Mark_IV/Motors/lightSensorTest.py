@@ -22,8 +22,8 @@
 # THE SOFTWARE.
 
 # Can enable debug output by uncommenting:
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
+# import logging
+# logging.basicConfig(level=logging.DEBUG)
 
 import time
 import SI1145.SI1145 as SI1145
@@ -44,16 +44,15 @@ import SI1145.SI1145 as SI1145
 
 sensor = SI1145.SI1145()
 
-print('Press Cntrl + Z to cancel')
+print("Press Cntrl + Z to cancel")
 
 while True:
-        vis = sensor.readVisible()
-        IR = sensor.readIR()
-        UV = sensor.readUV()
-        uvIndex = UV
-        #print('Vis:             ' + str(vis))
-        #print('IR:              ' + str(IR))
-        print('UV Index:        ' + str(uvIndex))
+    vis = sensor.readVisible()
+    IR = sensor.readIR()
+    UV = sensor.readUV()
+    uvIndex = UV
+    # print('Vis:             ' + str(vis))
+    # print('IR:              ' + str(IR))
+    print("UV Index:        " + str(uvIndex))
 
-        time.sleep(.25)
-
+    time.sleep(0.25)

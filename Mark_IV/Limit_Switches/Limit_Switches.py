@@ -1,30 +1,31 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
+
 class limitSwitches:
     def __init__(self):
         pass
 
     def limitLogic(self, switch):
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(switch,GPIO.OUT)
-        GPIO.output(switch,GPIO.HIGH)
+        GPIO.setup(switch, GPIO.OUT)
+        GPIO.output(switch, GPIO.HIGH)
         flag = 0
 
         try:
 
-            while(1):
+            while 1:
 
                 if GPIO.input(switch) == 0:
-                    flag+=1
+                    flag += 1
 
                 else:
-                    flag=0
+                    flag = 0
 
                 if flag > 5:
                     return True
 
-                sleep(.05)
+                sleep(0.05)
 
         except KeyboardInterrupt:
             print("GPIO Cleanup")
