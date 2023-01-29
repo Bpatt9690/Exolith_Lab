@@ -5,8 +5,6 @@ from Limit_Switches import limitSwitches
 
 
 class axis_reset:
-
-
     def __init__(self):
         """Constructor for axis_reset class"""
         self.logger = logger()
@@ -17,7 +15,7 @@ class axis_reset:
     def elevation_reset(self):
         """Responsible for resetting the elevation axis."""
         GPIO.setwarnings(False)
-        self.logger.logInfo('Resetting Elevation')
+        self.logger.logInfo("Resetting Elevation")
         GPIO.setmode(GPIO.BCM)
         switch = 17
         GPIO.setup(switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -37,20 +35,20 @@ class axis_reset:
         GPIO.setup(AZ_STEP, GPIO.OUT)
         GPIO.output(AZ_DIR, CW)
 
-        while (1):
+        while 1:
 
             for x in range(200):
                 GPIO.output(AZ_STEP, GPIO.HIGH)
                 # Dictates how fast stepper motor will run
-                sleep(.05)
+                sleep(0.05)
                 GPIO.output(AZ_STEP, GPIO.LOW)
 
                 if GPIO.input(switch) == 0:
-                    self.logger.logInfo('Elevation Homing Successful')
+                    self.logger.logInfo("Elevation Homing Successful")
                     GPIO.cleanup()
                     return True
 
-        sleep(.5)
+        sleep(0.5)
 
     def x_axis_reset(self):
         """Responsible for resetting the x axis."""
@@ -86,16 +84,16 @@ class axis_reset:
         # !!!Not Calling LimitSwitches Class!!!#
 
         try:
-            while (1):
+            while 1:
 
                 for x in range(MAX):
 
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
-                    sleep(.005)  # Dictates how fast stepper motor will run
+                    sleep(0.005)  # Dictates how fast stepper motor will run
                     GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(.005)
+                    sleep(0.005)
 
                     if GPIO.input(motor2_switch) == 0:
                         motor2_flag += 1
@@ -106,18 +104,18 @@ class axis_reset:
                         motor1_flag = 0
 
                     if motor2_flag >= 5:
-                        self.logger.logInfo('X Homing Successful')
+                        self.logger.logInfo("X Homing Successful")
                         sleep(1)
                         return True
 
                     elif motor1_flag >= 5:
-                        self.logger.logInfo('X Homing Successful')
+                        self.logger.logInfo("X Homing Successful")
                         sleep(1)
                         return True
 
         # Once finished clean everything up
         except Exception as e:
-            self.logger.logError('Failure {}'.format(e))
+            self.logger.logError("Failure {}".format(e))
             GPIO.cleanup()
             return False
 
@@ -153,17 +151,17 @@ class axis_reset:
 
         try:
 
-            while (1):
+            while 1:
 
                 for x in range(MAX):
 
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # Allow it to get there.
                     # .5 == super slow
-                    sleep(.005)  # Dictates how fast stepper motor will run
+                    sleep(0.005)  # Dictates how fast stepper motor will run
                     GPIO.output(STEP_1, GPIO.LOW)
 
-                    sleep(.005)
+                    sleep(0.005)
 
                     if GPIO.input(motor2_switch) == 0:
                         motor2_flag += 1
@@ -174,18 +172,18 @@ class axis_reset:
                         motor1_flag = 0
 
                     if motor2_flag >= 5:
-                        self.logger.logInfo('Y Homing Successful')
+                        self.logger.logInfo("Y Homing Successful")
                         sleep(1)
                         return True
 
                     elif motor1_flag >= 5:
-                        self.logger.logInfo('Y Homing Successful')
+                        self.logger.logInfo("Y Homing Successful")
                         sleep(1)
                         return True
 
         # Once finished clean everything up
 
         except Exception as e:
-            self.logger.logError('Failure {}'.format(e))
+            self.logger.logError("Failure {}".format(e))
             GPIO.cleanup()
             return False

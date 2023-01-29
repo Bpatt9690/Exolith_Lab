@@ -39,7 +39,7 @@ def track(direction, steps, uvMax, uvUpper, uvLower):
     GPIO.output(DIR_1, CW)
 
     uv_current = uv_sensor()
-    print('Stationary UV value: ', uv_current)
+    print("Stationary UV value: ", uv_current)
 
     uv_high = uv_current
     uv_low = uv_current
@@ -47,27 +47,26 @@ def track(direction, steps, uvMax, uvUpper, uvLower):
     try:
 
         for x in range(steps):
-            print('Adjusting....')
+            print("Adjusting....")
 
             GPIO.output(STEP_1, GPIO.HIGH)
             # .5 == super slow
             # .00005 == breaking
-            sleep(.05)
+            sleep(0.05)
             GPIO.output(STEP_1, GPIO.LOW)
-            sleep(.05)
+            sleep(0.05)
 
             uv = uv_sensor()
 
-            print('current uv:', uv)
-            print('uvLower', uvLower)
-            print('uvUpper', uvUpper)
+            print("current uv:", uv)
+            print("uvLower", uvLower)
+            print("uvUpper", uvUpper)
             print()
 
             if uvLower <= uv < uvMax:
-                print('Stopping here')
+                print("Stopping here")
                 stepMovement(0, 1)
                 break
-
 
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -82,5 +81,5 @@ def main():
     solarPositioning(uvMax)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

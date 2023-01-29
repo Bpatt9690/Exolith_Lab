@@ -8,7 +8,6 @@ from Logging import logger
 
 
 class elevation_tracker:
-
     def __init__(self):
         self.bus = smbus.SMBus(1)
         self.DeviceAddress = 0x68
@@ -51,12 +50,12 @@ class elevation_tracker:
 
         # Days from J2000, accurate from 1901 to 2099
         daynum = (
-                367 * year
-                - 7 * (year + (month + 9) // 12) // 4
-                + 275 * month // 9
-                + day
-                - 730531.5
-                + greenwichtime / 24
+            367 * year
+            - 7 * (year + (month + 9) // 12) // 4
+            + 275 * month // 9
+            + day
+            - 730531.5
+            + greenwichtime / 24
         )
 
         # Mean longitude of the sun
@@ -67,9 +66,9 @@ class elevation_tracker:
 
         # Ecliptic longitude of the sun
         eclip_long = (
-                mean_long
-                + 0.03342305518 * sin(mean_anom)
-                + 0.0003490658504 * sin(2 * mean_anom)
+            mean_long
+            + 0.03342305518 * sin(mean_anom)
+            + 0.0003490658504 * sin(2 * mean_anom)
         )
 
         # Obliquity of the ecliptic
@@ -136,7 +135,9 @@ class elevation_tracker:
         # Gathering current tilt angle from sensor
         currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
 
-        self.logger.logInfo("Current Tilt Elevation Angle: {}".format(currentTiltAngleX))
+        self.logger.logInfo(
+            "Current Tilt Elevation Angle: {}".format(currentTiltAngleX)
+        )
         self.logger.logInfo("Current Solar Elevation: {}".format(elevation))
         time.sleep(1)
 
@@ -162,7 +163,7 @@ class elevation_tracker:
 
                 for x in range(int(degreeDev)):
                     GPIO.output(STEP, GPIO.HIGH)
-                    sleep(.05)  # Dictates how fast stepper motor will run
+                    sleep(0.05)  # Dictates how fast stepper motor will run
                     GPIO.output(STEP, GPIO.LOW)
 
                 time.sleep(1)
@@ -175,7 +176,7 @@ class elevation_tracker:
 
                 degreeDifferenceX = float(currentTiltAngleX) - float(elevation)
 
-            self.logger.logInfo('Elevation Angle Reached, Stopping Adjustment')
+            self.logger.logInfo("Elevation Angle Reached, Stopping Adjustment")
             return True
 
         except Exception as e:
@@ -199,26 +200,30 @@ class elevation_tracker:
         accY = self.read_raw_data(self.ACCEL_YOUT_H)
         accZ = self.read_raw_data(self.ACCEL_ZOUT_H)
 
-        if (self.RestrictPitch):
+        if self.RestrictPitch:
             roll = math.atan2(accY, accZ) * self.radToDeg
-            pitch = math.atan(-accX / math.sqrt((accY ** 2) + (accZ ** 2))) * self.radToDeg
+            pitch = (
+                math.atan(-accX / math.sqrt((accY**2) + (accZ**2))) * self.radToDeg
+            )
         else:
-            roll = math.atan(accY / math.sqrt((accX ** 2) + (accZ ** 2))) * self.radToDeg
+            roll = (
+                math.atan(accY / math.sqrt((accX**2) + (accZ**2))) * self.radToDeg
+            )
             pitch = math.atan2(-accX, accZ) * self.radToDeg
 
         kalmanX.setAngle(roll)
         kalmanY.setAngle(pitch)
-        gyroXAngle = roll;
-        gyroYAngle = pitch;
-        compAngleX = roll;
-        compAngleY = pitch;
+        gyroXAngle = roll
+        gyroYAngle = pitch
+        compAngleX = roll
+        compAngleY = pitch
 
         timer = time.time()
         flag = 0
 
         while True:
-            if (flag > 100):  # Problem with the connection
-                self.logger.logInfo('Failed to find data')
+            if flag > 100:  # Problem with the connection
+                self.logger.logInfo("Failed to find data")
                 flag = 0
                 continue
             try:
@@ -235,19 +240,27 @@ class elevation_tracker:
                 dt = time.time() - timer
                 timer = time.time()
 
-                if (self.RestrictPitch):
+                if self.RestrictPitch:
                     roll = math.atan2(accY, accZ) * self.radToDeg
-                    pitch = math.atan(-accX / math.sqrt((accY ** 2) + (accZ ** 2))) * self.radToDeg
+                    pitch = (
+                        math.atan(-accX / math.sqrt((accY**2) + (accZ**2)))
+                        * self.radToDeg
+                    )
                 else:
-                    roll = math.atan(accY / math.sqrt((accX ** 2) + (accZ ** 2))) * self.radToDeg
+                    roll = (
+                        math.atan(accY / math.sqrt((accX**2) + (accZ**2)))
+                        * self.radToDeg
+                    )
                     pitch = math.atan2(-accX, accZ) * self.radToDeg
 
                 gyroXRate = gyroX / 131
                 gyroYRate = gyroY / 131
 
-                if (self.RestrictPitch):
+                if self.RestrictPitch:
 
-                    if ((roll < -90 and self.kalAngleX > 90) or (roll > 90 and self.kalAngleX < -90)):
+                    if (roll < -90 and self.kalAngleX > 90) or (
+                        roll > 90 and self.kalAngleX < -90
+                    ):
                         kalmanX.setAngle(roll)
                         complAngleX = roll
                         self.kalAngleX = roll
@@ -255,12 +268,14 @@ class elevation_tracker:
                     else:
                         self.kalAngleX = kalmanX.getAngle(roll, gyroXRate, dt)
 
-                    if (abs(self.kalAngleX) > 90):
+                    if abs(self.kalAngleX) > 90:
                         gyroYRate = -gyroYRate
                         self.kalAngleY = kalmanY.getAngle(pitch, gyroYRate, dt)
                 else:
 
-                    if ((pitch < -90 and self.kalAngleY > 90) or (pitch > 90 and self.kalAngleY < -90)):
+                    if (pitch < -90 and self.kalAngleY > 90) or (
+                        pitch > 90 and self.kalAngleY < -90
+                    ):
                         kalmanY.setAngle(pitch)
                         complAngleY = pitch
                         self.kalAngleY = pitch
@@ -268,7 +283,7 @@ class elevation_tracker:
                     else:
                         self.kalAngleY = kalmanY.getAngle(pitch, gyroYRate, dt)
 
-                    if (abs(self.kalAngleY) > 90):
+                    if abs(self.kalAngleY) > 90:
                         gyroXRate = -gyroXRate
                         self.kalAngleX = kalmanX.getAngle(roll, gyroXRate, dt)
 
@@ -280,15 +295,15 @@ class elevation_tracker:
                 compAngleX = 0.93 * (compAngleX + gyroXRate * dt) + 0.07 * roll
                 compAngleY = 0.93 * (compAngleY + gyroYRate * dt) + 0.07 * pitch
 
-                if ((gyroXAngle < -180) or (gyroXAngle > 180)):
+                if (gyroXAngle < -180) or (gyroXAngle > 180):
                     gyroXAngle = self.kalAngleX
-                if ((gyroYAngle < -180) or (gyroYAngle > 180)):
+                if (gyroYAngle < -180) or (gyroYAngle > 180):
                     gyroYAngle = self.kalAngleY
 
                 return str(self.kalAngleX), str(self.kalAngleY)
 
             except Exception as e:
-                self.logger.logInfo('Tilt Angle Failure {}'.format(e))
+                self.logger.logInfo("Tilt Angle Failure {}".format(e))
                 flag += 1
 
     def into_range(self, x, range_min, range_max):
@@ -298,36 +313,38 @@ class elevation_tracker:
 
     def read_raw_data(self, addr):
 
-        while (1):
+        while 1:
             try:
                 # Accelero and Gyro value are 16-bit
                 high = self.bus.read_byte_data(self.DeviceAddress, addr)
                 low = self.bus.read_byte_data(self.DeviceAddress, addr + 1)
 
                 # concatenate higher and lower value
-                value = ((high << 8) | low)
+                value = (high << 8) | low
 
                 # to get signed value from mpu6050
-                if (value > 32768):
+                if value > 32768:
                     value = value - 65536
 
                 return value
 
             except Exception as e:
-                self.logger.logInfo('Failed to read raw MPU data: {}'.format(e))
+                self.logger.logInfo("Failed to read raw MPU data: {}".format(e))
 
     # Read the gyro and acceleromater values from MPU6050
     def MPU_Init(self):
-        while (1):
+        while 1:
             try:
                 # write to sample rate register
                 self.bus.write_byte_data(self.DeviceAddress, self.SMPLRT_DIV, 7)
                 self.bus.write_byte_data(self.DeviceAddress, self.PWR_MGMT_1, 1)
-                self.bus.write_byte_data(self.DeviceAddress, self.CONFIG, int('0000110', 2))
+                self.bus.write_byte_data(
+                    self.DeviceAddress, self.CONFIG, int("0000110", 2)
+                )
                 # Write to Gyro configuration register
                 self.bus.write_byte_data(self.DeviceAddress, self.GYRO_CONFIG, 24)
                 # Write to interrupt enable register
                 self.bus.write_byte_data(self.DeviceAddress, self.INT_ENABLE, 1)
                 return
             except Exception as e:
-                self.logger.logInfo('MPU Init Failure {}'.format(e))
+                self.logger.logInfo("MPU Init Failure {}".format(e))
