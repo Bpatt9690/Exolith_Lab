@@ -5,7 +5,7 @@ import pytz
 
 class logger:
     def __init__(self):
-        pass
+        self.tz_NY = pytz.timezone("America/New_York")
 
     def logUV(self, data):
         timestamp = self.timeStamp()
@@ -15,13 +15,10 @@ class logger:
 
     def logInfo(self, data):
         timestamp = self.timeStamp()
-        print(timestamp + " INFO: " + str(data))
-        print()
-
+        print(f"{timestamp} INFO: {data}")
         with open(f"{datetime.now().date()}.txt", "a") as f:
             f.write(f"{data}\n")
 
     def timeStamp(self):
-        tz_NY = pytz.timezone("America/New_York")
-        datetime_NY = datetime.now(tz_NY)
+        datetime_NY = datetime.now(self.tz_NY)
         return str(datetime_NY.strftime("%H:%M:%S"))
