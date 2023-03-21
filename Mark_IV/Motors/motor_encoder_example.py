@@ -14,30 +14,27 @@ ls = limitSwitches()
 
 
 def xMovement():
-    # Direction pin from controller
     GPIO.cleanup()
-    DIR_1 = 5  # DIR+
-    # Step pin from controller
-    STEP_1 = 6  # PULL+
+    DIR_1 = 27  # DIR+
+    STEP_1 = 4  # PULL+
+    EB = 21
     # DIR_1 = os.getenv("MOTOR_EL_DIR")
     # STEP_1 = os.getenv("MOTOR_EL_PULSE")
-
-    # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
-    MAX = 10000
-    flag = 0
-
-    GPIO.setmode(GPIO.BCM)
+    counter = 0
+    steps = 1000000
 
     # Setup pin layout on PI
     GPIO.setmode(GPIO.BCM)
-
+    
     # Establish Pins in software
     GPIO.setup(DIR_1, GPIO.OUT)
     GPIO.setup(STEP_1, GPIO.OUT)
+    GPIO.setup(EB, GPIO.IN)
 
     # Set the first direction you want it to spin
+<<<<<<< Updated upstream
     GPIO.output(DIR_1, CCW)
 
     try:
@@ -52,12 +49,27 @@ def xMovement():
             print("running")
             GPIO.output(STEP_1, GPIO.LOW)
             sleep(0.0001)
+=======
+    GPIO.output(DIR_1, CW)
+
+    try:
+        while steps > 0:
+            # Set one coil winding to high
+            GPIO.output(STEP_1, GPIO.HIGH)
+            GPIO.output(STEP_1, GPIO.LOW)
+
+            # counter += GPIO.input(EB)
+            # print(counter)
+            
+            steps -= 1
+>>>>>>> Stashed changes
 
     # Once finished clean everything up
     except KeyboardInterrupt:
         print("cleanup")
         GPIO.cleanup()
 
+    GPIO.cleanup()
 
 def main():
     xMovement()
