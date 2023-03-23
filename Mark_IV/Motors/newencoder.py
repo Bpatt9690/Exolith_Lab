@@ -5,40 +5,28 @@ import time
 GPIO.setmode(GPIO.BCM)
 
 # Set the GPIO pins for PUL, DIR and EB
-PUL = 4
-DIR = 27
-EB = 21
+PUL = 4 # Pulse
+DIR = 27 # Direction
+EA = 21 # Encoder A pin
 
-# Set the target position (in pulses)
-target_position = 1
+target_position = 1000
+position = 0
 
-# Set the current position (in pulses)
-current_position = 0
-
-# Set the direction of the motor (1 for forward, 0 for backward)
+# 1 for forward, 0 for backward
 direction = 1
 
-# Set the enable pin high to enable the motor
-GPIO.setup(EB, GPIO.IN)
+# Set the encoder pin as an input
+GPIO.setup(EA, GPIO.IN)
 
 # Set the PUL and DIR pins as outputs
 GPIO.setup(PUL, GPIO.OUT)
 GPIO.setup(DIR, GPIO.OUT)
 
-# Set the step mode (1=full step, 2=half step, 4=microstep, etc.)
-step_mode = 1
-
-# Set the maximum speed (in pulses per second)
-max_speed = 1000
-
-# Set the acceleration (in pulses per second squared)
-acceleration = 2000
-
-# Set the PUL frequency
-freq = max_speed * step_mode
-
-# Set the duty cycle
-dc = 50
+SPR = 200 # Steps Per Revolution (We cannot change this)
+microstep = 5 # Step setting (We can change this)
+RPM = 1500 # Revolutions Per Minute (We can change this)
+freq = (SPR * microstep * RPM) / 60 #pulse frequency in Hz
+dc = 50 # Set the duty cycle (We can change this)
 
 # Set the PUL and DIR pins to their initial states
 GPIO.output(PUL, GPIO.LOW)
@@ -49,33 +37,45 @@ pwm = GPIO.PWM(PUL, freq)
 pwm.start(dc)
 
 # Define the encoder B signal interrupt handler
-def encoder_b_interrupt(channel):
-    global current_position
-    if GPIO.input(EB) == GPIO.HIGH:
-        current_position += 1 if direction else -1
-    else:
-        current_position -= 1 if direction else 1
+# def encoder_b_interrupt(channel):
+#    global current_position 
+
+#    if GPIO.input(EB) == GPIO.HIGH:
+#        current_position += 1 if direction else -1
+#    else:
+#        current_position -= 1 if direction else 1
 
 # Set up the encoder B signal interrupt
-GPIO.add_event_detect(EB, GPIO.BOTH, callback=encoder_b_interrupt)
+# GPIO.add_event_detect(EB, GPIO.BOTH, callback=encoder_b_interrupt)
+
+# def update_position(channel):
+#    global position, last_A
+#    new_A = GPIO.input(EA)
+#    print("A:", new_A)
+
+#    if last_A == 0 and new_A == 1:
+#        postion += 1
+#    elif last_A == 1 and new_A == 0:
+#       positon -= 1 
+
+#    last_A = new_A
+
+# GPIO.add_event_detect(EA, GPIO.BOTH, callback=update_position)
+# last_A = GPIO.input(EA)
 
 # Move the motor to the target position
-while current_position != target_position:
+while position != target_position:
+    # update_position(EA)
+    position += 1
+    # print("current postion:", position)
+    GPIO.output(PUL,GPIO.HIGH)
+    time.sleep(0.000004)
+    GPIO.output(PUL,GPIO.LOW)
+    time.sleep(0.000004)
 
-    # Change direction if necessary
-    if current_position == 0 or current_position == target_position:
-        direction = not direction
-        GPIO.output(DIR, direction)
-
-    # Change the PWM duty cycle to generate the next pulse
-    dc = 100 - dc
-    pwm.ChangeDutyCycle(dc)
-
-    # Wait for the interrupt
-    GPIO.event_detected(EB)
 
 # Set the enable pin low to disable the motor
-GPIO.remove_event_detect(EB)
+GPIO.remove_event_detect(EA)
 
 # Cleanup the GPIOs
 pwm.stop()
