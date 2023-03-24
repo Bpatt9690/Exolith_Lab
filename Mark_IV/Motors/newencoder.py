@@ -1,8 +1,10 @@
 import RPi.GPIO as GPIO
+import pigpio
 import time
 
 # Set the GPIO mode
 GPIO.setmode(GPIO.BCM)
+pi = pigpio.pi()
 
 # Set the GPIO pins for PUL, DIR and EB
 PUL = 4 # Pulse
@@ -15,12 +17,13 @@ position = 0
 # 1 for forward, 0 for backward
 direction = 1
 
-# Set the encoder pin as an input
-GPIO.setup(EA, GPIO.IN)
-
-# Set the PUL and DIR pins as outputs
-GPIO.setup(PUL, GPIO.OUT)
-GPIO.setup(DIR, GPIO.OUT)
+# Set the PUL, DIR and EN pins to their initial states
+pi.set_mode(PUL, pigpio.OUTPUT)
+pi.set_mode(DIR, pigpio.OUTPUT)
+# pi.set_mode(EA, pigpio.INPUT)
+pi.write(PUL, 0)
+pi.write(DIR, direction)
+# pi.write(EA, 0)
 
 SPR = 200 # Steps Per Revolution (We cannot change this)
 microstep = 5 # Step setting (We can change this)
@@ -28,13 +31,10 @@ RPM = 1500 # Revolutions Per Minute (We can change this)
 freq = (SPR * microstep * RPM) / 60 #pulse frequency in Hz
 dc = 50 # Set the duty cycle (We can change this)
 
-# Set the PUL and DIR pins to their initial states
-GPIO.output(PUL, GPIO.LOW)
-GPIO.output(DIR, direction)
-
 # Set up the PWM generator for the PUL pin
-pwm = GPIO.PWM(PUL, freq)
-pwm.start(dc)
+pi.set_PWM_frequency(PUL, freq)
+pi.set_PWM_range(PUL, 100)
+pi.set_PWM_dutycycle(PUL, dc)
 
 # Define the encoder B signal interrupt handler
 # def encoder_b_interrupt(channel):
@@ -63,20 +63,17 @@ pwm.start(dc)
 # GPIO.add_event_detect(EA, GPIO.BOTH, callback=update_position)
 # last_A = GPIO.input(EA)
 
-# Move the motor to the target position
-while position != target_position:
-    # update_position(EA)
-    position += 1
-    # print("current postion:", position)
-    GPIO.output(PUL,GPIO.HIGH)
-    time.sleep(0.000004)
-    GPIO.output(PUL,GPIO.LOW)
-    time.sleep(0.000004)
+while position < target_position:
+    # Move the motor in the set direction
+    pi.write(PUL, 1)
+    pi.write(PUL, 0)
+    if direction == 1:
+        position += 1
+    else:
+        position -= 1
+    if position == target_position or position == 0:
+        # Stop the motor
+        pi.stop()
 
-
-# Set the enable pin low to disable the motor
-GPIO.remove_event_detect(EA)
-
-# Cleanup the GPIOs
-pwm.stop()
+pi.stop()
 GPIO.cleanup()
