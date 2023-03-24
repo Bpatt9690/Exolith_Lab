@@ -11,7 +11,10 @@ PUL = 4 # Pulse
 DIR = 27 # Direction
 EA = 21 # Encoder A pin
 
-target_position = 1000
+# One revolution = 1000 steps
+# Any further specification than this requires us to know information 
+# about rod diameter, thread pitch, etc.
+target_position = 3000
 position = 0
 
 # 1 for forward, 0 for backward
@@ -32,7 +35,7 @@ freq = (SPR * microstep * RPM) / 60 #pulse frequency in Hz
 dc = 50 # Set the duty cycle (We can change this)
 
 # Set up the PWM generator for the PUL pin
-pi.set_PWM_frequency(PUL, freq)
+pi.set_PWM_frequency(PUL, int(freq))
 pi.set_PWM_range(PUL, 100)
 pi.set_PWM_dutycycle(PUL, dc)
 
@@ -52,12 +55,10 @@ pi.set_PWM_dutycycle(PUL, dc)
 #    global position, last_A
 #    new_A = GPIO.input(EA)
 #    print("A:", new_A)
-
 #    if last_A == 0 and new_A == 1:
 #        postion += 1
 #    elif last_A == 1 and new_A == 0:
 #       positon -= 1 
-
 #    last_A = new_A
 
 # GPIO.add_event_detect(EA, GPIO.BOTH, callback=update_position)
