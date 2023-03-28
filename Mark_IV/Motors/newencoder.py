@@ -14,7 +14,7 @@ EA = 21 # Encoder A pin
 # One revolution = 1000 steps
 # Any further specification than this requires us to know information 
 # about rod diameter, thread pitch, etc.
-target_position = 3000
+target_position = 1000
 position = 0
 
 # 1 for forward, 0 for backward
@@ -64,10 +64,13 @@ pi.set_PWM_dutycycle(PUL, dc)
 # GPIO.add_event_detect(EA, GPIO.BOTH, callback=update_position)
 # last_A = GPIO.input(EA)
 
-while position < target_position:
-    # Move the motor in the set direction
+while abs(position) < target_position:
+    # Send a pulse to the PUL pin to move the motor one step
     pi.write(PUL, 1)
+    time.sleep(1/freq)
     pi.write(PUL, 0)
+    # time.sleep(1/freq) # Delay to control the speed of the motor
+
     if direction == 1:
         position += 1
     else:
@@ -76,5 +79,6 @@ while position < target_position:
         # Stop the motor
         pi.stop()
 
+pi.write(PUL, 0)
 pi.stop()
 GPIO.cleanup()
