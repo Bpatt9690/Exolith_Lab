@@ -1,6 +1,7 @@
 import time
-import SI1145.SI1145 as SI1145
 import smbus
+import board
+import adafruit_si1145
 
 
 class sensor_group:
@@ -8,17 +9,20 @@ class sensor_group:
         pass
 
     def light_sensor_health(self):
-        sensor = SI1145.SI1145()
-
+        # setup I2C bus using board default
+        i2c = board.I2C()  
+        sensor = adafruit_si1145.SI1145(i2c)
         uvAverage = 0
 
         for i in range(10):
-            UV = sensor.readUV()
+            UV = sensor.uv_index
             uvIndex = UV
             uvAverage += uvIndex
-            time.sleep(0.1)
+
+        uvAverage = uvAverage/10
 
         if uvAverage / 10 > 0:
+            print("uvAverage {}".format(uvAverage))
             return True
         else:
             return False
@@ -37,7 +41,8 @@ class sensor_group:
         GYRO_YOUT_H = 0x45
         GYRO_ZOUT_H = 0x47
 
-        bus = smbus.SMBus(1)
+
+        bus = smbus.SMBus(0)
         DeviceAddress = 0x68
         bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
         bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
@@ -55,7 +60,7 @@ class sensor_group:
         if value > 32768:
             value = value - 65536
 
-        if value is not 0:
+        if value != 0:
             print("value is", value)
             return True
         else:

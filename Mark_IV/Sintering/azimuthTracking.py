@@ -1,8 +1,9 @@
 import RPi.GPIO as GPIO
 from time import sleep
 import time
-import SI1145.SI1145 as SI1145
 from Logging import logger
+import board
+import adafruit_si1145
 
 azVal = None
 uvUpper = None
@@ -11,7 +12,8 @@ uvLower = None
 
 class azimuth_tracker:
     def __init__(self):
-        self.sensor = SI1145.SI1145()
+        self.i2c = board.I2C()  
+        self.sensor = adafruit_si1145.SI1145(self.i2c)
         self.logger = logger()
 
     def stepMovement(self, direction, steps):
@@ -41,7 +43,7 @@ class azimuth_tracker:
         # Set the first direction you want it to spin
         GPIO.output(DIR_1, CW)
 
-        uv_current = self.uv_sensor()
+        uv_current = 5#self.uv_sensor()
 
         uv_high = uv_current
         uv_low = uv_current

@@ -17,13 +17,13 @@ class axis_reset:
         GPIO.setwarnings(False)
         self.logger.logInfo("Resetting Elevation")
         GPIO.setmode(GPIO.BCM)
-        switch = 17
+        switch = 25
         GPIO.setup(switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # Direction pin from controller
-        AZ_DIR = 25
+        AZ_DIR = 18
         # Step pin from controller
-        AZ_STEP = 24
+        AZ_STEP = 17
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 0
