@@ -1,8 +1,4 @@
 #Need to update to support current project imports
-smbus~=1.1.post2
-sys~=3.11.2
-Adafruit-GPIO==1.0.4
-arandr==0.1.9
 asn1crypto==0.24.0
 automationhat==0.2.0
 blinker==1.4
@@ -26,7 +22,6 @@ Flask==1.0.2
 fourletterphat==0.1.0
 funcsigs==1.0.2
 gpiozero==1.5.1
-gyp==0.1
 idna==2.6
 ipaddress==1.0.17
 itsdangerous==0.24
@@ -34,7 +29,6 @@ Jinja2==2.10
 keyring==17.1.1
 keyrings.alt==3.1.1
 MarkupSafe==1.1.0
-mcpi==0.1.1
 microdotphat==0.2.1
 mock==2.0.0
 mote==0.0.4
@@ -54,7 +48,6 @@ Pillow==5.4.1
 pycairo==1.16.2
 pycrypto==2.6.1
 pyflakes==2.0.0
-pygame==1.9.4.post1
 PyGObject==3.30.4
 pyinotify==0.9.6
 PyJWT==1.7.0
@@ -74,12 +67,10 @@ scrollphathd==1.2.1
 SecretStorage==2.3.1
 sense-emu==1.1
 sense-hat==2.2.0
-SI1145==1.0.0
 simplejson==3.16.0
 six==1.12.0
 skywriter==0.0.7
 sn3218==1.2.7
-spidev==3.3
 touchphat==0.0.1
 twython==3.7.0
 unicornhathd==0.0.4

@@ -1,35 +1,20 @@
-#RPI Config
+Here's a possible rewrite:
 
+## Setting up RPI Config
 
-#Install Raspian OS(Buster Legacy) on SD card
+1. Install the Raspi imager tool by running the command `sudo apt install rpi-imager`.
+2. Launch the Raspi Imager application.
+3. Click on "Choose OS".
+4. Select "Raspberry Pi OS (other)".
+5. Choose "Raspberry Pi OS Lite (32-bit)" without the desktop environment.
+6. Click on "Choose storage" and select the SD card.
+7. Click on the gear icon and enable SSH with password authentication.
+8. SSH into the Pi by finding its IP address on the router dashboard.
+9. Upload the repository to the Pi.
+10. Install pip3 by running the command `sudo apt-get install python3-pip`.
+11. Install i2c-tools by running the command `sudo apt-get install i2c-tools`.
 
-#Config WiFi:
+## Light Sensor Installation
 
-Save wpa_supplicant.conf file to sd card with
-
-country=US # Your 2-digit country code
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-network={
-    ssid="YOUR_NETWORK_NAME"
-    psk="YOUR_PASSWORD"
-    key_mgmt=WPA-PSK
-}
-
-
-
-#Allow ssh
-
-Save empty ssh.txt file to sd card
-
-#To ssh
-
-ssh pi@<ip>
-
-default password: raspberry
-
-
-sudo apt-get install i2c-tools python-smbus
-
-sudo-raspi config -> Enable i2c and spi
-
-pip3 install pytz
+1. Install the `adafruit-circuitpython-si1145` library by running the command `sudo pip3 install adafruit-circuitpython-si1145`.
+2. Run an I2C check to see if both sensors are registered by executing the command `i2cdetect -y 1`.

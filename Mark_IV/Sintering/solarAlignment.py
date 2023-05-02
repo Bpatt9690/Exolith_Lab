@@ -128,8 +128,8 @@ def main():
     sensorStatus = False
     axisStatus = False
 
-    logger.logInfo("Step 1: Reset all axis, check sensor health")
-    axisStatus = axisResets()
+    logger.logInfo("Step 1: Reset axes, checking sensor health")
+    #axisStatus = axisResets()
     sensorStatus = sensorGroupCheck()
 
     # Need to add fail flag to prevent endless loop on failure
