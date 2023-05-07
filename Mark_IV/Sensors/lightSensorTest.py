@@ -14,8 +14,7 @@ i2c = board.I2C()
 si1145 = adafruit_si1145.SI1145(i2c)
 
 
-for i in range(50):
-    print('hur')
+for i in range(10):
     vis = si1145.uv_index
     print(vis)
 

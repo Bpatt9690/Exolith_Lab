@@ -12,8 +12,6 @@ uvLower = None
 
 class azimuth_tracker:
     def __init__(self):
-        self.i2c = board.I2C()  
-        self.sensor = adafruit_si1145.SI1145(self.i2c)
         self.logger = logger()
 
     def stepMovement(self, direction, steps):
@@ -88,13 +86,29 @@ class azimuth_tracker:
         return max_val
 
     def uv_sensor(self):
-        uvAverage = 0
-        for i in range(20):
-            UV = self.sensor.readUV()
-            uvIndex = UV
-            uvAverage += uvIndex
-            time.sleep(0.001)
-        return uvAverage / 10
+        i2c = board.I2C()  
+        sensor = adafruit_si1145.SI1145(i2c)
+
+        values = []
+
+        while 1:
+
+            try:
+
+                print('light')
+       
+                for i in range(10):
+                    vis = sensor.uv_index
+                    values.append(vis)
+                    
+                print('UV index {}'.format(sum(values)/len(values)))
+                sensor.reset()
+                return (sum(values)/len(values))
+
+            except Exception as e:
+                print(e)
+                pass
+
 
     def azimuthPositioning(self, uvMax):
 

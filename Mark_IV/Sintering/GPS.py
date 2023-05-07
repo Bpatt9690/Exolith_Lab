@@ -32,7 +32,6 @@ class GPS_Data:
                     sline = line.split(",")
 
                     if str(sline[0]) == str(reading):
-                        print("what")
                         print(sline)
                         gps_dict["Time UTC"] = sline[1]
                         gps_dict["Lattitude"] = float(sline[2]) / 100

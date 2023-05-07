@@ -16,7 +16,7 @@ class logger:
     def logInfo(self, data):
         timestamp = self.timeStamp()
         print(f"{timestamp} INFO: {data}")
-        with open(f"{datetime.now().date()}.txt", "a") as f:
+        with open(f"logs/{datetime.now().date()}.txt", "a") as f:
             f.write(f"{data}\n")
 
     def timeStamp(self):
