@@ -1,0 +1,57 @@
+## Setting up RPI  ##
+
+1.) Install the Raspi imager tool by running the command `sudo apt install rpi-imager`. On a debian machine, windows and mac installation here: https://www.raspberrypi.com/software/
+
+2.) Launch the Raspi Imager application.
+
+3.) Click on "Choose OS".
+
+4.) Select "Raspberry Pi OS (other)".
+
+5.) Choose "Raspberry Pi OS Lite (32-bit)" without the desktop environment.
+
+6.) Click on "Choose storage" and select the SD card.
+
+7.) Click on the gear icon and enable SSH with password authentication [Username: pi, Password: Exolith].
+
+8.) Click Write if succeed move to step 9 if not revert to 3.
+
+9.) Plug pi into tp link router.
+
+10.) SSH into the Pi by finding its IP address on the router dashboard. If succesful pi needs to be switched back to internet router to finish installation. 
+
+11.) Once pi is reconnected to internet and ssh into it run command sudo raspi-config. A config screen will pop up, select interfact options -> I2c -> yes -> OK -> Finish
+
+12.) Install pip3 by running the command: sudo apt-get install python3-pip.
+
+13.) Install i2c-tools by running the command: sudo apt-get install i2c-tools.
+
+14.) pip install smbus
+
+15.) pip install pytz
+
+16.) Install the `adafruit-circuitpython-si1145` library by running the command: sudo pip3 install adafruit-circuitpython-si1145.
+
+17.) Run command: mkdir dir Exolith_lab in the /home/pi directory
+
+18.) Upload the code from github branch dev to the pi via sftp
+
+19.) Run command: pip install -r requirements.txt in the /home/pi/Exolith_Lab dir
+
+With both sensors wired up
+
+20.) Run an I2C check to see if both sensors are registered by executing the command: i2cdetect -y 1.
+
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:                         -- -- -- -- -- -- -- -- 
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+60: 60 -- -- -- -- -- -- -- 68 -- -- -- -- -- -- -- 
+70: -- -- -- -- -- -- -- -- 
+
+21.) Run the code setupTest.py, this will require someone to trigger the elevation axis limit switch.
+
+22.) If everything is succesful code will print out : All Systems Go. If not DEBUG.

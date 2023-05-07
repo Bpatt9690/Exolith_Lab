@@ -22,13 +22,13 @@ class sensor_group:
         uvAverage = uvAverage/10
 
         if uvAverage / 10 > 0:
-            print("uvAverage {}".format(uvAverage))
             return True
         else:
             return False
 
     def orientation_sensor_health(self):
 
+   
         PWR_MGMT_1 = 0x6B
         SMPLRT_DIV = 0x19
         CONFIG = 0x1A
@@ -42,7 +42,7 @@ class sensor_group:
         GYRO_ZOUT_H = 0x47
 
 
-        bus = smbus.SMBus(0)
+        bus = smbus.SMBus(1)
         DeviceAddress = 0x68
         bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
         bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
@@ -61,7 +61,6 @@ class sensor_group:
             value = value - 65536
 
         if value != 0:
-            print("value is", value)
             return True
         else:
             return False

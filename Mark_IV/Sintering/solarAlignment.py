@@ -57,8 +57,8 @@ def sensorGroupCheck():
     except Exception as e:
         logger.logInfo("Sensor Group Failure: {}".format(e))
 
-        if light_sensor_status and orientation_sensor_status:
-            logger.logInfo("Sensor Group Healthy")
+    if light_sensor_status and orientation_sensor_status:
+        logger.logInfo("Sensor Group Healthy")
         return True
 
     else:
@@ -91,7 +91,7 @@ def solarElevationLogic():
     azimuth, elevation = elevation_tracker.sunpos(when, location, True)
 
     logger.logInfo("Current UTC: {}".format(now))
-    logger.logInfo(("EST timezone: {}:{}:{}".format(hour, minutes, seconds)))
+    #Need to fix#logger.logInfo(("EST timezone: {}:{}:{}".format(hour, minutes, seconds)))
 
     status = elevation_tracker.solarElevationPositioning(elevation)
 
@@ -129,7 +129,7 @@ def main():
     axisStatus = False
 
     logger.logInfo("Step 1: Reset axes, checking sensor health")
-    #axisStatus = axisResets()
+    axisStatus = True#axisResets()
     sensorStatus = sensorGroupCheck()
 
     # Need to add fail flag to prevent endless loop on failure
@@ -140,14 +140,15 @@ def main():
         logger.logInfo("Step 2: Solar Elevation Logic, Solar Azimuth Logic")
 
         solar_elevation_status = solarElevationLogic()
+        azimuth_status = azimuthLogic()
+
 
         if solar_elevation_status:
             pass
-        # azimuth_status = azimuthLogic()
 
         else:
             logger.logInfo(
-                "Solar Elvation Status Failure: {}".format(solar_elevation_status)
+                "Solar Elevation Status Failure: {}".format(solar_elevation_status)
             )
 
         if solar_elevation_status and azimuth_status:
