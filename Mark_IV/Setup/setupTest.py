@@ -4,7 +4,7 @@ from time import sleep
 import board
 import smbus
 import RPi.GPIO as GPIO
-import adafruit_si1145
+import adafruit_ltr390
 
 def gpsTest():
 	gps_dict = {}
@@ -47,22 +47,22 @@ def lightTest():
 
 	while 1:
 		print('waiting for device')
-		si1145 = adafruit_si1145.SI1145(i2c)
-		print(si1145.device_info)
+		ltr = adafruit_ltr390.LTR390(i2c)
+		print(ltr.data_ready)
 
-		if si1145.device_info:
+		if ltr.data_ready:
 			break
 
 		time.sleep(1)
 
 	for i in range(10):
-		vis = si1145.uv_index
+		vis = ltr.uvi
 		values.append(vis)
 
 	if sum(values)/len(values) > 0:
 		print('Light Sensor Data Retrieval Successful')
 		print(values)
-		si1145.reset()
+		ltr.initialize()
 		return True
 	else:
 		print('Light Sensor Data Retrieval Failure')
@@ -118,7 +118,7 @@ def limitswitchTest():
 
 		if GPIO.input(25) == 0:
 		    flag += 1
-
+		    
 		else:
 		    flag = 0
 
