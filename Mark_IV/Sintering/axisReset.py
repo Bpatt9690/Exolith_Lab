@@ -55,8 +55,8 @@ class axis_reset:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 6  # DIR+
-        STEP_1 = 5  # PULL+
+        DIR_1 = 13  # DIR+
+        STEP_1 = 20  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 0
@@ -124,8 +124,8 @@ class axis_reset:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 19  # DIR+
-        STEP_1 = 20  # PULL+
+        DIR_1 = 26  # DIR+
+        STEP_1 = 19  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 0
@@ -137,7 +137,7 @@ class axis_reset:
         motor2_flag = 0
 
         GPIO.setmode(GPIO.BCM)
-        motor1_switch = 18
+        motor1_switch = 24
         motor2_switch = 12
         GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)

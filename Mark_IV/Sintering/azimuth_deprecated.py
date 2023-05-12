@@ -13,8 +13,8 @@ def track(direction, steps, uvMax, uvUpper, uvLower):
     GPIO.setwarnings(False)
     GPIO.cleanup()
 
-    DIR_1 = 13  # DIR+
-    STEP_1 = 26  # PULL+
+    DIR_1 = 25  # DIR+
+    STEP_1 = 24  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = direction

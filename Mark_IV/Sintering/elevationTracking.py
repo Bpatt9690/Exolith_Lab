@@ -111,10 +111,10 @@ class elevation_tracker:
         GPIO.setwarnings(False)
 
         # Direction pin from controller
-        DIR = 25
+        DIR = 18
 
         # Step pin from controller
-        STEP = 24
+        STEP = 17
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 1

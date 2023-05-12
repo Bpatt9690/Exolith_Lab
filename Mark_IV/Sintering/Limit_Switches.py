@@ -34,10 +34,10 @@ class limitSwitches:
         return self.limitLogic(21)
 
     def motory1(self):
-        return self.limitLogic(18)
+        return self.limitLogic(24)
 
     def motory2(self):
         return self.limitLogic(12)
 
     def elevation(self):
-        return self.limitLogic(17)
+        return self.limitLogic(25)
