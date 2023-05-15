@@ -1,11 +1,11 @@
 import time
 from datetime import date, datetime
-import pytz
+import arrow
 
 
 class logger:
     def __init__(self):
-        self.tz_NY = pytz.timezone("America/New_York")
+        self.tz_NY = arrow.now().to("America/New_York").tzinfo
 
     def logUV(self, data):
         timestamp = self.timeStamp()

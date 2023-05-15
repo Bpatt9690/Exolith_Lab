@@ -55,7 +55,7 @@ class axis_reset:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 13  # DIR+
+        DIR_1 = 19  # DIR+
         STEP_1 = 20  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
@@ -125,7 +125,7 @@ class axis_reset:
         GPIO.cleanup()
 
         DIR_1 = 26  # DIR+
-        STEP_1 = 19  # PULL+
+        STEP_1 = 13  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 0

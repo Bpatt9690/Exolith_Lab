@@ -1,7 +1,7 @@
 import time
 import smbus
 import board
-import adafruit_si1145
+import adafruit_ltr390
 
 
 class sensor_group:
@@ -11,11 +11,11 @@ class sensor_group:
     def light_sensor_health(self):
         # setup I2C bus using board default
         i2c = board.I2C()  
-        sensor = adafruit_si1145.SI1145(i2c)
+        sensor = adafruit_ltr390.LTR390(i2c)
         uvAverage = 0
 
         for i in range(10):
-            UV = sensor.uv_index
+            UV = sensor.uvi
             uvIndex = UV
             uvAverage += uvIndex
 

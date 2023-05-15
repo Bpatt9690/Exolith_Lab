@@ -3,7 +3,7 @@ from time import sleep
 import time
 from Logging import logger
 import board
-import adafruit_si1145
+import adafruit_ltr390
 
 azVal = None
 uvUpper = None
@@ -18,8 +18,8 @@ class azimuth_tracker:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 25  # DIR+
-        STEP_1 = 24  # PULL+
+        DIR_1 = 6  # DIR+
+        STEP_1 = 5  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = direction
@@ -87,7 +87,7 @@ class azimuth_tracker:
 
     def uv_sensor(self):
         i2c = board.I2C()  
-        sensor = adafruit_si1145.SI1145(i2c)
+        sensor = adafruit_ltr390.LTR390(i2c)
 
         values = []
 
@@ -98,11 +98,11 @@ class azimuth_tracker:
                 print('light')
        
                 for i in range(10):
-                    vis = sensor.uv_index
+                    vis = sensor.uvi
                     values.append(vis)
                     
                 print('UV index {}'.format(sum(values)/len(values)))
-                sensor.reset()
+                sensor.initialize()
                 return (sum(values)/len(values))
 
             except Exception as e:
@@ -130,8 +130,8 @@ class azimuth_tracker:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 25  # DIR+
-        STEP_1 = 24  # PULL+
+        DIR_1 = 6  # DIR+
+        STEP_1 = 5  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = direction
@@ -208,8 +208,8 @@ class azimuth_tracker:
             GPIO.setwarnings(False)
             GPIO.cleanup()
 
-            DIR_1 = 25  # DIR+
-            STEP_1 = 24  # PULL+
+            DIR_1 = 6  # DIR+
+            STEP_1 = 5  # PULL+
 
             # 0/1 used to signify clockwise or counterclockwise.
             CW = 1

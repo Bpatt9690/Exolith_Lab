@@ -1,11 +1,9 @@
 import RPi.GPIO as GPIO
 from time import sleep
 import time
-import SI1145.SI1145 as SI1145
 from Logging import logger
 from datetime import date, datetime
 import serial
-import pytz
 import os
 
 
@@ -13,8 +11,8 @@ def track(direction, steps, uvMax, uvUpper, uvLower):
     GPIO.setwarnings(False)
     GPIO.cleanup()
 
-    DIR_1 = 25  # DIR+
-    STEP_1 = 24  # PULL+
+    DIR_1 = 6  # DIR+
+    STEP_1 = 5  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = direction
