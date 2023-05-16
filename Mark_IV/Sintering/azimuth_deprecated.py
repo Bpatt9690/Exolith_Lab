@@ -5,14 +5,18 @@ from Logging import logger
 from datetime import date, datetime
 import serial
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 def track(direction, steps, uvMax, uvUpper, uvLower):
     GPIO.setwarnings(False)
     GPIO.cleanup()
 
-    DIR_1 = 6  # DIR+
-    STEP_1 = 5  # PULL+
+    DIR_1 = os.getenv("AZIMUTH_Direction")  # DIR+
+    STEP_1 = os.getenv("AZIMUTH_Pulse")  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = direction

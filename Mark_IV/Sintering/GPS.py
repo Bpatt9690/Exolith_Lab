@@ -3,7 +3,6 @@ from Logging import logger
 import time
 from datetime import date, datetime
 
-
 class GPS_Data:
     def __init__(self):
         self.logger = logger()
