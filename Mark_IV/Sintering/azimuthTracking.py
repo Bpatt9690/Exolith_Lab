@@ -100,6 +100,7 @@ class azimuth_tracker:
                 for i in range(10):
                     vis = sensor.uvi
                     values.append(vis)
+                    time.sleep(0.01)
                     
                 print('UV index {}'.format(sum(values)/len(values)))
                 sensor.initialize()

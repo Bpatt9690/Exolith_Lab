@@ -146,7 +146,6 @@ def main():
         solar_elevation_status = solarElevationLogic()
         azimuth_status = azimuthLogic()
 
-
         if solar_elevation_status:
             pass
 
