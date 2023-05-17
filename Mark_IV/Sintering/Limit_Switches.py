@@ -32,16 +32,16 @@ class limitSwitches:
             time.sleep(0.05)
 
     def motorx1(self):
-        return self.limitLogic(os.getenv("limitSwitchX_1"))
+        return self.limitLogic(int(os.getenv("limitSwitchX_1")))
 
     def motorx2(self):
-        return self.limitLogic(os.getenv("limitSwitchX_2"))
+        return self.limitLogic(int(os.getenv("limitSwitchX_2")))
 
     def motory1(self):
-        return self.limitLogic(os.getenv("limitSwitchY_1"))
+        return self.limitLogic(int(os.getenv("limitSwitchY_1")))
 
     def motory2(self):
-        return self.limitLogic(os.getenv("limitSwitchY_2"))
+        return self.limitLogic(int(os.getenv("limitSwitchY_2")))
 
     def elevation(self):
-        return self.limitLogic(os.getenv("limitSwitchElavation"))
+        return self.limitLogic(int(os.getenv("limitSwitchElavation")))

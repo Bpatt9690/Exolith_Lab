@@ -115,17 +115,17 @@ class elevation_tracker:
         GPIO.setwarnings(False)
 
         # Direction pin from controller
-        DIR = os.getenv("ELAVATION_Direction")
+        DIR = int(os.getenv("ELAVATION_Direction"))
 
         # Step pin from controller
-        STEP = os.getenv("ELAVATION_Pulse")
+        STEP = int(os.getenv("ELAVATION_Pulse"))
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 1
         CCW = 0
 
         # Should be set by user, either via flag or direct input
-        accuracy = 5.0
+        accuracy = 3.0
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)

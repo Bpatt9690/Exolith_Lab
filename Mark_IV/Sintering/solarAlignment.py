@@ -133,7 +133,7 @@ def main():
     axisStatus = False
 
     logger.logInfo("Step 1: Reset axes, checking sensor health")
-    axisStatus = True#axisResets()
+    axisStatus = axisResets()
     sensorStatus = sensorGroupCheck()
 
     # Need to add fail flag to prevent endless loop on failure
