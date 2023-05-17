@@ -1,6 +1,10 @@
 import RPi.GPIO as GPIO
 import time
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
 
 class limitSwitches:
     def __init__(self):
@@ -28,16 +32,16 @@ class limitSwitches:
             time.sleep(0.05)
 
     def motorx1(self):
-        return self.limitLogic(27)
+        return self.limitLogic(int(os.getenv("limitSwitchX_1")))
 
     def motorx2(self):
-        return self.limitLogic(21)
+        return self.limitLogic(int(os.getenv("limitSwitchX_2")))
 
     def motory1(self):
-        return self.limitLogic(18)
+        return self.limitLogic(int(os.getenv("limitSwitchY_1")))
 
     def motory2(self):
-        return self.limitLogic(12)
+        return self.limitLogic(int(os.getenv("limitSwitchY_2")))
 
     def elevation(self):
-        return self.limitLogic(17)
+        return self.limitLogic(int(os.getenv("limitSwitchElavation")))

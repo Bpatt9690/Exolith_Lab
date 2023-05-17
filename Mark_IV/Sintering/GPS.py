@@ -1,8 +1,8 @@
 import serial
 from Logging import logger
 import time
-from datetime import date, datetime
-
+import arrow
+from datetime import date, datetime, timezone
 
 class GPS_Data:
     def __init__(self):
@@ -52,7 +52,7 @@ class GPS_Data:
     def userDefinedCoordinates(self):
         gps_dict = {}
 
-        gps_dict["Time UTC"] = "173651.00"
+        gps_dict["Time UTC"] = str(datetime.now(arrow.now().to("America/New_York").tzinfo).strftime("%H%M%S"))
         gps_dict["Lattitude"] = float(2833.2327) / 100
         gps_dict["Lattitude Direction"] = "N"
         gps_dict["Longitude"] = float(8111.11886) / 100
@@ -70,7 +70,9 @@ class GPS_Data:
         return today, year, day, month
 
     def getTime(self):
-        now = datetime.utcnow().strftime("%H%M%S")
+        # now = "175520.00"
+        datetime_NY = datetime.now(arrow.now().to("America/New_York").tzinfo)
+        now = str(datetime_NY.strftime("%H%M%S"))
         hour = str(now[0:2])
         minutes = str(now[2:4])
         seconds = str(now[4:6])

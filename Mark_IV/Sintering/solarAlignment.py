@@ -1,7 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 from datetime import date, datetime
-import pytz
+# import pytz
+import arrow
 from GPS import GPS_Data
 import smbus
 from Logging import logger
@@ -71,7 +72,8 @@ def sensorGroupCheck():
 
 
 def solarElevationLogic():
-    gps_dict = gps.getCurrentCoordinates()
+    # gps_dict = gps.getCurrentCoordinates()
+    gps_dict = gps.userDefinedCoordinates()
 
     today, year, day, month = gps.getDate()
 
@@ -85,7 +87,9 @@ def solarElevationLogic():
     location = (gps_dict["Lattitude"], longitude)
     when = (year, month, day, int(hour), int(minutes), int(seconds), 0)
 
-    tz_NY = pytz.timezone("America/New_York")
+    # tz_NY = pytz.timezone("America/New_York")
+    # datetime_NY = datetime.now(tz_NY)
+    tz_NY = arrow.now().to('America/New_York').tzinfo
     datetime_NY = datetime.now(tz_NY)
 
     azimuth, elevation = elevation_tracker.sunpos(when, location, True)
@@ -129,7 +133,7 @@ def main():
     axisStatus = False
 
     logger.logInfo("Step 1: Reset axes, checking sensor health")
-    axisStatus = True#axisResets()
+    axisStatus = axisResets()
     sensorStatus = sensorGroupCheck()
 
     # Need to add fail flag to prevent endless loop on failure
@@ -141,7 +145,6 @@ def main():
 
         solar_elevation_status = solarElevationLogic()
         azimuth_status = azimuthLogic()
-
 
         if solar_elevation_status:
             pass

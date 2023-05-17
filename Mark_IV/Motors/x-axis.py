@@ -12,46 +12,46 @@ ls = limitSwitches()
 
 
 def xMovement():
-    # Direction pin from controller
+    GPIO.setwarnings(False)
     GPIO.cleanup()
-    DIR_1 = 6  # DIR+
-    # Step pin from controller
-    STEP_1 = 5  # PULL+
+
+    DIR_1 = 19  # DIR+
+    STEP_1 = 20  # PULL+
+
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
+
     MAX = 10000
-    flag = 0
 
     GPIO.setmode(GPIO.BCM)
-    motor1_switch = 27
-    motor2_switch = 21
+    motor1_switch = 4
+    motor2_switch = 27
+
     GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-    # Setup pin layout on PI
-    GPIO.setmode(GPIO.BCM)
 
     # Establish Pins in software
     GPIO.setup(DIR_1, GPIO.OUT)
     GPIO.setup(STEP_1, GPIO.OUT)
 
-    # Set the first direction you want it to spin
+    # Set the first direction
     GPIO.output(DIR_1, CW)
+
+    # !!!Not Calling LimitSwitches Class!!!#
 
     try:
         while 1:
 
             for x in range(MAX):
 
-                # Set one coil winding to high
                 GPIO.output(STEP_1, GPIO.HIGH)
                 # .5 == super slow
                 # .00005 == breaking
-                sleep(0.005)
-                # Set coil winding to low
+                sleep(0.005)  # Dictates how fast stepper motor will run
                 GPIO.output(STEP_1, GPIO.LOW)
                 sleep(0.005)
+
 
     # Once finished clean everything up
     except KeyboardInterrupt:

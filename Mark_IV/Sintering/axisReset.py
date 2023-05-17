@@ -2,6 +2,11 @@ from Logging import logger
 import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class axis_reset:
@@ -17,13 +22,13 @@ class axis_reset:
         GPIO.setwarnings(False)
         self.logger.logInfo("Resetting Elevation")
         GPIO.setmode(GPIO.BCM)
-        switch = 25
+        switch = int(os.getenv("limitSwitchElavation"))
         GPIO.setup(switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # Direction pin from controller
-        AZ_DIR = 18
+        AZ_DIR = int(os.getenv("ELAVATION_Direction"))
         # Step pin from controller
-        AZ_STEP = 17
+        AZ_STEP = int(os.getenv("ELAVATION_Pulse"))
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 0
@@ -55,8 +60,8 @@ class axis_reset:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 6  # DIR+
-        STEP_1 = 5  # PULL+
+        DIR_1 = int(os.getenv("MOTOR_X_Direction"))  # DIR+
+        STEP_1 = int(os.getenv("MOTOR_X_Pulse"))  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 0
@@ -68,8 +73,8 @@ class axis_reset:
         motor2_flag = 0
 
         GPIO.setmode(GPIO.BCM)
-        motor1_switch = 27
-        motor2_switch = 21
+        motor1_switch = int(os.getenv("limitSwitchX_1"))
+        motor2_switch = int(os.getenv("limitSwitchX_2"))
 
         GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -124,8 +129,8 @@ class axis_reset:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 19  # DIR+
-        STEP_1 = 20  # PULL+
+        DIR_1 = int(os.getenv("MOTOR_Y_Direction"))  # DIR+
+        STEP_1 = int(os.getenv("MOTOR_Y_Pulse"))  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = 0
@@ -137,8 +142,8 @@ class axis_reset:
         motor2_flag = 0
 
         GPIO.setmode(GPIO.BCM)
-        motor1_switch = 18
-        motor2_switch = 12
+        motor1_switch = int(os.getenv("limitSwitchY_1"))
+        motor2_switch = int(os.getenv("limitSwitchY_2"))
         GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 

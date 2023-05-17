@@ -4,7 +4,7 @@ from time import sleep
 import board
 import smbus
 import RPi.GPIO as GPIO
-import adafruit_si1145
+import adafruit_ltr390
 
 def gpsTest():
 	gps_dict = {}
@@ -18,27 +18,38 @@ def gpsTest():
 		dsrdtr=False,
 	)
 
-	while True:
-		line = gps.readline()
-		time.sleep(1)
+	# Get user defined GPS coordinates.
+	gps_dict["Time UTC"] = "173651.00"
+	gps_dict["Lattitude"] = float(2833.2327) / 100
+	gps_dict["Lattitude Direction"] = "N"
+	gps_dict["Longitude"] = float(8111.11886) / 100
+	gps_dict["Longitude Direction"] = "W"
+	gps_dict["Number Satellites"] = "09"
+	gps_dict["Alt Above Sea Level"] = "34.2"
+	print("GPS Sensor Data Retrieval Successful \n {}".format(gps_dict))
+	return True
 
-		try:
-			line = line.decode("utf-8")
-			sline = line.split(",")
+	# while True:
+	# 	line = gps.readline()
+	# 	time.sleep(1)
 
-			if sline[0] == "$GPGGA":
-				gps_dict["Time UTC"] = sline[1]
-				gps_dict["Lattitude"] = float(sline[2]) / 100
-				gps_dict["Lattitude Direction"] = sline[3]
-				gps_dict["Longitude"] = float(sline[4]) / 100
-				gps_dict["Longitude Direction"] = sline[5]
-				gps_dict["Number Satellites"] = sline[7]
-				gps_dict["Alt Above Sea Level"] = sline[9]
-				print("GPS Sensor Data Retrieval Successful \n {}".format(gps_dict))
-				return True
+	# 	try:
+	# 		line = line.decode("utf-8")
+	# 		sline = line.split(",")
 
-		except:
-			print('GPS Sensor Data Retrieval Failure')
+	# 		if sline[0] == "$GPGGA":
+	# 			gps_dict["Time UTC"] = sline[1]
+	# 			gps_dict["Lattitude"] = float(sline[2]) / 100
+	# 			gps_dict["Lattitude Direction"] = sline[3]
+	# 			gps_dict["Longitude"] = float(sline[4]) / 100
+	# 			gps_dict["Longitude Direction"] = sline[5]
+	# 			gps_dict["Number Satellites"] = sline[7]
+	# 			gps_dict["Alt Above Sea Level"] = sline[9]
+	# 			print("GPS Sensor Data Retrieval Successful \n {}".format(gps_dict))
+	# 			return True
+
+	# 	except:
+	# 		print('GPS Sensor Data Retrieval Failure')
 
 def lightTest():
 
@@ -47,25 +58,28 @@ def lightTest():
 
 	while 1:
 		print('waiting for device')
-		si1145 = adafruit_si1145.SI1145(i2c)
-		print(si1145.device_info)
+		ltr = adafruit_ltr390.LTR390(i2c)
+		ready = ltr.data_ready
+		print(ready)
 
-		if si1145.device_info:
+		if ready:
 			break
 
 		time.sleep(1)
 
-	for i in range(10):
-		vis = si1145.uv_index
+	for i in range(10): 
+		vis = ltr.uvi
 		values.append(vis)
+		time.sleep(0.05)
 
 	if sum(values)/len(values) > 0:
 		print('Light Sensor Data Retrieval Successful')
 		print(values)
-		si1145.reset()
+		ltr.initialize()
 		return True
 	else:
 		print('Light Sensor Data Retrieval Failure')
+		
 
 
 def orientationtest():
@@ -99,7 +113,7 @@ def orientationtest():
 	# to get signed value from mpu6050
 	if value > 32768:
 	    value = value - 65536
-
+	
 	if value != 0:
 	    print('Orietation Sensor Data Retrieval Successful')
 	    return True
@@ -115,10 +129,11 @@ def limitswitchTest():
 	expiration = 10000
 
 	while timeVal < expiration:
+		print(timeVal)
 
 		if GPIO.input(25) == 0:
 		    flag += 1
-
+		    
 		else:
 		    flag = 0
 

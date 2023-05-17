@@ -3,7 +3,12 @@ from time import sleep
 import time
 from Logging import logger
 import board
-import adafruit_si1145
+import adafruit_ltr390
+from dotenv import load_dotenv
+import os 
+
+# Load environment variables from .env file
+load_dotenv()
 
 azVal = None
 uvUpper = None
@@ -18,8 +23,8 @@ class azimuth_tracker:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 13  # DIR+
-        STEP_1 = 26  # PULL+
+        DIR_1 = int(os.getenv("AZIMUTH_Direction"))  # DIR+
+        STEP_1 = int(os.getenv("AZIMUTH_Pulse"))  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = direction
@@ -41,7 +46,7 @@ class azimuth_tracker:
         # Set the first direction you want it to spin
         GPIO.output(DIR_1, CW)
 
-        uv_current = 5#self.uv_sensor()
+        uv_current = self.uv_sensor()
 
         uv_high = uv_current
         uv_low = uv_current
@@ -51,13 +56,13 @@ class azimuth_tracker:
             self.logger.logInfo("Adjusting....")
 
             for x in range(steps):
-
-                GPIO.output(STEP_1, GPIO.HIGH)
-                # .5 == super slow
-                # .00005 == breaking
-                sleep(0.005)
-                GPIO.output(STEP_1, GPIO.LOW)
-                sleep(0.005)
+                for _ in range(75):
+                    GPIO.output(STEP_1, GPIO.HIGH)
+                    # .5 == super slow
+                    # .00005 == breaking
+                    sleep(0.005)
+                    GPIO.output(STEP_1, GPIO.LOW)
+                    sleep(0.005)
 
                 uv = self.uv_sensor()
 
@@ -87,7 +92,7 @@ class azimuth_tracker:
 
     def uv_sensor(self):
         i2c = board.I2C()  
-        sensor = adafruit_si1145.SI1145(i2c)
+        sensor = adafruit_ltr390.LTR390(i2c)
 
         values = []
 
@@ -98,11 +103,12 @@ class azimuth_tracker:
                 print('light')
        
                 for i in range(10):
-                    vis = sensor.uv_index
+                    vis = sensor.uvi
                     values.append(vis)
+                    time.sleep(0.005)
                     
                 print('UV index {}'.format(sum(values)/len(values)))
-                sensor.reset()
+                sensor.initialize()
                 return (sum(values)/len(values))
 
             except Exception as e:
@@ -130,8 +136,8 @@ class azimuth_tracker:
         GPIO.setwarnings(False)
         GPIO.cleanup()
 
-        DIR_1 = 13  # DIR+
-        STEP_1 = 26  # PULL+
+        DIR_1 = int(os.getenv("AZIMUTH_Direction"))  # DIR+
+        STEP_1 = int(os.getenv("AZIMUTH_Pulse"))  # PULL+
 
         # 0/1 used to signify clockwise or counterclockwise.
         CW = direction
@@ -163,13 +169,14 @@ class azimuth_tracker:
 
             for x in range(steps):
                 self.logger.logInfo("Azimuth Adjustment...")
-
-                GPIO.output(STEP_1, GPIO.HIGH)
-                # .5 == super slow
-                # .00005 == breaking
-                sleep(0.005)
-                GPIO.output(STEP_1, GPIO.LOW)
-                sleep(0.005)
+                
+                for _ in range(75):
+                    GPIO.output(STEP_1, GPIO.HIGH)
+                    # .5 == super slow
+                    # .00005 == breaking
+                    sleep(0.005)
+                    GPIO.output(STEP_1, GPIO.LOW)
+                    sleep(0.005)
 
                 uv = self.uv_sensor()
 
@@ -208,8 +215,8 @@ class azimuth_tracker:
             GPIO.setwarnings(False)
             GPIO.cleanup()
 
-            DIR_1 = 13  # DIR+
-            STEP_1 = 26  # PULL+
+            DIR_1 = int(os.getenv("AZIMUTH_Direction"))  # DIR+
+            STEP_1 = int(os.getenv("AZIMUTH_Pulse"))  # PULL+
 
             # 0/1 used to signify clockwise or counterclockwise.
             CW = 1
@@ -231,12 +238,13 @@ class azimuth_tracker:
                 for x in range(steps):
                     self.logger.logInfo("Adjusting azimuth....")
 
-                    GPIO.output(STEP_1, GPIO.HIGH)
-                    # .5 == super slow
-                    # .00005 == breaking
-                    sleep(0.005)
-                    GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.005)
+                    for _ in range(75):
+                        GPIO.output(STEP_1, GPIO.HIGH)
+                        # .5 == super slow
+                        # .00005 == breaking
+                        sleep(0.005)
+                        GPIO.output(STEP_1, GPIO.LOW)
+                        sleep(0.005)
 
                     uvVal = self.uv_sensor()
 

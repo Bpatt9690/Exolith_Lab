@@ -1,15 +1,15 @@
 import time
 from datetime import date, datetime
-import pytz
+import arrow
 
 
 class logger:
     def __init__(self):
-        self.tz_NY = pytz.timezone("America/New_York")
+        self.tz_NY = arrow.now().to("America/New_York").tzinfo
 
     def logUV(self, data):
         timestamp = self.timeStamp()
-        with open("uvsensor.txt", "r") as f:
+        with open("uvsensor.txt", "w") as f:
             f.write(str(data) + "\n")
             f.close()
 
@@ -19,6 +19,6 @@ class logger:
         with open(f"logs/{datetime.now().date()}.txt", "a") as f:
             f.write(f"{data}\n")
 
-    def timeStamp(self):
+    def timeStamp(self): 
         datetime_NY = datetime.now(self.tz_NY)
         return str(datetime_NY.strftime("%H:%M:%S"))

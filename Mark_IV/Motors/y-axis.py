@@ -13,11 +13,12 @@ ls = limitSwitches()
 
 def yMovement():
     # Direction pin from controller
+    GPIO.setwarnings(False)
     GPIO.cleanup()
-    DIR_1 = 19  # DIR+
+    DIR_1 = 26  # DIR+
     # DIR_2 = 25 #DIR+
     # Step pin from controller
-    STEP_1 = 20  # PULL+
+    STEP_1 = 13  # PULL+
     # STEP_2 = 24 #PULL+
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
@@ -26,19 +27,14 @@ def yMovement():
     flag = 0
 
     GPIO.setmode(GPIO.BCM)
-    motor1_switch = 18
+    motor1_switch = 24
     motor2_switch = 12
     GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-    # Setup pin layout on PI
-    GPIO.setmode(GPIO.BCM)
-
     # Establish Pins in software
     GPIO.setup(DIR_1, GPIO.OUT)
     GPIO.setup(STEP_1, GPIO.OUT)
-    # GPIO.setup(DIR_2, GPIO.OUT)
-    # GPIO.setup(STEP_2, GPIO.OUT)
 
     # Set the first direction you want it to spin
     GPIO.output(DIR_1, CW)

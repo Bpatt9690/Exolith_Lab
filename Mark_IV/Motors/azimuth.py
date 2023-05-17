@@ -1,23 +1,24 @@
 import RPi.GPIO as GPIO
 from time import sleep
 import time
-import SI1145.SI1145 as SI1145
+import adafruit_ltr390
 from Logging import logger
 from datetime import date, datetime
+import board
 import serial
-import pytz
+import arrow
 import os
 
-
-sensor = SI1145.SI1145()
+i2c = board.I2C()
+sensor = adafruit_ltr390.LTR390(i2c)
 
 
 def stepMovement(direction, steps):
     GPIO.setwarnings(False)
     GPIO.cleanup()
 
-    DIR_1 = 13  # DIR+
-    STEP_1 = 26  # PULL+
+    DIR_1 = 6  # DIR+
+    STEP_1 = 5  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = direction
@@ -53,12 +54,13 @@ def stepMovement(direction, steps):
         for x in range(steps):
             print("Adjusting....")
 
-            GPIO.output(STEP_1, GPIO.HIGH)
-            # .5 == super slow
-            # .00005 == breaking
-            sleep(0.05)
-            GPIO.output(STEP_1, GPIO.LOW)
-            sleep(0.05)
+            for _ in range(20):
+                GPIO.output(STEP_1, GPIO.HIGH)
+                # .5 == super slow
+                # .00005 == breaking
+                sleep(0.005)
+                GPIO.output(STEP_1, GPIO.LOW)
+                sleep(0.005)
 
             uv = uv_sensor()
 
@@ -80,8 +82,8 @@ def track(direction, steps, uvMax, uvUpper, uvLower):
     GPIO.setwarnings(False)
     GPIO.cleanup()
 
-    DIR_1 = 13  # DIR+
-    STEP_1 = 26  # PULL+
+    DIR_1 = 6  # DIR+
+    STEP_1 = 5  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = direction
@@ -142,13 +144,13 @@ def track(direction, steps, uvMax, uvUpper, uvLower):
 
 
 def uv_sensor():
-    global sensor
     uvAverage = 0
     for i in range(10):
-        UV = sensor.readUV()
+        UV = sensor.uvi
         uvIndex = UV
         uvAverage += uvIndex
-        time.sleep(0.1)
+        time.sleep(0.01)
+    sensor.initialize()
     return uvAverage / 10
 
 
@@ -170,7 +172,7 @@ def maxValue():
 
 # Current timeStamps in EST; Configurable
 def timeStamp():
-    tz_NY = pytz.timezone("America/New_York")
+    tz_NY = arrow.now().to("America/New_York").tzinfo
     datetime_NY = datetime.now(tz_NY)
     return str(datetime_NY.strftime("%H:%M:%S"))
 
@@ -193,10 +195,10 @@ def solarPositioning(uvMax):
 
 
 def main():
-    os.remove("uvsensor.txt")
-    stepMovement(1, 25)
-    uvMax = maxValue()
-    solarPositioning(uvMax)
+    # os.remove("uvsensor.txt")
+    stepMovement(1, 1000)
+    # uvMax = maxValue()
+    # solarPositioning(uvMax)
 
 
 if __name__ == "__main__":

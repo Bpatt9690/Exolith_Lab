@@ -1,20 +1,22 @@
 import RPi.GPIO as GPIO
 from time import sleep
 import time
-import SI1145.SI1145 as SI1145
 from Logging import logger
 from datetime import date, datetime
 import serial
-import pytz
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 def track(direction, steps, uvMax, uvUpper, uvLower):
     GPIO.setwarnings(False)
     GPIO.cleanup()
 
-    DIR_1 = 13  # DIR+
-    STEP_1 = 26  # PULL+
+    DIR_1 = os.getenv("AZIMUTH_Direction")  # DIR+
+    STEP_1 = os.getenv("AZIMUTH_Pulse")  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = direction
