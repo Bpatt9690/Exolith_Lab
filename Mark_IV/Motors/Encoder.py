@@ -50,7 +50,7 @@ class Encoder(object):
     This library is a simple port of the Arduino Encoder library
     (https://github.com/PaulStoffregen/Encoder) 
     """
-    def __init__(self, A, B):S
+    def __init__(self, A, B):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(A, GPIO.IN)
         GPIO.setup(B, GPIO.IN)
