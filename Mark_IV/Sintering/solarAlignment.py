@@ -9,9 +9,11 @@ from Logging import logger
 from axisReset import axis_reset
 from sensorGroup import sensor_group
 import os
+from dotenv import load_dotenv
 from elevationTracking import elevation_tracker
 from azimuthTracking import azimuth_tracker
 
+load_dotenv()
 logger = logger()
 elevation_tracker = elevation_tracker()
 azimuth_tracker = azimuth_tracker()
@@ -72,9 +74,11 @@ def sensorGroupCheck():
 
 
 def solarElevationLogic():
-    # gps_dict = gps.getCurrentCoordinates()
-    gps_dict = gps.userDefinedCoordinates()
-
+    if(bool(os.getenv("useGPS"))):
+        gps_dict = gps.userDefinedCoordinates()
+    else:
+        gps_dict = gps.getCurrentCoordinates()
+    
     today, year, day, month = gps.getDate()
 
     now, hour, minutes, seconds = gps.getTime()
