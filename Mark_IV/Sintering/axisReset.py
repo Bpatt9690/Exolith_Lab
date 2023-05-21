@@ -96,9 +96,9 @@ class axis_reset:
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
-                    sleep(0.005)  # Dictates how fast stepper motor will run
+                    sleep(0.0005)  # Dictates how fast stepper motor will run
                     GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.005)
+                    sleep(0.0005)
 
                     if GPIO.input(motor2_switch) == 0:
                         motor2_flag += 1
@@ -163,10 +163,10 @@ class axis_reset:
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # Allow it to get there.
                     # .5 == super slow
-                    sleep(0.005)  # Dictates how fast stepper motor will run
+                    sleep(0.0005)  # Dictates how fast stepper motor will run
                     GPIO.output(STEP_1, GPIO.LOW)
 
-                    sleep(0.005)
+                    sleep(0.0005)
 
                     if GPIO.input(motor2_switch) == 0:
                         motor2_flag += 1
