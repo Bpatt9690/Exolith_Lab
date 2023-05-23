@@ -1,7 +1,11 @@
 import RPi.GPIO as GPIO
 from time import sleep
 from Limit_Switches import limitSwitches
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
 
 """
 Moves both X and Y axis. Currently CW || 0 moves both axis forward
@@ -12,19 +16,17 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 ls = limitSwitches()
 
 
-def Movement():
+def xyMove():
     # Direction pin from controller
     GPIO.cleanup()
-    xDIR_1 = 6  # DIR+
-    xDIR_2 = 22  # DIR+
+    xDIR = int(os.getenv("MOTOR_X_Direction"))  # DIR+
     # Step pin from controller
-    xSTEP_1 = 5  # PULL+
-    xSTEP_2 = 23  # PULL+
-    yDIR_1 = 19  # DIR+
-    yDIR_2 = 25  # DIR+
+    xSTEP = int(os.getenv("MOTOR_X_Pulse")) # PULL+
+
+    yDIR = int(os.getenv("MOTOR_Y_Direction"))  # DIR+
     # Step pin from controller
-    ySTEP_1 = 20  # PULL+
-    ySTEP_2 = 24  # PULL+
+    ySTEP = int(os.getenv("MOTOR_Y_Pulse"))  # PULL+
+
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
@@ -32,10 +34,10 @@ def Movement():
     flag = 0
 
     GPIO.setmode(GPIO.BCM)
-    xmotor1_switch = 27
-    xmotor2_switch = 21
-    ymotor1_switch = 18
-    ymotor2_switch = 12
+    xmotor1_switch = int(os.getenv("limitSwitchX_1"))
+    xmotor2_switch = int(os.getenv("limitSwitchX_2"))
+    ymotor1_switch = int(os.getenv("limitSwitchY_1"))
+    ymotor2_switch = int(os.getenv("limitSwitchY_2"))
     GPIO.setup(xmotor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(xmotor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(ymotor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -45,23 +47,17 @@ def Movement():
     GPIO.setmode(GPIO.BCM)
 
     # Establish Pins in software
-    GPIO.setup(xDIR_1, GPIO.OUT)
-    GPIO.setup(xSTEP_1, GPIO.OUT)
-    GPIO.setup(xDIR_2, GPIO.OUT)
-    GPIO.setup(xSTEP_2, GPIO.OUT)
+    GPIO.setup(xDIR, GPIO.OUT)
+    GPIO.setup(xSTEP, GPIO.OUT)
 
     # Set the first direction you want it to spin
-    GPIO.output(xDIR_1, CW)
-    GPIO.output(xDIR_2, CW)
+    GPIO.output(xDIR, CW)
 
-    GPIO.setup(yDIR_1, GPIO.OUT)
-    GPIO.setup(ySTEP_1, GPIO.OUT)
-    GPIO.setup(yDIR_2, GPIO.OUT)
-    GPIO.setup(ySTEP_2, GPIO.OUT)
+    GPIO.setup(yDIR, GPIO.OUT)
+    GPIO.setup(ySTEP, GPIO.OUT)
 
     # Set the first direction you want it to spin
-    GPIO.output(yDIR_1, CW)
-    GPIO.output(yDIR_2, CW)
+    GPIO.output(yDIR, CW)
 
     # CW Away from limit switch
     try:
@@ -72,19 +68,15 @@ def Movement():
             for x in range(MAX):
 
                 # Set one coil winding to high
-                GPIO.output(xSTEP_1, GPIO.HIGH)
-                GPIO.output(xSTEP_2, GPIO.HIGH)
-                GPIO.output(ySTEP_1, GPIO.HIGH)
-                GPIO.output(ySTEP_2, GPIO.HIGH)
+                GPIO.output(xSTEP, GPIO.HIGH)
+                GPIO.output(ySTEP, GPIO.HIGH)
                 # Allow it to get there.
                 # .5 == super slow
                 # .00005 == breaking
                 sleep(0.005)  # Dictates how fast stepper motor will run
                 # Set coil winding to low
-                GPIO.output(xSTEP_1, GPIO.LOW)
-                GPIO.output(xSTEP_2, GPIO.LOW)
-                GPIO.output(ySTEP_1, GPIO.LOW)
-                GPIO.output(ySTEP_2, GPIO.LOW)
+                GPIO.output(xSTEP, GPIO.LOW)
+                GPIO.output(ySTEP, GPIO.LOW)
                 sleep(0.005)  # Dictates how fast stepper motor will run
 
     # Once finished clean everything up
@@ -94,7 +86,7 @@ def Movement():
 
 
 def main():
-    Movement()
+    xyMove()
 
 
 if __name__ == "__main__":
