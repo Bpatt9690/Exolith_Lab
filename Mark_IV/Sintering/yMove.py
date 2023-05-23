@@ -15,7 +15,7 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 
 ls = limitSwitches()
 
-def yMove(distance):
+def yMove(distance=6, clockwise=True):
     # Direction pin from controller
     GPIO.cleanup()
     DIR = int(os.getenv("MOTOR_Y_Direction")) #DIR+
@@ -24,8 +24,7 @@ def yMove(distance):
     CW = 0
     CCW = 1
     MAX = 10000
-    flag = 0
-    # distance = int(input()) #must be in cm!
+    motor_flag = 0
     seconds = distance/0.6157
 
     GPIO.setmode(GPIO.BCM)
@@ -42,7 +41,10 @@ def yMove(distance):
     GPIO.setup(STEP, GPIO.OUT)
 
     # Set the first direction you want it to spin
-    GPIO.output(DIR, CW)
+    if clockwise == True:
+        GPIO.output(DIR, CW)
+    else:
+        GPIO.output(DIR, CCW)
 
     #CW Away from limit switch
     try:
@@ -54,22 +56,32 @@ def yMove(distance):
         
         # Run forever.
         while(timer <= seconds):
+            # # Run for 200 steps. This will change based on how you set you controller
+            # for x in range(200):
 
-            # Run for 200 steps. This will change based on how you set you controller
-            for x in range(200):
-
-                # Set one coil winding to high
-                GPIO.output(STEP,GPIO.HIGH)
-                # Allow it to get there.
-                #.5 == super slow
-                # .00005 == breaking
-                sleep(.001) # Dictates how fast stepper motor will run
-                # Set coil winding to low
-                GPIO.output(STEP,GPIO.LOW)
-                sleep(.001) # Dictates how fast stepper motor will run
+            # Set one coil winding to high
+            GPIO.output(STEP,GPIO.HIGH)
+            # Allow it to get there.
+            #.5 == super slow
+            # .00005 == breaking
+            sleep(.001) # Dictates how fast stepper motor will run
+            # Set coil winding to low
+            GPIO.output(STEP,GPIO.LOW)
+            sleep(.001) # Dictates how fast stepper motor will run
                 
-                end = time.time()
-                timer = round(end - now) 
+            end = time.time()
+            timer = round(end - now)
+
+            if timer <= seconds:
+                break
+            
+            if GPIO.input(motor2_switch) == 0 or GPIO.input(motor1_switch) == 0:
+                motor_flag += 1
+            else:
+                motor_flag = 0
+
+            if motor_flag >= 5:
+                break
 
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -78,7 +90,7 @@ def yMove(distance):
 
 
 def main():
-    xMove()
+    yMove()
 
 if __name__ == '__main__':
     main()
