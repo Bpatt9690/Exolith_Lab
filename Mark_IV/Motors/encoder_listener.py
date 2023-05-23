@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 
 def listen_rising_edge(pin):
     # Set up GPIO mode and pin
-    current pin = 21
+    pin = 21
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(pin, GPIO.IN)
 
