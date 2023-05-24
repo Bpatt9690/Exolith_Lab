@@ -19,6 +19,7 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 ls = limitSwitches()
 
 def trace_box(x_dist=14, y_dist=9):
+    GPIO.cleanup()
     ar = axis_reset()
     ar.x_axis_reset()
     ar.y_axis_reset()
@@ -45,6 +46,7 @@ def trace_box(x_dist=14, y_dist=9):
 
 def main():
     trace_box()
+    GPIO.cleanup()
 
 if __name__ == '__main__':
     main()
