@@ -92,6 +92,7 @@ def xMove(distance=6, clockwise=True, speed_mod=1):
 
 def main():
     xMove()
+    GPIO.cleanup()
 
 if __name__ == '__main__':
     main()
