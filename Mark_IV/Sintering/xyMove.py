@@ -14,19 +14,19 @@ Uses multithreading.
 def xyMove(x_dist=6, y_dist=6, z_dist=6):
     x_speed_mod = 1
     y_speed_mod = 1
-    # z_speed_mod = 1
+    z_speed_mod = 1
 
     # x and y rotate determine if motors move clockwise or counterclockwise.
     # True for CW and False for CCW.
     x_rotate = True
     y_rotate = True
-    # z_dir = True
+    z_dir = True
     if x_dist < 0:
         x_rotate = False
     if y_dist < 0:
         y_rotate = False
-    # if z_dist < 0:
-    #     z_dir = False
+    if z_dist < 0:
+        z_dir = False
 
     # Decides which axis with move at max speed (1), and which will be slowed down.
     # max_dist = max(x_dist, y_dist, z_dist)

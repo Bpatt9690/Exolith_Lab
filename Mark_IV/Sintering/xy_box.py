@@ -1,22 +1,11 @@
 import RPi.GPIO as GPIO
-from time import sleep
-from Limit_Switches import limitSwitches
-import time
-from dotenv import load_dotenv
 from xMove import xMove
 from yMove import yMove
 from axisReset import axis_reset
-import os
-
-# Load environment variables from .env file
-load_dotenv()
 
 '''
-Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
-DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
+Moves x and y to trace a box as if sintering.
 '''
-
-ls = limitSwitches()
 
 def trace_box(x_dist=14, y_dist=9):
     GPIO.cleanup()
