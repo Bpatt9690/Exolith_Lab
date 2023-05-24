@@ -16,6 +16,10 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 ls = limitSwitches()
 
 def xMove(distance=6, clockwise=True, speed_mod=1):
+    if speed_mod > 1:
+        print("Speed modifier above 1, x motor cannot go above max speed.")
+        exit()
+
     # Direction pin from controller
     GPIO.cleanup()
     DIR = int(os.getenv("MOTOR_X_Direction")) #DIR+

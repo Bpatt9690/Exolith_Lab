@@ -11,6 +11,11 @@ def zMove(distance=3, dir=True, speed_mod=1):
     # between 0 and 100
     cycles = 50
 
+    if speed_mod > 1:
+        print("Speed modifier above 1, linear actuator cannot go above max speed.")
+        exit()
+
+    GPIO.cleanup()
     # in1 = int(os.getenv("LINEAR_in1"))
     # in2 = int(os.getenv("LINEAR_in2"))
     # en = int(os.getenv("LINEAR_en"))
