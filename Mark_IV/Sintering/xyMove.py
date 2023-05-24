@@ -3,6 +3,7 @@ import multiprocessing as mp
 from solarAlignment import solarTracking, solarElevationLogic, azimuthLogic
 from xMove import xMove
 from yMove import yMove
+from zMove import zMove
 from axisReset import axis_reset
 
 """
@@ -10,23 +11,36 @@ Moves both X and Y axis a specified distance simultaneously and ending at the sa
 Uses multithreading.
 """
 
-def xyMove(x_dist=6, y_dist=6):
+def xyMove(x_dist=6, y_dist=6, z_dist=6):
+    x_speed_mod = 1
+    y_speed_mod = 1
+    # z_speed_mod = 1
+
     # x and y rotate determine if motors move clockwise or counterclockwise.
     # True for CW and False for CCW.
     x_rotate = True
     y_rotate = True
+    # z_dir = True
     if x_dist < 0:
         x_rotate = False
     if y_dist < 0:
         y_rotate = False
+    # if z_dist < 0:
+    #     z_dir = False
 
     # Decides which axis with move at max speed (1), and which will be slowed down.
-    if x_dist > y_dist:
-        x_speed_mod = 1
+    # max_dist = max(x_dist, y_dist, z_dist)
+    max_dist = max(x_dist, y_dist)
+    if x_dist == max_dist:
         y_speed_mod = y_dist / x_dist
-    else:
+        z_speed_mod = z_dist / x_dist
+    elif y_dist == max_dist:
         x_speed_mod = x_dist / y_dist
-        y_speed_mod = 1
+        z_speed_mod = z_dist / y_dist
+    # else:
+    #     x_speed_mod = x_dist / z_dist
+    #     y_speed_mod = y_dist / z_dist
+
 
     print(mp.cpu_count)
 
@@ -44,6 +58,7 @@ def xyMove(x_dist=6, y_dist=6):
     # alignProc.start()
     xProc.start()
     yProc.start()
+    # zMove(z_dist, z_dir, z_speed_mod)
     xProc.join()
     yProc.join()
     time.sleep(5)
