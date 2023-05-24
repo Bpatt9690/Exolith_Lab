@@ -16,7 +16,7 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 ls = limitSwitches()
 
 
-def xyMove():
+def xyForward():
     # Direction pin from controller
     GPIO.cleanup()
     xDIR = int(os.getenv("MOTOR_X_Direction"))  # DIR+
@@ -86,7 +86,7 @@ def xyMove():
 
 
 def main():
-    xyMove()
+    xyForward()
 
 
 if __name__ == "__main__":

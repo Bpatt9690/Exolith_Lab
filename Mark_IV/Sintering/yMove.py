@@ -15,7 +15,7 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 
 ls = limitSwitches()
 
-def yMove(distance=6, clockwise=True):
+def yMove(distance=6, clockwise=True, speed_mod=1):
     # Direction pin from controller
     GPIO.cleanup()
     DIR = int(os.getenv("MOTOR_Y_Direction")) #DIR+
@@ -25,7 +25,7 @@ def yMove(distance=6, clockwise=True):
     CCW = 1
     MAX = 10000
     motor_flag = 0
-    seconds = distance/0.6157
+    seconds = distance / (0.6157 * speed_mod)
 
     GPIO.setmode(GPIO.BCM)
     motor1_switch = int(os.getenv("limitSwitchY_1"))
@@ -64,10 +64,10 @@ def yMove(distance=6, clockwise=True):
             # Allow it to get there.
             #.5 == super slow
             # .00005 == breaking
-            sleep(.001) # Dictates how fast stepper motor will run
+            sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
             # Set coil winding to low
             GPIO.output(STEP,GPIO.LOW)
-            sleep(.001) # Dictates how fast stepper motor will run
+            sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
                 
             end = time.time()
             timer = round(end - now)
