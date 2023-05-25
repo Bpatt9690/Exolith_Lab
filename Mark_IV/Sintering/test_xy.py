@@ -11,18 +11,23 @@ class TestXY(unittest.TestCase):
         self.assertTrue(xy.x_axis_reset())
         self.assertTrue(xy.y_axis_reset())
     
-    def x_movement(self):
-    	# Test if x motors can move x distance successfully  
+    def test_x_movement(self):
+    	# Test if x motors can move x distance successfully
         self.xMove(6)
+        self.xMove(-6)
 
-    def y_movement(self):
+    def test_y_movement(self):
         # Test if y motors can move y distance successfully
         self.yMove(6)
+        self.yMove(-6)
     	
-    def xy_movement(self):
+    def test_xy_movement(self):
         # Idea 1: Simple test of just telling the x and y motors to move to one location 
         # Idea 2: To test for any mechanical limitations, we should try moving the bin to each "corner
-        self.xyMove()
+        self.xyMove(6, 6)
+        self.xyMove(6, -6)
+        self.xyMove(-6, 6)
+        self.xyMove(-6, -6)
 
         
 if __name__ == '__main__':
