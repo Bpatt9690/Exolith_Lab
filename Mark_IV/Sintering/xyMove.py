@@ -50,7 +50,7 @@ def xyMove(x_dist=6, y_dist=6, z_dist=6):
     #     exit()
     # if not(azimuthLogic()):
     #     exit()
-    # alignProc = mp.Process(target=solarTracking, args=())
+    # alignProc = mp.Process(target=solarTracking)
 
     # Starts moving x and y simultaneously in different processes.
     xProc = mp.Process(target=xMove, args=(x_dist, x_rotate, x_speed_mod))

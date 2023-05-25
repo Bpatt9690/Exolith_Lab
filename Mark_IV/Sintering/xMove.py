@@ -29,8 +29,11 @@ def xMove(distance=6, clockwise=True, speed_mod=1):
     CCW = 1
     MAX = 10000
     motor_flag = 0
+
+    # num is a constant that can turn distance to seconds given the linear actuator's speed.
+    num = 0.6157
     # distance = int(input()) #must be in cm!
-    seconds = distance / (0.6157 * speed_mod)
+    seconds = distance / (num * speed_mod)
 
     GPIO.setmode(GPIO.BCM)
     motor1_switch = int(os.getenv("limitSwitchX_1"))
