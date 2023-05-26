@@ -50,11 +50,11 @@ def yMovement():
                 #        GPIO.output(STEP_2,GPIO.HIGH)
                 # .5 == super slow
                 # .00005 == breaking
-                sleep(0.0005)  # Dictates how fast stepper motor will run
+                sleep(0.001)  # Dictates how fast stepper motor will run
                 # Set coil winding to low
                 GPIO.output(STEP_1, GPIO.LOW)
                 #       GPIO.output(STEP_2,GPIO.LOW)
-                sleep(0.0005)  # Dictates how fast stepper motor will run
+                sleep(0.001)  # Dictates how fast stepper motor will run
 
     # Once finished clean everything up
     except KeyboardInterrupt:

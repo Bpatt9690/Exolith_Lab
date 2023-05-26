@@ -20,8 +20,10 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
         print("Speed modifier above 1, y motor cannot go above max speed.")
         exit()
 
+    if(speed_mod < 0.001):
+        return
+
     # Direction pin from controller
-    GPIO.cleanup()
     DIR = int(os.getenv("MOTOR_Y_Direction")) #DIR+
     STEP = int(os.getenv("MOTOR_Y_Pulse")) #PULL+
     # 0/1 used to signify clockwise or counterclockwise.
@@ -31,7 +33,7 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
     motor_flag = 0
 
     # num is a constant that can turn distance to seconds given the linear actuator's speed.
-    num = 0.6157
+    num = 0.295
     seconds = distance / (num * speed_mod)
 
     GPIO.setmode(GPIO.BCM)
@@ -39,9 +41,6 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
     motor2_switch = int(os.getenv("limitSwitchY_2"))
     GPIO.setup(motor1_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
     GPIO.setup(motor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
-
-    # Setup pin layout on PI
-    GPIO.setmode(GPIO.BCM)
 
     # Establish Pins in software
     GPIO.setup(DIR, GPIO.OUT)
@@ -62,33 +61,36 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
         # x = 0
         
         # Run forever.
+        print(timer)
+        print(seconds)
         while(timer <= seconds):
             # # Run for 200 steps. This will change based on how you set you controller
-            # for x in range(200):
+            for x in range(200):
 
-            # Set one coil winding to high
-            GPIO.output(STEP,GPIO.HIGH)
-            # Allow it to get there.
-            #.5 == super slow
-            # .00005 == breaking
-            sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
-            # Set coil winding to low
-            GPIO.output(STEP,GPIO.LOW)
-            sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
+                # Set one coil winding to high
+                GPIO.output(STEP,GPIO.HIGH)
+                # Allow it to get there.
+                #.5 == super slow
+                # .00005 == breaking
+                sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
+                # Set coil winding to low
+                GPIO.output(STEP,GPIO.LOW)
+                sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
+                    
+                end = time.time()
+                timer = round(end - now)
+
+                if timer > seconds:
+                    break
                 
-            end = time.time()
-            timer = round(end - now)
+                if GPIO.input(motor2_switch) == 0 or GPIO.input(motor1_switch) == 0:
+                    motor_flag += 1
+                else:
+                    motor_flag = 0
 
-            if timer <= seconds:
-                break
-            
-            if GPIO.input(motor2_switch) == 0 or GPIO.input(motor1_switch) == 0:
-                motor_flag += 1
-            else:
-                motor_flag = 0
-
-            if motor_flag >= 5:
-                break
+                if motor_flag >= 5:
+                    break
+        GPIO.cleanup()
 
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -98,7 +100,6 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
 
 def main():
     yMove()
-    GPIO.cleanup()
 
 if __name__ == '__main__':
     main()

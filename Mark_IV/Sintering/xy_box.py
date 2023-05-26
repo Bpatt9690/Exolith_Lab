@@ -7,14 +7,14 @@ from axisReset import axis_reset
 Moves x and y to trace a box as if sintering.
 '''
 
-def trace_box(x_dist=14, y_dist=9):
+def trace_box(x_dist=14, y_dist=8):
     GPIO.cleanup()
     ar = axis_reset()
     ar.x_axis_reset()
     ar.y_axis_reset()
 
     # Direction pin from controller
-    y_increment = 3
+    y_increment = 2
     num_lines = int(y_dist / y_increment)
 
     clockwise = True
