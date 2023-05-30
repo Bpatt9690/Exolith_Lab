@@ -47,7 +47,9 @@ def xyCurve(x_dist=6, y_dist=6, x_circle=0, y_circle=6):
 
         x_rotate = True
         y_rotate = True
-        if (angle_delta < 0 and y > 0) or (angle_delta > 0 and y < 0):
+        # change y and x, needs to represent if current y and x values are
+        # positive or negative, not the distances to travel.
+        if (angle_delta < 0 and y < 0) or (angle_delta > 0 and y > 0):
             x_rotate = False
         if (angle_delta < 0 and x < 0) or (angle_delta > 0 and x > 0):
             y_rotate = False
