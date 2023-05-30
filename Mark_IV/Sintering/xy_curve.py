@@ -1,26 +1,29 @@
 import time
-from math import cos, sin, tan, sqrt
+from math import cos, sin, tan, atan, sqrt
 import math
 import multiprocessing as mp
 from xMove import xMove
 from yMove import yMove
 
-def xyCurve(x_dist=6, y_dist=6, x_circle=0, y_circle=6):
+def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=6):
     speed_mod = 1
     x_prev = 0
     y_prev = 0
     x = 0
     y = 0
-    num_segs = 10
+    num_segs = 40
     radius = sqrt(x_circle * x_circle + y_circle * y_circle)
 
     # Get start and end angle on unit circle.
-    if(x_circle == 0):
+    if x_circle == 0:
         start_ang = math.pi / 2
     else:
-        start_ang = tan(y_circle / x_circle)
-    end_ang = tan((y_circle - y_dist) / (x_circle + float(x_dist)))
-    angle_delta = (start_ang - end_ang) / float(num_segs)
+        start_ang = atan(y_circle / x_circle)
+    end_ang = atan((y_circle - y_dist) / (x_circle + float(x_dist)))
+
+    start_ang = 0
+    end_ang = 2 * math.pi
+    angle_delta = abs((abs(start_ang) - abs(end_ang)) / float(num_segs))
     theta = start_ang
     if start_ang > end_ang:
         angle_delta *= -1
@@ -47,11 +50,9 @@ def xyCurve(x_dist=6, y_dist=6, x_circle=0, y_circle=6):
 
         x_rotate = True
         y_rotate = True
-        # change y and x, needs to represent if current y and x values are
-        # positive or negative, not the distances to travel.
-        if (angle_delta < 0 and y < 0) or (angle_delta > 0 and y > 0):
+        if (angle_delta < 0 and sin(theta) < 0) or (angle_delta > 0 and sin(theta) > 0):
             x_rotate = False
-        if (angle_delta < 0 and x < 0) or (angle_delta > 0 and x > 0):
+        if (angle_delta < 0 and cos(theta) < 0) or (angle_delta > 0 and cos(theta) > 0):
             y_rotate = False
 
         xProc = mp.Process(target=xMove, args=(abs(x), x_rotate, x_speed))

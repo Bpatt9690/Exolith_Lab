@@ -37,7 +37,7 @@ def yMovement():
     GPIO.setup(STEP_1, GPIO.OUT)
 
     # Set the first direction you want it to spin
-    GPIO.output(DIR_1, CW)
+    GPIO.output(DIR_1, CCW)
     # GPIO.output(DIR_2, CW)
     # CW Away from limit switch
     try:
