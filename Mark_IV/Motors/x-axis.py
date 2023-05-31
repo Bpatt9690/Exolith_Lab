@@ -52,7 +52,6 @@ def xMovement():
                 GPIO.output(STEP_1, GPIO.LOW)
                 sleep(0.001)
 
-
     # Once finished clean everything up
     except KeyboardInterrupt:
         print("cleanup")

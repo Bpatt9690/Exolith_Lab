@@ -7,6 +7,7 @@ import os
 # Load environment variables from .env file
 # load_dotenv()
 
+
 def zMove(distance=3, dir=True, speed_mod=1):
     # Between 0 and 100, controls speed. 50 is medium speed.
     # Need to find speed that matches default speeds for x and y
@@ -23,7 +24,6 @@ def zMove(distance=3, dir=True, speed_mod=1):
     in1 = 7
     in2 = 8
     en = 9
-    
     # NEEDS TESTING. num is a constant that can turn distance to seconds given the linear actuator's speed.
     num = 0.6157
     seconds = distance / (num * speed_mod)
@@ -62,6 +62,7 @@ def zMove(distance=3, dir=True, speed_mod=1):
 def main():
     zMove()
     GPIO.cleanup()
+
 
 if __name__ == "__main__":
     main()

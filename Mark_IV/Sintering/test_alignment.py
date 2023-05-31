@@ -5,8 +5,10 @@ from axisReset import axis_reset
 from elevationTracking import elevation_tracker
 from azimuthTracking import azimuth_tracker
 
+
 class TestAlignment(unittest.TestCase):
     gps = GPS_Data()
+
     def test_sensors(self):
         self.assertTrue(sensorGroupCheck())
 
@@ -16,7 +18,6 @@ class TestAlignment(unittest.TestCase):
         self.assertTrue(ar.elevation_reset())
         # self.assertTrue(ar.x_axis_reset())
         # self.assertTrue(ar.y_axis_reset())
-    
     def test_gps(self):
         # Tests if gps gets correct location and produces correct elevation angle.
         self.gps.getCurrentCoordinates()
@@ -28,10 +29,10 @@ class TestAlignment(unittest.TestCase):
     def test_elev_angle(self):
         # Tests if elevation angle is accurate.
         self.assertTrue(elevation_tracker.solarElevationPositioning(45))
-    
     def test_azim_movement(self):
         # Tests if azimuth turns as intended.
         self.assertTrue(azimuthLogic())
-        
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main()

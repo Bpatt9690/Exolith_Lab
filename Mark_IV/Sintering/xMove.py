@@ -8,24 +8,25 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-'''
+"""
 Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
 DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
-'''
+"""
 
 ls = limitSwitches()
+
 
 def xMove(distance=6, clockwise=True, speed_mod=1):
     if speed_mod > 1:
         print("Speed modifier above 1, x motor cannot go above max speed.")
         exit()
-    
-    if(speed_mod < 0.001):
+
+    if speed_mod < 0.001:
         return
 
     # Direction pin from controller
-    DIR = int(os.getenv("MOTOR_X_Direction")) #DIR+
-    STEP = int(os.getenv("MOTOR_X_Pulse")) #PULL+
+    DIR = int(os.getenv("MOTOR_X_Direction"))  # DIR+
+    STEP = int(os.getenv("MOTOR_X_Pulse"))  # PULL+
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
@@ -40,8 +41,8 @@ def xMove(distance=6, clockwise=True, speed_mod=1):
     GPIO.setmode(GPIO.BCM)
     motor1_switch = int(os.getenv("limitSwitchX_1"))
     motor2_switch = int(os.getenv("limitSwitchX_2"))
-    GPIO.setup(motor1_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
-    GPIO.setup(motor2_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     # Establish Pins in software
     GPIO.setup(DIR, GPIO.OUT)

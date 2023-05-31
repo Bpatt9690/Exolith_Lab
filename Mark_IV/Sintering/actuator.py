@@ -9,6 +9,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
+
 def actuator():
     in1 = int(os.getenv("LINEAR_in1"))
     in2 = int(os.getenv("LINEAR_in2"))
@@ -30,7 +31,6 @@ def actuator():
     print("\n")
 
     while 1:
-
         x = input()
 
         if x == "r":
@@ -90,8 +90,10 @@ def actuator():
             print("<<<  wrong data  >>>")
             print("please enter the defined data to continue.....")
 
+
 def main():
     actuator()
 
-if __name__ == '__main__':
-    main()  
+
+if __name__ == "__main__":
+    main()

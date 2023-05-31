@@ -48,8 +48,9 @@ class Encoder(object):
     which connected via two pin A and B.
     Works only on interrupts because all RPi pins allow that.
     This library is a simple port of the Arduino Encoder library
-    (https://github.com/PaulStoffregen/Encoder) 
+    (https://github.com/PaulStoffregen/Encoder)
     """
+
     def __init__(self, A, B):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(A, GPIO.IN)
