@@ -21,8 +21,10 @@ def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=6):
         start_ang = atan(y_circle / x_circle)
     end_ang = atan((y_circle - y_dist) / (x_circle + float(x_dist)))
 
-    start_ang = 0
-    end_ang = 2 * math.pi
+    # Add any custom angle for testing.
+    # start_ang = 0
+    # end_ang = 2 * math.pi
+
     angle_delta = abs((abs(start_ang) - abs(end_ang)) / float(num_segs))
     theta = start_ang
     if start_ang > end_ang:
