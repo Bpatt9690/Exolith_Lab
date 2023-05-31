@@ -11,7 +11,7 @@ Moves both X and Y axis a specified distance simultaneously and ending at the sa
 Uses multithreading.
 """
 
-def xyMove(x_dist=14, y_dist=4, z_dist=6):
+def xyMove(x_dist=8, y_dist=8, z_dist=6):
     x_speed_mod = 1
     y_speed_mod = 1
     z_speed_mod = 1

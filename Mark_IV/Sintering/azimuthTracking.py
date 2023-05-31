@@ -128,7 +128,7 @@ class azimuth_tracker:
         self.logger.logInfo("UV Upper: " + str(uvUpper))
         self.logger.logInfo("UV Lower: " + str(uvLower))
 
-        azstatus = self.azimuthMaxPosition(1, 25, uvMax, uvUpper, uvLower)
+        azstatus = self.azimuthMaxPosition(1, 100, uvMax, uvUpper, uvLower)
         return azstatus
 
     def azimuthMaxPosition(self, direction, steps, uvMax, uvUpper, uvLower):
@@ -260,3 +260,11 @@ class azimuth_tracker:
             except Exception as e:
                 self.logger.logInfo("Tracking Exception: {}".format(e))
                 GPIO.cleanup()
+
+
+def main():
+    at = azimuth_tracker()
+    at.stepMovement(1, 100)
+
+if __name__ == "__main__":
+    main()

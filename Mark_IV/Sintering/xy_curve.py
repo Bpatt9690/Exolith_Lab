@@ -5,13 +5,13 @@ import multiprocessing as mp
 from xMove import xMove
 from yMove import yMove
 
-def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=6):
+def xyCurve(x_dist=1, y_dist=1, x_circle=0, y_circle=1, rotation=False):
     speed_mod = 1
     x_prev = 0
     y_prev = 0
     x = 0
     y = 0
-    num_segs = 40
+    num_segs = 18
     radius = sqrt(x_circle * x_circle + y_circle * y_circle)
 
     # Get start and end angle on unit circle.
@@ -21,11 +21,19 @@ def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=6):
         start_ang = atan(y_circle / x_circle)
     end_ang = atan((y_circle - y_dist) / (x_circle + float(x_dist)))
 
-    # Add any custom angle for testing.
-    # start_ang = 0
-    # end_ang = 2 * math.pi
+    # Angles can be manually set for testing.
+    # start_ang = math.pi / 3
+    # end_ang = math.pi / 2
 
-    angle_delta = abs((abs(start_ang) - abs(end_ang)) / float(num_segs))
+    if rotation:
+        start_ang = math.pi - start_ang
+        end_ang = math.pi - end_ang
+        if end_ang <= start_ang:
+            end_ang += 2 * math.pi
+    elif not rotation and end_ang >= start_ang:
+        end_ang -= 2 * math.pi
+        
+    angle_delta = abs((end_ang - start_ang) / float(num_segs))
     theta = start_ang
     if start_ang > end_ang:
         angle_delta *= -1
@@ -40,15 +48,12 @@ def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=6):
         x = x_prev - radius * abs(cos(theta))
         y = y_prev - radius * abs(sin(theta))
 
-        # Use angle to change the travel distance and speed for the segments.
-        # NEEDS TO BE CHANGED
-
         x_speed = speed_mod
         y_speed = speed_mod
         if abs(x) >= abs(y) and x != 0:
-            y_speed = speed_mod * abs(y / x)
+            y_speed = y_speed * abs(y / x)
         elif abs(x) < abs(y) and y != 0:
-            x_speed = speed_mod * abs(x / y)
+            x_speed = x_speed * abs(x / y)
 
         x_rotate = True
         y_rotate = True
