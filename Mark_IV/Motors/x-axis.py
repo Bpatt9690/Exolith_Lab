@@ -48,10 +48,9 @@ def xMovement():
                 GPIO.output(STEP_1, GPIO.HIGH)
                 # .5 == super slow
                 # .00005 == breaking
-                sleep(0.0005)  # Dictates how fast stepper motor will run
+                sleep(0.001)  # Dictates how fast stepper motor will run
                 GPIO.output(STEP_1, GPIO.LOW)
-                sleep(0.0005)
-
+                sleep(0.001)
 
     # Once finished clean everything up
     except KeyboardInterrupt:

@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 
+
 def listen_rising_edge(pin):
     # Set up GPIO mode and pin
     pin = 21
