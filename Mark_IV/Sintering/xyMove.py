@@ -32,14 +32,14 @@ def xyMove(x_dist=8, y_dist=8, z_dist=6):
     # max_dist = max(x_dist, y_dist, z_dist)
     max_dist = max(x_dist, y_dist)
     if x_dist == max_dist:
-        y_speed_mod = y_dist / x_dist
-        z_speed_mod = z_dist / x_dist
+        y_speed_mod = (y_dist / x_dist) * y_speed_mod
+        z_speed_mod = (z_dist / x_dist) * z_speed_mod
     elif y_dist == max_dist:
-        x_speed_mod = x_dist / y_dist
-        z_speed_mod = z_dist / y_dist
+        x_speed_mod = (x_dist / y_dist) * x_speed_mod
+        z_speed_mod = (z_dist / y_dist) * z_speed_mod
     # else:
-    #     x_speed_mod = x_dist / z_dist
-    #     y_speed_mod = y_dist / z_dist
+    #     x_speed_mod = (x_dist / z_dist) * x_speed_mod
+    #     y_speed_mod = (y_dist / z_dist) * y_speed_mod
 
     # ar = axis_reset()
     # ar.elevation_reset()

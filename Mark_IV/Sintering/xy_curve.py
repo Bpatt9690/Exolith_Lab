@@ -1,11 +1,11 @@
 import time
-from math import cos, sin, tan, atan, sqrt
+from math import cos, sin, tan, atan2, sqrt
 import math
 import multiprocessing as mp
 from xMove import xMove
 from yMove import yMove
 
-def xyCurve(x_dist=1, y_dist=1, x_circle=0, y_circle=1, rotation=False):
+def xyCurve(x_dist=-3, y_dist=3, x_circle=0, y_circle=3, rotation=False):
     speed_mod = 1
     x_prev = 0
     y_prev = 0
@@ -18,22 +18,24 @@ def xyCurve(x_dist=1, y_dist=1, x_circle=0, y_circle=1, rotation=False):
     start_ang = math.pi / 2
     end_ang = math.pi / 2
     if x_circle != 0:
-        start_ang = atan(y_circle / x_circle)
+        start_ang = atan2(y_circle, x_circle)
     if x_circle + x_dist != 0:
-        end_ang = atan((y_circle - y_dist) / (x_circle + float(x_dist)))
-
+        end_ang = atan2(y_circle - y_dist, x_circle + float(x_dist))
+    print(start_ang)
+    print(end_ang)
     # Angles can be manually set for testing.
     # start_ang = math.pi / 3
     # end_ang = math.pi / 2
 
     if rotation:
-        start_ang = math.pi - start_ang
-        end_ang = math.pi - end_ang
         if end_ang <= start_ang:
             end_ang += 2 * math.pi
+        start_ang = math.pi - start_ang
+        end_ang = math.pi - end_ang
     elif not rotation and end_ang >= start_ang:
         end_ang -= 2 * math.pi
-        
+    print(start_ang)
+    print(end_ang)
     angle_delta = abs((end_ang - start_ang) / float(num_segs))
     theta = start_ang
     if start_ang > end_ang:
