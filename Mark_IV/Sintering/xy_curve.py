@@ -1,5 +1,4 @@
-import time
-from math import cos, sin, tan, atan2, sqrt
+from math import cos, sin, atan2, sqrt
 import math
 import multiprocessing as mp
 from xMove import xMove

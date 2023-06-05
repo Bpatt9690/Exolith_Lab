@@ -17,13 +17,13 @@ def zMove(distance=3, dir=True, speed_mod=1):
         print("Speed modifier above 1, linear actuator cannot go above max speed.")
         exit()
 
+    if speed_mod < 0.001:
+        return
+
     GPIO.cleanup()
-    # in1 = int(os.getenv("LINEAR_in1"))
-    # in2 = int(os.getenv("LINEAR_in2"))
-    # en = int(os.getenv("LINEAR_en"))
-    in1 = 7
-    in2 = 8
-    en = 9
+    in1 = int(os.getenv("LINEAR_in1"))
+    in2 = int(os.getenv("LINEAR_in2"))
+    en = int(os.getenv("LINEAR_en"))
     # NEEDS TESTING. num is a constant that can turn distance to seconds given the linear actuator's speed.
     num = 0.6157
     seconds = distance / (num * speed_mod)
