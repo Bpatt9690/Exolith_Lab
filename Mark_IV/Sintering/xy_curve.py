@@ -4,7 +4,7 @@ import multiprocessing as mp
 from xMove import xMove
 from yMove import yMove
 
-def xyCurve(x_dist=-3, y_dist=3, x_circle=0, y_circle=3, rotation=False):
+def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=3, rotation=True):
     speed_mod = 1
     x_prev = 0
     y_prev = 0

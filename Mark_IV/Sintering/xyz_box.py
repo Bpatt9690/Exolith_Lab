@@ -15,9 +15,9 @@ def trace_box(x_dist=14, y_dist=8, z_dist=8):
     ar.y_axis_reset()
 
     # Direction pin from controller
-    increment = 2
-    num_y_lines = int(y_dist / increment)
-    num_z_lines = int(z_dist / increment)
+    focal_diameter = 1
+    num_y_lines = int(round(y_dist / focal_diameter, 0))
+    num_z_lines = int(round(z_dist / focal_diameter, 0))
 
     x_rotation = True
     y_rotation = True
@@ -27,9 +27,9 @@ def trace_box(x_dist=14, y_dist=8, z_dist=8):
             # Make box with given number of lines.
             for _ in range(num_y_lines):
                 xMove(x_dist, x_rotation)
-                yMove(increment, y_rotation)
+                yMove(focal_diameter, y_rotation)
                 x_rotation = not(x_rotation)
-            zMove(increment, True) 
+            zMove(focal_diameter, True) 
             y_rotation = not(y_rotation)
 
 
