@@ -5,6 +5,7 @@ from zMove import zMove
 from xy_curve import xyCurve
 from axisReset import axis_reset
 
+
 def box2d(x_dist=7, y_dist=5):
     GPIO.cleanup()
     ar = axis_reset()
@@ -116,12 +117,12 @@ def cylinder(radius=6, height=6):
         GPIO.cleanup()
 
 
-def bowl(radius=6, height=6):
+def semi_sphere(radius=6):
     GPIO.cleanup()
 
     # Direction pin from controller
     focal_diameter = 1
-    num_layers = int(round(height / focal_diameter, 0))
+    num_layers = int(round(radius / focal_diameter, 0))
     start_out = True
 
     # True moves linear actuator forward.
@@ -135,6 +136,38 @@ def bowl(radius=6, height=6):
             zMove(focal_diameter, True)
             start_out = not(start_out)
             radius -= focal_diameter
+            
+    # Once finished clean everything up
+    except KeyboardInterrupt:
+        print("cleanup")
+        GPIO.cleanup()
+
+
+def bowl(radius=6):
+    GPIO.cleanup()
+
+    # Direction pin from controller
+    focal_diameter = 1
+
+    # thickness defines how many layers thick the bowl will be.
+    thickness = 2
+    num_layers = int(round(radius / focal_diameter, 0))
+
+    # True moves linear actuator forward.
+    try:
+        for i in range(num_layers):
+            for j in range(thickness):
+                xyCurve(0, 0, 0, radius)
+
+                if j == thickness - 1:
+                    break
+
+                yMove(focal_diameter, True)
+                radius -= focal_diameter
+
+            if i == num_layers - 1:
+                break  
+            zMove(focal_diameter, True)
             
     # Once finished clean everything up
     except KeyboardInterrupt:
