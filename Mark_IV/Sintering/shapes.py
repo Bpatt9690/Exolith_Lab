@@ -13,7 +13,8 @@ def box2d(x_dist=7, y_dist=5):
     ar.x_axis_reset()
     ar.y_axis_reset()
 
-    # Direction pin from controller
+    # Defines the diameter of the focal point in cm.
+    # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     focal_diameter = 1
     num_lines = int(y_dist / focal_diameter)
 
@@ -21,8 +22,11 @@ def box2d(x_dist=7, y_dist=5):
     #CW Away from limit switch
     try:
         # Make box with given number of lines.
-        for _ in range(num_lines):
+        for i in range(num_lines):
             xMove(x_dist, clockwise)
+            if i == num_lines - 1:
+                break
+
             yMove(focal_diameter, True)
             clockwise = not(clockwise)
 
@@ -38,6 +42,8 @@ def box3d(x_dist=14, y_dist=8, z_dist=8):
     ar.x_axis_reset()
     ar.y_axis_reset()
 
+    # Defines the diameter of the focal point in cm.
+    # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     focal_diameter = 1
     num_y_lines = int(round(y_dist / focal_diameter, 0))
     num_z_lines = int(round(z_dist / focal_diameter, 0))
@@ -48,10 +54,19 @@ def box3d(x_dist=14, y_dist=8, z_dist=8):
     try:
         for i in range(num_z_lines):
             # Make box with given number of lines.
-            for _ in range(num_y_lines):
+            for j in range(num_y_lines):
+                # Makes layer of box.
                 xMove(x_dist, x_rotation)
-                yMove(focal_diameter, y_rotation)
                 x_rotation = not(x_rotation)
+
+                # When on last line of layer, keep tray still and start at that same point on the next layer.
+                if j == num_y_lines - 1:
+                    break
+                yMove(focal_diameter, y_rotation)
+
+            # When of last layer, don't move tray down anymore.
+            if i == num_z_lines - 1:
+                break
             zMove(focal_diameter, True) 
             y_rotation = not(y_rotation)
 
@@ -63,9 +78,12 @@ def box3d(x_dist=14, y_dist=8, z_dist=8):
 
 
 def circle(radius=3, start_out=True):
-    # Diameter of focal point in cm.
+    # Defines the diameter of the focal point in cm.
+    # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     focal_diameter = 1
     num_layers = int(round(radius / focal_diameter, 0))
+
+    # Start on the outside or center of filled-in circle.
     if start_out:
         radius = focal_diameter * (num_layers - 0.5)
     else:
@@ -73,10 +91,14 @@ def circle(radius=3, start_out=True):
 
     try:
         for i in range(num_layers):
+            # Draw circle outline
             xyCurve(0, 0, 0, radius, True)
 
             if i == num_layers - 1:
                 break
+
+            # Make next circle smaller if starting on outside of circle.
+            # Make next circle larger if starting on inside of circle.
             if start_out:
                 yMove(focal_diameter, True)
                 radius -= focal_diameter
@@ -90,8 +112,12 @@ def circle(radius=3, start_out=True):
 
 
 def hexagon(width=5, start_out=True):
+    # Defines the diameter of the focal point in cm.
+    # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     focal_diameter = 1
     num_layers = int(round((width) / (2 * focal_diameter), 0))
+
+    # Start on the outside or center of filled-in hexagon.
     if start_out:
         width = focal_diameter * (num_layers - 0.5) * 2
     else:
@@ -100,7 +126,7 @@ def hexagon(width=5, start_out=True):
 
     try:
         for i in range(num_layers):
-            # Traces hexagon
+            # Traces hexagon outline (in xy)
             xMove(side, True)
             xyMove(side, side * sqrt(3))
             xyMove(side * -1, side * sqrt(3))
@@ -112,7 +138,7 @@ def hexagon(width=5, start_out=True):
             if i == num_layers - 1:
                 break
             
-            # Moves to start next hexagon
+            # Moves to start next hexagon, depending on if that hexagon is starting on inside or outside.
             if start_out:
                 yMove(focal_diameter, True)
                 side -= focal_diameter / 2
@@ -126,40 +152,48 @@ def hexagon(width=5, start_out=True):
 
 
 def cylinder(radius=6, height=6):
+    # Defines the diameter of the focal point in cm.
+    # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     focal_diameter = 1
     num_layers = int(round(height / focal_diameter, 0))
     start_out = True
 
-    # True moves linear actuator forward.
     try:
         for i in range(num_layers):
+            # Traces filled-in circle.
             circle(radius, start_out)
 
             if i == num_layers - 1:
                 break
             
+            # Moves to start next layer.
+            # True moves linear actuator forward.
             zMove(focal_diameter, True)
             start_out = not(start_out)
             
-    # Once finished clean everything up
+    # Once finished clean everything up.
     except KeyboardInterrupt:
         print("cleanup")
         GPIO.cleanup()
 
 
 def hexagonal_prism(width=5, height=5):
+    # Defines the diameter of the focal point in cm.
+    # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     focal_diameter = 1
     num_layers = int(round(height / focal_diameter, 0))
     start_out = True
 
-    # True moves linear actuator forward.
     try:
         for i in range(num_layers):
+            # Traces filled-in hexagon.
             hexagon(width, start_out)
 
             if i == num_layers - 1:
                 break
             
+            # Moves to start next layer.
+            # True moves linear actuator forward.
             zMove(focal_diameter, True)
             start_out = not(start_out)
             
@@ -170,20 +204,26 @@ def hexagonal_prism(width=5, height=5):
 
 
 def semi_sphere(radius=6):
+    # Defines the diameter of the focal point in cm.
+    # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     focal_diameter = 1
     num_layers = int(round(radius / focal_diameter, 0))
     start_out = True
 
-    # True moves linear actuator forward.
     try:
         for i in range(num_layers):
+            # Traces filled-in circle.
             circle(radius, start_out)
 
             if i == num_layers - 1:
                 break
             
+            # Moves to start next layer.
+            # True moves linear actuator forward.
             zMove(focal_diameter, True)
             start_out = not(start_out)
+
+            # Makes next circle smaller.
             radius -= focal_diameter
             
     # Once finished clean everything up
@@ -193,6 +233,7 @@ def semi_sphere(radius=6):
 
 
 def bowl(radius=6):
+    # Defines the diameter of the focal point in cm.
     focal_diameter = 1
 
     # Thickness defines how many layers thick the bowl will be.
@@ -203,16 +244,21 @@ def bowl(radius=6):
     try:
         for i in range(num_layers):
             for j in range(thickness):
+                # Traces circle outline, makes bowl with given number of circles as thickness.
                 xyCurve(0, 0, 0, radius)
 
                 if j == thickness - 1:
                     break
-
+                
+                # Moves to start next layer.
                 yMove(focal_diameter, True)
+                # Makes next circle smaller.
                 radius -= focal_diameter
 
             if i == num_layers - 1:
                 break  
+            # Moves to start next layer.
+            # True moves linear actuator forward.
             zMove(focal_diameter, True)
             
     # Once finished clean everything up
