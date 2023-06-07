@@ -13,5 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application's code to the container
 COPY . .
 
+# Copy the .env file to the container
+COPY .env .
+
 # Set the command to run your application
 CMD [ "python", "../Mark_IV/Sintering/solarAlignment.py" ]
