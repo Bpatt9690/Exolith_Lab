@@ -7,15 +7,15 @@ from xy_curve import xyCurve
 from math import sqrt
 from axisReset import axis_reset
 
+# Defines the diameter of the focal point in cm.
+focal_diameter = 1
 
 def box2d(x_dist=7, y_dist=5):
     ar = axis_reset()
     ar.x_axis_reset()
     ar.y_axis_reset()
 
-    # Defines the diameter of the focal point in cm.
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    focal_diameter = 1
     num_lines = int(y_dist / focal_diameter)
 
     clockwise = True
@@ -42,9 +42,7 @@ def box3d(x_dist=14, y_dist=8, z_dist=8):
     ar.x_axis_reset()
     ar.y_axis_reset()
 
-    # Defines the diameter of the focal point in cm.
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    focal_diameter = 1
     num_y_lines = int(round(y_dist / focal_diameter, 0))
     num_z_lines = int(round(z_dist / focal_diameter, 0))
 
@@ -78,9 +76,7 @@ def box3d(x_dist=14, y_dist=8, z_dist=8):
 
 
 def circle(radius=3, start_out=True):
-    # Defines the diameter of the focal point in cm.
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    focal_diameter = 1
     num_layers = int(round(radius / focal_diameter, 0))
 
     # Start on the outside or center of filled-in circle.
@@ -112,9 +108,7 @@ def circle(radius=3, start_out=True):
 
 
 def hexagon(width=5, start_out=True):
-    # Defines the diameter of the focal point in cm.
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    focal_diameter = 1
     num_layers = int(round((width) / (2 * focal_diameter), 0))
 
     # Start on the outside or center of filled-in hexagon.
@@ -152,9 +146,7 @@ def hexagon(width=5, start_out=True):
 
 
 def cylinder(radius=6, height=6):
-    # Defines the diameter of the focal point in cm.
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    focal_diameter = 1
     num_layers = int(round(height / focal_diameter, 0))
     start_out = True
 
@@ -178,9 +170,7 @@ def cylinder(radius=6, height=6):
 
 
 def hexagonal_prism(width=5, height=5):
-    # Defines the diameter of the focal point in cm.
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    focal_diameter = 1
     num_layers = int(round(height / focal_diameter, 0))
     start_out = True
 
@@ -204,9 +194,7 @@ def hexagonal_prism(width=5, height=5):
 
 
 def semi_sphere(radius=6):
-    # Defines the diameter of the focal point in cm.
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    focal_diameter = 1
     num_layers = int(round(radius / focal_diameter, 0))
     start_out = True
 
@@ -233,9 +221,6 @@ def semi_sphere(radius=6):
 
 
 def bowl(radius=6):
-    # Defines the diameter of the focal point in cm.
-    focal_diameter = 1
-
     # Thickness defines how many layers thick the bowl will be.
     thickness = 2
     num_layers = int(round(radius / focal_diameter, 0))

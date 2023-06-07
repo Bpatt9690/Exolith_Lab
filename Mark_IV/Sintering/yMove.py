@@ -4,6 +4,7 @@ from Limit_Switches import limitSwitches
 import time
 from dotenv import load_dotenv
 import os
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -99,7 +100,15 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
 
 
 def main():
-    yMove()
+    num_args = len(sys.argv)
+    if num_args == 2:
+        yMove(sys.argv[1])
+    elif num_args == 3:
+        yMove(sys.argv[1], sys.argv[2])
+    elif num_args == 4:
+        yMove(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+        yMove()
 
 if __name__ == '__main__':
     main()

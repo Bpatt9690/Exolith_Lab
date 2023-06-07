@@ -5,6 +5,7 @@ from xMove import xMove
 from yMove import yMove
 # from zMove import zMove
 from axisReset import axis_reset
+import sys
 
 """
 Moves both X and Y axis a specified distance simultaneously and ending at the same time.
@@ -64,7 +65,15 @@ def xyMove(x_dist=8, y_dist=8, z_dist=6):
     
 
 def main():
-    xyMove()
+    num_args = len(sys.argv)
+    if num_args == 2:
+        xyMove(sys.argv[1])
+    elif num_args == 3:
+        xyMove(sys.argv[1], sys.argv[2])
+    elif num_args == 4:
+        xyMove(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+        xyMove()
 
 if __name__ == "__main__":
     main()
