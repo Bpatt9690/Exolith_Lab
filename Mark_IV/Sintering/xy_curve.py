@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 from math import cos, sin, atan2, sqrt
 import math
 import os
+import sys
 import multiprocessing as mp
 from Limit_Switches import limitSwitches
 from xMove import xMove
@@ -89,7 +90,10 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
 
 
 def main():
-    xyCurve()
+    if len(sys.argv) == 6:
+        xyCurve(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    else:
+        xyCurve()
 
 if __name__ == "__main__":
     main()
