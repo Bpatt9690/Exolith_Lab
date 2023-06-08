@@ -22,19 +22,17 @@ gps = GPS_Data()
 
 def axisResets():
     ar = axis_reset()
-    x_axis_status = False
-    y_axis_status = False
+    xy_status = False
     ev_status = False
 
     try:
-        x_axis_status = ar.x_axis_reset()
-        y_axis_status = ar.y_axis_reset()
+        xy_status = ar.xy_reset()
         ev_status = ar.elevation_reset()
 
     except Exception as e:
         logger.logInfo("Axis Reset Failure: {}".format(e))
 
-    if x_axis_status and y_axis_status and ev_status:
+    if xy_status and ev_status:
         logger.logInfo("Successful reset")
         return True
 
@@ -42,7 +40,7 @@ def axisResets():
         logger.logInfo("Axis Reset Failure")
         logger.logInfo(
             "x_axis_status: {} \ny_axis_status: {} \nev_status: {}".format(
-                x_axis_status, y_axis_status, ev_status
+                xy_status, xy_status, ev_status
             )
         )
         return False
