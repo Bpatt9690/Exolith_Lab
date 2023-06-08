@@ -67,11 +67,11 @@ def xyMove(x_dist=8, y_dist=8, z_dist=6):
 def main():
     num_args = len(sys.argv)
     if num_args == 2:
-        xyMove(sys.argv[1])
+        xyMove(float(sys.argv[1]))
     elif num_args == 3:
-        xyMove(sys.argv[1], sys.argv[2])
+        xyMove(float(sys.argv[1]), float(sys.argv[2]))
     elif num_args == 4:
-        xyMove(sys.argv[1], sys.argv[2], sys.argv[3])
+        xyMove(float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3]))
     else:
         xyMove()
 

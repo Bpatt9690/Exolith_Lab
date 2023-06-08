@@ -198,12 +198,12 @@ class axis_reset:
         try:
             xProc = mp.Process(target=self.x_axis_reset)
             yProc = mp.Process(target=self.y_axis_reset)
+            xProc.start()
+            yProc.start()
             xProc.join()
             yProc.join()
             return True
         except Exception as e:
-            xProc.terminate()
-            yProc.terminate()
             self.logger.logError("Failure {}".format(e))
             GPIO.cleanup()
             return False

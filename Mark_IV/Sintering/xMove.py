@@ -104,11 +104,11 @@ def xMove(distance=6, clockwise=True, speed_mod=1):
 def main():
     num_args = len(sys.argv)
     if num_args == 2:
-        xMove(sys.argv[1])
+        xMove(float(sys.argv[1]))
     elif num_args == 3:
-        xMove(sys.argv[1], sys.argv[2])
+        xMove(float(sys.argv[1]), bool(sys.argv[2]))
     elif num_args == 4:
-        xMove(sys.argv[1], sys.argv[2], sys.argv[3])
+        xMove(float(sys.argv[1]), bool(sys.argv[2]), float(sys.argv[3]))
     else:
         xMove()
     

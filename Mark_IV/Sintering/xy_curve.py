@@ -9,9 +9,7 @@ from yMove import yMove
 
 ls = limitSwitches()
 
-def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=3, rotation=True):
-    x_motor_flag = 0
-    y_motor_flag = 0
+def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
     speed_mod = 1
     x_prev = 0
     y_prev = 0
@@ -55,15 +53,8 @@ def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=3, rotation=True):
     y_prev = radius * abs(sin(theta))
 
     for _ in range(num_segs):
-        if GPIO.input(y2_motor_switch) == 0 or GPIO.input(y1_motor_switch) == 0:
-            y_motor_flag += 1
-        else:
-            y_motor_flag = 0
-        if GPIO.input(x2_motor_switch) == 0 or GPIO.input(x1_motor_switch) == 0:
-            x_motor_flag += 1
-        else:
-            x_motor_flag = 0
-        if y_motor_flag >= 5 or x_motor_flag >= 5:
+        # Stop circle if any limit switches are activated.
+        if GPIO.input(y2_motor_switch) == 0 or GPIO.input(y1_motor_switch) == 0 or GPIO.input(x2_motor_switch) == 0 or GPIO.input(x1_motor_switch) == 0:
             break
 
         # Get current angle on unit circle.

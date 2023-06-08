@@ -73,9 +73,9 @@ def sensorGroupCheck():
 
 def solarElevationLogic():
     if(bool(os.getenv("useGPS"))):
-        gps_dict = gps.userDefinedCoordinates()
-    else:
         gps_dict = gps.getCurrentCoordinates()
+    else:
+        gps_dict = gps.userDefinedCoordinates()
     
     today, year, day, month = gps.getDate()
 
