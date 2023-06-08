@@ -1,17 +1,35 @@
+import RPi.GPIO as GPIO
 from math import cos, sin, atan2, sqrt
 import math
+import os
 import multiprocessing as mp
+from Limit_Switches import limitSwitches
 from xMove import xMove
 from yMove import yMove
 
+ls = limitSwitches()
+
 def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=3, rotation=True):
+    x_motor_flag = 0
+    y_motor_flag = 0
     speed_mod = 1
     x_prev = 0
     y_prev = 0
     x = 0
     y = 0
+    ref = 18  # The number of segments that produces correct dimensions by default.
     num_segs = 18
     radius = sqrt(x_circle * x_circle + y_circle * y_circle)
+
+    x1_motor_switch = int(os.getenv("limitSwitchX_1"))
+    x2_motor_switch = int(os.getenv("limitSwitchX_2"))
+    y1_motor_switch = int(os.getenv("limitSwitchY_1"))
+    y2_motor_switch = int(os.getenv("limitSwitchY_2"))
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(x1_motor_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
+    GPIO.setup(x2_motor_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(y1_motor_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)    
+    GPIO.setup(y2_motor_switch,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
     # Get start and end angle on unit circle.
     start_ang = math.pi / 2
@@ -20,11 +38,6 @@ def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=3, rotation=True):
         start_ang = atan2(y_circle, x_circle)
     if x_circle + x_dist != 0:
         end_ang = atan2(y_circle - y_dist, x_circle + float(x_dist))
-    print(start_ang)
-    print(end_ang)
-    # Angles can be manually set for testing.
-    # start_ang = math.pi / 3
-    # end_ang = math.pi / 2
 
     if rotation:
         if end_ang <= start_ang:
@@ -33,8 +46,6 @@ def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=3, rotation=True):
         end_ang = math.pi - end_ang
     elif not rotation and end_ang >= start_ang:
         end_ang -= 2 * math.pi
-    print(start_ang)
-    print(end_ang)
     angle_delta = abs((end_ang - start_ang) / float(num_segs))
     theta = start_ang
     if start_ang > end_ang:
@@ -44,11 +55,22 @@ def xyCurve(x_dist=3, y_dist=3, x_circle=0, y_circle=3, rotation=True):
     y_prev = radius * abs(sin(theta))
 
     for _ in range(num_segs):
+        if GPIO.input(y2_motor_switch) == 0 or GPIO.input(y1_motor_switch) == 0:
+            y_motor_flag += 1
+        else:
+            y_motor_flag = 0
+        if GPIO.input(x2_motor_switch) == 0 or GPIO.input(x1_motor_switch) == 0:
+            x_motor_flag += 1
+        else:
+            x_motor_flag = 0
+        if y_motor_flag >= 5 or x_motor_flag >= 5:
+            break
+
         # Get current angle on unit circle.
         theta += angle_delta
 
-        x = (x_prev - radius * abs(cos(theta))) * (18 / num_segs)
-        y = (y_prev - radius * abs(sin(theta))) * (18 / num_segs)
+        x = (x_prev - radius * abs(cos(theta))) * (ref / num_segs)
+        y = (y_prev - radius * abs(sin(theta))) * (ref / num_segs)
 
         x_speed = speed_mod
         y_speed = speed_mod
