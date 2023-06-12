@@ -16,7 +16,7 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
     y_prev = 0
     x = 0
     y = 0
-    ref = 18  # The number of segments that produces correct dimensions by default.
+    motor_flag = 0
     num_segs = 18
     radius = sqrt(x_circle * x_circle + y_circle * y_circle)
 
@@ -45,24 +45,18 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
         end_ang = math.pi - end_ang
     elif not rotation and end_ang >= start_ang:
         end_ang -= 2 * math.pi
-    angle_delta = abs((end_ang - start_ang) / float(num_segs))
+    angle_delta = (end_ang - start_ang) / float(num_segs)
     theta = start_ang
-    if start_ang > end_ang:
-        angle_delta *= -1
 
     x_prev = radius * abs(cos(theta))
     y_prev = radius * abs(sin(theta))
 
     for _ in range(num_segs):
-        # Stop circle if any limit switches are activated.
-        if GPIO.input(y2_motor_switch) == 0 or GPIO.input(y1_motor_switch) == 0 or GPIO.input(x2_motor_switch) == 0 or GPIO.input(x1_motor_switch) == 0:
-            break
-
         # Get current angle on unit circle.
         theta += angle_delta
 
-        x = (x_prev - radius * abs(cos(theta))) * (ref / num_segs)
-        y = (y_prev - radius * abs(sin(theta))) * (ref / num_segs)
+        x = (x_prev - radius * abs(cos(theta)))
+        y = (y_prev - radius * abs(sin(theta)))
 
         x_speed = speed_mod
         y_speed = speed_mod
@@ -85,13 +79,21 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
         xProc.join()
         yProc.join()
 
+        # Stop circle if any limit switches are activated.
+        if GPIO.input(y2_motor_switch) == 0 or GPIO.input(y1_motor_switch) == 0 or GPIO.input(x2_motor_switch) == 0 or GPIO.input(x1_motor_switch) == 0:
+            motor_flag += 1
+        else:
+            motor_flag = 0
+        if motor_flag == 2:
+            break
+
         x_prev = radius * abs(cos(theta))
         y_prev = radius * abs(sin(theta))
 
 
 def main():
     if len(sys.argv) == 6:
-        xyCurve(float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), bool(sys.argv[5]))
+        xyCurve(float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), bool(int(sys.argv[5])))
     else:
         xyCurve()
 

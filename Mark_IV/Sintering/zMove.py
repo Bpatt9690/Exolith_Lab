@@ -13,7 +13,7 @@ def zMove(distance=3, dir=True, speed_mod=1):
     # Need to find speed that matches default speeds for x and y
     cycles = 50
 
-    if speed_mod > 1:
+    if speed_mod > 2:
         print("Speed modifier above 1, linear actuator cannot go above max speed.")
         exit()
 
@@ -25,7 +25,7 @@ def zMove(distance=3, dir=True, speed_mod=1):
     in2 = int(os.getenv("LINEAR_in2"))
     en = int(os.getenv("LINEAR_en"))
     # NEEDS TESTING. num is a constant that can turn distance to seconds given the linear actuator's speed.
-    num = 0.6157
+    num = 0.2913
     seconds = distance / (num * speed_mod)
 
     # Setup pin layout on PI

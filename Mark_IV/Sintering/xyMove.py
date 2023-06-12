@@ -24,10 +24,13 @@ def xyMove(x_dist=8, y_dist=8, z_dist=6):
     z_dir = True
     if x_dist < 0:
         x_rotate = False
+        x_dist = abs(x_dist)
     if y_dist < 0:
         y_rotate = False
+        y_dist = abs(y_dist)
     if z_dist < 0:
         z_dir = False
+        z_dist = abs(z_dist)
 
     # Decides which axis with move at max speed (1), and which will be slowed down.
     # max_dist = max(x_dist, y_dist, z_dist)
@@ -59,7 +62,6 @@ def xyMove(x_dist=8, y_dist=8, z_dist=6):
     # zMove(z_dist, z_dir, z_speed_mod)
     xProc.join()
     yProc.join()
-    time.sleep(5)
     # alignProc.terminate()
     print("X and Y finished!")
     

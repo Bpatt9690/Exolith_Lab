@@ -11,10 +11,6 @@ from axisReset import axis_reset
 focal_diameter = 1
 
 def box2d(x_dist=7, y_dist=5):
-    ar = axis_reset()
-    ar.x_axis_reset()
-    ar.y_axis_reset()
-
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     num_lines = int(y_dist / focal_diameter)
 
@@ -38,10 +34,6 @@ def box2d(x_dist=7, y_dist=5):
     
 
 def box3d(x_dist=14, y_dist=8, z_dist=8):
-    ar = axis_reset()
-    ar.x_axis_reset()
-    ar.y_axis_reset()
-
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     num_y_lines = int(round(y_dist / focal_diameter, 0))
     num_z_lines = int(round(z_dist / focal_diameter, 0))
@@ -253,7 +245,10 @@ def bowl(radius=6):
 
 
 def main():
+    # hexagon(width=8, start_out=False)
+    # circle(radius=4, start_out=False)
     box2d()
+
 
 if __name__ == "__main__":
     main()

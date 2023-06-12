@@ -17,7 +17,7 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 ls = limitSwitches()
 
 def yMove(distance=6, clockwise=True, speed_mod=1):
-    if speed_mod > 1:
+    if speed_mod > 2:
         print("Speed modifier above 1, y motor cannot go above max speed.")
         exit()
 
@@ -34,7 +34,7 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
     motor_flag = 0
 
     # num is a constant that can turn distance to seconds given the linear actuator's speed.
-    num = 0.295
+    num = 0.2913
     seconds = distance / (num * speed_mod)
 
     GPIO.setmode(GPIO.BCM)
@@ -104,7 +104,7 @@ def main():
     if num_args == 2:
         yMove(float(sys.argv[1]))
     elif num_args == 3:
-        yMove(float(sys.argv[1]), bool(sys.argv[2]))
+        yMove(float(sys.argv[1]), bool(int(sys.argv[2])))
     elif num_args == 4:
         yMove(float(sys.argv[1]), bool(sys.argv[2]), float(sys.argv[3]))
     else:
