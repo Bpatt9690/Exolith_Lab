@@ -2,6 +2,9 @@ from Logging import logger
 import RPi.GPIO as GPIO
 import multiprocessing as mp
 from time import sleep
+from xMove import xMove
+from yMove import yMove
+import xyMove
 from Limit_Switches import limitSwitches
 from dotenv import load_dotenv
 import os
@@ -207,11 +210,42 @@ class axis_reset:
             self.logger.logError("Failure {}".format(e))
             GPIO.cleanup()
             return False
+        
+    def x_axis_mid(self):
+        self.x_axis_reset()
+        try:
+            xMove(14)
+            return True
+        except Exception as e:
+            self.logger.logError("Failure {}".format(e))
+            GPIO.cleanup()
+            return False
+
+    def y_axis_mid(self):
+        self.y_axis_reset()
+        try:
+            yMove(9.5)
+            return True
+        except Exception as e:
+            self.logger.logError("Failure {}".format(e))
+            GPIO.cleanup()
+            return False
+        
+    def xy_axis_mid(self):
+        self.xy_reset()
+        try:
+            xyMove.xyMove(14, 9.5)
+            return True
+        except Exception as e:
+            self.logger.logError("Failure {}".format(e))
+            GPIO.cleanup()
+            return False
 
 
 def main():
     ar = axis_reset()
     ar.xy_reset()
+    # ar.xy_axis_mid()
 
 if __name__ == "__main__":
     main()
