@@ -1,7 +1,6 @@
 import serial
 from Logging import logger
 import time
-import arrow
 from datetime import date, datetime, timezone
 
 class GPS_Data:
