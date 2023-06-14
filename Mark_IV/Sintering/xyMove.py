@@ -1,6 +1,6 @@
 import time
 import multiprocessing as mp
-from solarAlignment import solarTracking, solarElevationLogic, azimuthLogic
+# from solarAlignment import solarTracking, solarElevationLogic, azimuthLogic
 from xMove import xMove
 from yMove import yMove
 # from zMove import zMove

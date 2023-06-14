@@ -7,8 +7,10 @@ from xy_curve import xyCurve
 from math import sqrt
 from axisReset import axis_reset
 
+ar = axis_reset()
+
 # Defines the diameter of the focal point in cm.
-focal_diameter = 1
+focal_diameter = 0.7
 
 def box2d(x_dist=7, y_dist=5):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
@@ -245,9 +247,10 @@ def bowl(radius=6):
 
 
 def main():
-    # hexagon(width=8, start_out=False)
-    # circle(radius=4, start_out=False)
-    box2d()
+    # ar.xy_axis_mid()
+    # hexagon(width=8, start_out=True)
+    circle(radius=4, start_out=True)
+    # box2d()
 
 
 if __name__ == "__main__":

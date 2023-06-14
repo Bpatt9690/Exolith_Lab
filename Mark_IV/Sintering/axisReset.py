@@ -215,6 +215,7 @@ class axis_reset:
         self.x_axis_reset()
         try:
             xMove(14)
+            sleep(1)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
@@ -225,6 +226,7 @@ class axis_reset:
         self.y_axis_reset()
         try:
             yMove(9.5)
+            sleep(1)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
@@ -235,6 +237,7 @@ class axis_reset:
         self.xy_reset()
         try:
             xyMove.xyMove(14, 9.5)
+            sleep(1)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
