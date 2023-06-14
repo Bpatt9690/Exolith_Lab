@@ -62,8 +62,6 @@ def yMove(distance=6, clockwise=True, speed_mod=1):
         # x = 0
         
         # Run forever.
-        print(timer)
-        print(seconds)
         while(timer <= seconds):
             # # Run for 200 steps. This will change based on how you set you controller
             for x in range(200):
