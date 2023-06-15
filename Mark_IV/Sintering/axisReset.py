@@ -4,6 +4,7 @@ import multiprocessing as mp
 from time import sleep
 from xMove import xMove
 from yMove import yMove
+import sys
 import xyMove
 from Limit_Switches import limitSwitches
 from dotenv import load_dotenv
@@ -247,8 +248,12 @@ class axis_reset:
 
 def main():
     ar = axis_reset()
-    ar.xy_reset()
-    # ar.xy_axis_mid()
+    num_args = len(sys.argv)
+    if num_args > 1 and sys.argv[1] == "mid":
+        ar.xy_axis_mid()
+    else:
+        ar.xy_reset()
+    
 
 if __name__ == "__main__":
     main()
