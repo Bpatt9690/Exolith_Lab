@@ -105,12 +105,12 @@ def hexagon(width=5, start_out=True):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     num_layers = int(round((width) / (2 * focal_diameter), 0))
 
+    side = width / 4
     # Start on the outside or center of filled-in hexagon.
     if start_out:
         width = focal_diameter * (num_layers - 0.5) * 2
     else:
         width = focal_diameter
-    side = width / 4
 
     try:
         for i in range(num_layers):
