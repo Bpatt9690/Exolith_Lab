@@ -17,7 +17,7 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
     x = 0
     y = 0
     motor_flag = 0
-    num_segs = 30
+    num_segs = 20
     radius = sqrt(x_circle * x_circle + y_circle * y_circle)
 
     x1_motor_switch = int(os.getenv("limitSwitchX_1"))

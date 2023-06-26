@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import sys
 from xMove import xMove
 from yMove import yMove
 from zMove import zMove
@@ -101,11 +102,10 @@ def circle(radius=3, start_out=True):
         GPIO.cleanup()
 
 
-def hexagon(width=5, start_out=True):
+def hexagon(width=5, start_out=False):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     num_layers = int(round((width) / (2 * focal_diameter), 0))
 
-    side = width / 4
     # Start on the outside or center of filled-in hexagon.
     if start_out:
         width = focal_diameter * (num_layers - 0.5) * 2
@@ -114,6 +114,7 @@ def hexagon(width=5, start_out=True):
 
     try:
         for i in range(num_layers):
+            side = width / 4
             # Traces hexagon outline (in xy)
             xMove(side, True)
             xyMove(side, side * sqrt(3))
@@ -129,10 +130,10 @@ def hexagon(width=5, start_out=True):
             # Moves to start next hexagon, depending on if that hexagon is starting on inside or outside.
             if start_out:
                 yMove(focal_diameter, True)
-                side -= focal_diameter / 2
+                width = width - focal_diameter * 2
             else:
                 yMove(focal_diameter, False)
-                side += focal_diameter / 2
+                width = width + focal_diameter * 2
         
     except KeyboardInterrupt:
         print("cleanup")
@@ -247,10 +248,16 @@ def bowl(radius=6):
 
 
 def main():
-    # ar.xy_axis_mid()
-    # hexagon(width=8, start_out=True)
-    circle(radius=4, start_out=True)
-    # box2d()
+    num_args = len(sys.argv)
+    if num_args > 1:
+        if sys.arvgv[1].lower() == "hexagon":
+            hexagon(width=4, start_out=True)
+        if sys.arvgv[1].lower() == "circle":
+            circle(radius=4, start_out=True)
+        if sys.arvgv[1].lower() == "box2d":
+            box2d()
+    else:
+        box2d()
 
 
 if __name__ == "__main__":
