@@ -250,11 +250,11 @@ def bowl(radius=6):
 def main():
     num_args = len(sys.argv)
     if num_args > 1:
-        if sys.arvgv[1].lower() == "hexagon":
-            hexagon(width=4, start_out=True)
-        if sys.arvgv[1].lower() == "circle":
-            circle(radius=4, start_out=True)
-        if sys.arvgv[1].lower() == "box2d":
+        if sys.argv[1].lower() == "hexagon":
+            hexagon(width=6, start_out=True)
+        if sys.argv[1].lower() == "circle":
+            circle(radius=3, start_out=True)
+        if sys.argv[1].lower() == "box2d":
             box2d()
     else:
         box2d()
