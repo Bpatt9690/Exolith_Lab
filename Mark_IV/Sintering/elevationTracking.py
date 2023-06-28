@@ -1,4 +1,5 @@
 import time
+import sys
 import math
 from Kalman import KalmanAngle
 import smbus
@@ -13,6 +14,7 @@ load_dotenv()
 
 class elevation_tracker:
     def __init__(self):
+        print(sys.path)
         self.bus = smbus.SMBus(1)
         self.DeviceAddress = 0x68
         self.RestrictPitch = True
@@ -125,7 +127,7 @@ class elevation_tracker:
         CCW = 0
 
         # Should be set by user, either via flag or direct input
-        accuracy = 0.5
+        accuracy = 3
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)
@@ -169,7 +171,6 @@ class elevation_tracker:
                 if degreeDifferenceX > 0:
                     GPIO.output(DIR, CW)
                 else:
-                    sleep(1.0)
                     GPIO.output(DIR, CCW)
 
                 for x in range(int(degreeDev)):

@@ -21,22 +21,24 @@ gps = GPS_Data()
 def axisResets():
     ar = axisReset.axis_reset()
     xy_status = False
+    ev_status = False
 
     try:
         xy_status = ar.xy_reset()
+        ev_status = ar.elevation_reset()
 
     except Exception as e:
         logger.logInfo("Axis Reset Failure: {}".format(e))
 
-    if xy_status:
+    if xy_status and ev_status:
         logger.logInfo("Successful reset")
         return True
 
     else:
         logger.logInfo("Axis Reset Failure")
         logger.logInfo(
-            "xy_axis_status: {}".format(
-                xy_status
+            "xy_axis_status: {}\nev_status: {}".format(
+                xy_status, ev_status
             )
         )
         return False
@@ -117,7 +119,7 @@ def solarTracking():
     while True:
         azimuth_tracking_status = azimuth_tracker.tracking()
         solar_elevation_status = solarElevationLogic()
-        time.sleep(10)  # sleep for 10 seconds before checking positioning
+        time.sleep(20)  # sleep for 10 seconds before checking positioning
 
 
 def main():

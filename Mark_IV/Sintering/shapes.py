@@ -11,7 +11,7 @@ from axisReset import axis_reset
 ar = axis_reset()
 
 # Defines the diameter of the focal point in cm.
-focal_diameter = 0.7
+focal_diameter = 0.8
 
 def box2d(x_dist=7, y_dist=5):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
@@ -253,7 +253,7 @@ def main():
         if sys.argv[1].lower() == "hexagon":
             hexagon(width=6, start_out=True)
         if sys.argv[1].lower() == "circle":
-            circle(radius=3, start_out=True)
+            circle(radius=3, start_out=False)
         if sys.argv[1].lower() == "box2d":
             box2d(x_dist=6, y_dist=3.5)
     else:
