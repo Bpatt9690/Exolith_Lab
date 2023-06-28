@@ -128,7 +128,7 @@ class azimuth_tracker:
         self.logger.logInfo("UV Upper: " + str(uvUpper))
         self.logger.logInfo("UV Lower: " + str(uvLower))
 
-        azstatus = self.azimuthMaxPosition(1, 100, uvMax, uvUpper, uvLower)
+        azstatus = self.azimuthMaxPosition(0, int(os.getenv("AZIMUTH_Steps")), uvMax, uvUpper, uvLower)
         return azstatus
 
     def azimuthMaxPosition(self, direction, steps, uvMax, uvUpper, uvLower):
