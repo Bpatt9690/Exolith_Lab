@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 # Load environment variables from .env file
-# load_dotenv()
+load_dotenv()
 
 
 def zMove(distance=3, dir=True, speed_mod=1):
@@ -14,7 +14,7 @@ def zMove(distance=3, dir=True, speed_mod=1):
     cycles = 50
 
     if speed_mod > 2:
-        print("Speed modifier above 1, linear actuator cannot go above max speed.")
+        print("Speed modifier above 2, linear actuator cannot go above max speed.")
         exit()
 
     if speed_mod < 0.001:
@@ -37,7 +37,7 @@ def zMove(distance=3, dir=True, speed_mod=1):
     GPIO.setup(en, GPIO.OUT)
 
     # Sets up analog device (linear actuator)
-    p = GPIO.PWM(en, 1000)
+    p = GPIO.PWM(en, 50)
 
     if dir:
         # Moves forward
