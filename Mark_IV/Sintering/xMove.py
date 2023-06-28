@@ -17,7 +17,7 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 ls = limitSwitches()
 
 
-def xMove(distance=6, clockwise=True, speed_mod=1):
+def xMove(distance=6, clockwise=True, speed_mod=0.3):
     if speed_mod > 2:
         print("Speed modifier above 1, x motor cannot go above max speed.")
         exit()

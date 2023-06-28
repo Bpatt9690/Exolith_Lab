@@ -255,7 +255,7 @@ def main():
         if sys.argv[1].lower() == "circle":
             circle(radius=3, start_out=True)
         if sys.argv[1].lower() == "box2d":
-            box2d()
+            box2d(x_dist=6, y_dist=3.5)
     else:
         box2d()
 

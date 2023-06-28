@@ -4,9 +4,8 @@ from datetime import date, datetime
 # import pytz
 import arrow
 from GPS import GPS_Data
-import smbus
 from Logging import logger
-from axisReset import axis_reset
+import axisReset
 from sensorGroup import sensor_group
 import os
 from dotenv import load_dotenv
@@ -21,7 +20,7 @@ gps = GPS_Data()
 
 
 def axisResets():
-    ar = axis_reset()
+    ar = axisReset.axis_reset()
     xy_status = False
     ev_status = False
 

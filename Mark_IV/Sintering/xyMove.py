@@ -4,7 +4,6 @@ import multiprocessing as mp
 from xMove import xMove
 from yMove import yMove
 # from zMove import zMove
-from axisReset import axis_reset
 import sys
 
 """

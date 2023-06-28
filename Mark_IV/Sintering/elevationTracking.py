@@ -132,7 +132,14 @@ class elevation_tracker:
         GPIO.setup(DIR, GPIO.OUT)
         GPIO.setup(STEP, GPIO.OUT)
 
-        time.sleep(1)
+        # GPIO.output(DIR, CW)
+
+        # for x in range(1000):
+        #     GPIO.output(STEP, GPIO.HIGH)
+        #     sleep(0.02)  # Dictates how fast stepper motor will run
+        #     GPIO.output(STEP, GPIO.LOW)
+
+        # time.sleep(1)
 
         currentTiltAngleX, currentTiltAngleY = self.tiltAngle()
 
