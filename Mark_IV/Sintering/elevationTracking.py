@@ -2,20 +2,20 @@ import time
 import sys
 import math
 from Kalman import KalmanAngle
-import smbus
+import smbus2
 import RPi.GPIO as GPIO
 from time import sleep
 from Logging import logger
 from dotenv import load_dotenv
 import os
+import inspect
 
 # Load environment variables from .env file
 load_dotenv()
 
 class elevation_tracker:
     def __init__(self):
-        print(sys.path)
-        self.bus = smbus.SMBus(1)
+        self.bus = smbus2.SMBus(1)
         self.DeviceAddress = 0x68
         self.RestrictPitch = True
         self.radToDeg = 57.2957786
@@ -127,7 +127,7 @@ class elevation_tracker:
         CCW = 0
 
         # Should be set by user, either via flag or direct input
-        accuracy = 3
+        accuracy = 1.5
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)
@@ -264,6 +264,8 @@ class elevation_tracker:
                         * self.radToDeg
                     )
                     pitch = math.atan2(-accX, accZ) * self.radToDeg
+                print(roll)
+                print(pitch)
 
                 gyroXRate = gyroX / 131
                 gyroYRate = gyroY / 131
