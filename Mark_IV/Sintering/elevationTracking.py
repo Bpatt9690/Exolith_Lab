@@ -2,7 +2,7 @@ import time
 import sys
 import math
 from Kalman import KalmanAngle
-import smbus2
+import smbus
 import RPi.GPIO as GPIO
 from time import sleep
 from Logging import logger
@@ -15,7 +15,7 @@ load_dotenv()
 
 class elevation_tracker:
     def __init__(self):
-        self.bus = smbus2.SMBus(1)
+        self.bus = smbus.SMBus(1)
         self.DeviceAddress = 0x68
         self.RestrictPitch = True
         self.radToDeg = 57.2957786
@@ -127,7 +127,8 @@ class elevation_tracker:
         CCW = 0
 
         # Should be set by user, either via flag or direct input
-        accuracy = 1.5
+        accuracy = 1
+        degOffset = 2.7
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)
@@ -146,7 +147,7 @@ class elevation_tracker:
         currentTiltAngleX, currentTiltAngleY = self.tiltAngle()
 
         # Gathering current tilt angle from sensor
-        currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
+        currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) - degOffset
 
         self.logger.logInfo(
             "Current Tilt Elevation Angle: {}".format(currentTiltAngleX)
@@ -175,14 +176,14 @@ class elevation_tracker:
 
                 for x in range(int(degreeDev)):
                     GPIO.output(STEP, GPIO.HIGH)
-                    sleep(0.05)  # Dictates how fast stepper motor will run
+                    sleep(0.2)  # Dictates how fast stepper motor will run
                     GPIO.output(STEP, GPIO.LOW)
 
                 time.sleep(1)
 
                 # New Angle Readings
                 currentTiltAngleX, currentTiltAngleY = self.tiltAngle()
-                currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
+                currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) - degOffset
                 self.logger.logInfo("Lens Tilt angle: {}".format(currentTiltAngleX))
                 self.logger.logInfo("Solar Elevation: {}".format(elevation))
 
@@ -264,8 +265,6 @@ class elevation_tracker:
                         * self.radToDeg
                     )
                     pitch = math.atan2(-accX, accZ) * self.radToDeg
-                print(roll)
-                print(pitch)
 
                 gyroXRate = gyroX / 131
                 gyroYRate = gyroY / 131

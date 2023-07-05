@@ -48,7 +48,7 @@ class GPS_Data:
                     time.sleep(1)
 
     def userDefinedCoordinates(self):
-        self.gps_dict["Time UTC"] = "202020"
+        self.gps_dict["Time UTC"] = "192020"
         self.gps_dict["Lattitude"] = float(2833.2327) / 100
         self.gps_dict["Lattitude Direction"] = "N"
         self.gps_dict["Longitude"] = float(8111.11886) / 100
