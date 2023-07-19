@@ -128,7 +128,7 @@ class elevation_tracker:
 
         # Should be set by user, either via flag or direct input
         accuracy = 1
-        degOffset = 2.7
+        degOffset = 0.5
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)
@@ -147,7 +147,7 @@ class elevation_tracker:
         currentTiltAngleX, currentTiltAngleY = self.tiltAngle()
 
         # Gathering current tilt angle from sensor
-        currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) - degOffset
+        currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) + degOffset
 
         self.logger.logInfo(
             "Current Tilt Elevation Angle: {}".format(currentTiltAngleX)
@@ -183,7 +183,7 @@ class elevation_tracker:
 
                 # New Angle Readings
                 currentTiltAngleX, currentTiltAngleY = self.tiltAngle()
-                currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) - degOffset
+                currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) + degOffset
                 self.logger.logInfo("Lens Tilt angle: {}".format(currentTiltAngleX))
                 self.logger.logInfo("Solar Elevation: {}".format(elevation))
 
@@ -208,10 +208,13 @@ class elevation_tracker:
 
         time.sleep(1)
 
+        accX_offset = -300
+        accY_offset = -200
+        accZ_offset = -1200
         # Read Accelerometer raw value
-        accX = self.read_raw_data(self.ACCEL_XOUT_H)
-        accY = self.read_raw_data(self.ACCEL_YOUT_H)
-        accZ = self.read_raw_data(self.ACCEL_ZOUT_H)
+        accX = self.read_raw_data(self.ACCEL_XOUT_H) + accX_offset
+        accY = self.read_raw_data(self.ACCEL_YOUT_H) + accY_offset
+        accZ = self.read_raw_data(self.ACCEL_ZOUT_H) + accZ_offset
 
         if self.RestrictPitch:
             roll = math.atan2(accY, accZ) * self.radToDeg
@@ -241,9 +244,9 @@ class elevation_tracker:
                 continue
             try:
                 # Read Accelerometer raw value
-                accX = self.read_raw_data(self.ACCEL_XOUT_H)
-                accY = self.read_raw_data(self.ACCEL_YOUT_H)
-                accZ = self.read_raw_data(self.ACCEL_ZOUT_H)
+                accX = self.read_raw_data(self.ACCEL_XOUT_H) + accX_offset
+                accY = self.read_raw_data(self.ACCEL_YOUT_H) + accY_offset
+                accZ = self.read_raw_data(self.ACCEL_ZOUT_H) + accZ_offset
 
                 # Read Gyroscope raw value
                 gyroX = self.read_raw_data(self.GYRO_XOUT_H)

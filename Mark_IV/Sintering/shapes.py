@@ -36,7 +36,7 @@ def box2d(x_dist=7, y_dist=5):
         GPIO.cleanup()
     
 
-def box3d(x_dist=14, y_dist=8, z_dist=8):
+def box3d(x_dist=3, y_dist=2, z_dist=2):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     num_y_lines = int(round(y_dist / focal_diameter, 0))
     num_z_lines = int(round(z_dist / focal_diameter, 0))
@@ -60,7 +60,7 @@ def box3d(x_dist=14, y_dist=8, z_dist=8):
             # When of last layer, don't move tray down anymore.
             if i == num_z_lines - 1:
                 break
-            zMove(focal_diameter, True) 
+            zMove(focal_diameter, False) 
             y_rotation = not(y_rotation)
 
 
@@ -155,7 +155,7 @@ def cylinder(radius=6, height=6):
             
             # Moves to start next layer.
             # True moves linear actuator forward.
-            zMove(focal_diameter, True)
+            zMove(focal_diameter, False)
             start_out = not(start_out)
             
     # Once finished clean everything up.
@@ -179,7 +179,7 @@ def hexagonal_prism(width=5, height=5):
             
             # Moves to start next layer.
             # True moves linear actuator forward.
-            zMove(focal_diameter, True)
+            zMove(focal_diameter, False)
             start_out = not(start_out)
             
     # Once finished clean everything up
@@ -203,7 +203,7 @@ def semi_sphere(radius=6):
             
             # Moves to start next layer.
             # True moves linear actuator forward.
-            zMove(focal_diameter, True)
+            zMove(focal_diameter, False)
             start_out = not(start_out)
 
             # Makes next circle smaller.
@@ -239,7 +239,7 @@ def bowl(radius=6):
                 break  
             # Moves to start next layer.
             # True moves linear actuator forward.
-            zMove(focal_diameter, True)
+            zMove(focal_diameter, False)
             
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -257,7 +257,7 @@ def main():
         if sys.argv[1].lower() == "box2d":
             box2d(x_dist=3, y_dist=3)
     else:
-        box2d(x_dist=3, y_dist=3)
+        box3d(x_dist=3, y_dist=2, z_dist=2)
 
 
 if __name__ == "__main__":
