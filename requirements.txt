@@ -1,3 +1,4 @@
+adafruit-circuitpython-vl53l0x==3.6.9
 asn1crypto==0.24.0
 automationhat==0.2.0
 blinker==1.4

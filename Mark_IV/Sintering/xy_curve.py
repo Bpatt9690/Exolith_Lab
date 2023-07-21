@@ -7,12 +7,12 @@ import multiprocessing as mp
 from Limit_Switches import limitSwitches
 from xMove import xMove
 from yMove import yMove
-
+ 
 ls = limitSwitches()
 
 def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
     # Initialize variables
-    speed_mod = 1
+    speed_mod = 0.1
 
     # Tracks the total previous x and y movement
     x_prev = 0

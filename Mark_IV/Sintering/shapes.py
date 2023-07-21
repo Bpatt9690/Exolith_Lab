@@ -11,23 +11,37 @@ from axisReset import axis_reset
 ar = axis_reset()
 
 # Defines the diameter of the focal point in cm.
-focal_diameter = 0.8
+focal_diameter = 0.7
 
-def box2d(x_dist=7, y_dist=5):
+def box2d(x_dist=7, y_dist=5, flip=False):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    num_lines = int(y_dist / focal_diameter)
-
-    clockwise = True
+    if flip:
+        num_lines = int(round(x_dist / focal_diameter, 0))
+        y_dist = int(round(y_dist / focal_diameter, 0)) * focal_diameter
+        clockwise = False
+    else:
+        num_lines = int(round(y_dist / focal_diameter, 0))
+        x_dist = int(round(x_dist / focal_diameter, 0)) * focal_diameter
+        clockwise = True
     #CW Away from limit switch
     try:
         # Make box with given number of lines.
-        for i in range(num_lines):
-            xMove(x_dist, clockwise)
-            if i == num_lines - 1:
-                break
+        if(flip):
+            for i in range(num_lines):
+                yMove(y_dist, clockwise)
+                if i == num_lines - 1:
+                    break
 
-            yMove(focal_diameter, True)
-            clockwise = not(clockwise)
+                xMove(focal_diameter, False)
+                clockwise = not(clockwise)
+        else:
+            for i in range(num_lines):
+                xMove(x_dist, clockwise)
+                if i == num_lines - 1:
+                    break
+
+                yMove(focal_diameter, True)
+                clockwise = not(clockwise)
 
 
     # Once finished clean everything up
@@ -38,31 +52,21 @@ def box2d(x_dist=7, y_dist=5):
 
 def box3d(x_dist=3, y_dist=2, z_dist=2):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    num_y_lines = int(round(y_dist / focal_diameter, 0))
     num_z_lines = int(round(z_dist / focal_diameter, 0))
 
-    x_rotation = True
-    y_rotation = True
+    flip = False
     #CW Away from limit switch
     try:
         for i in range(num_z_lines):
-            # Make box with given number of lines.
-            for j in range(num_y_lines):
-                # Makes layer of box.
-                xMove(x_dist, x_rotation)
-                x_rotation = not(x_rotation)
-
-                # When on last line of layer, keep tray still and start at that same point on the next layer.
-                if j == num_y_lines - 1:
-                    break
-                yMove(focal_diameter, y_rotation)
+            # Make box of given size, but flip orientation 90 degrees every layer to increase strength of brick.
+            box2d(x_dist, y_dist, flip)
 
             # When of last layer, don't move tray down anymore.
             if i == num_z_lines - 1:
                 break
             zMove(focal_diameter, False) 
-            y_rotation = not(y_rotation)
-
+            flip = not(flip)
+            input("Press Enter to continue next layer")
 
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -157,6 +161,7 @@ def cylinder(radius=6, height=6):
             # True moves linear actuator forward.
             zMove(focal_diameter, False)
             start_out = not(start_out)
+            input("Press Enter to continue next layer")
             
     # Once finished clean everything up.
     except KeyboardInterrupt:
@@ -181,6 +186,7 @@ def hexagonal_prism(width=5, height=5):
             # True moves linear actuator forward.
             zMove(focal_diameter, False)
             start_out = not(start_out)
+            input("Press Enter to continue next layer")
             
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -208,6 +214,8 @@ def semi_sphere(radius=6):
 
             # Makes next circle smaller.
             radius -= focal_diameter
+
+            input("Press Enter to continue next layer")
             
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -234,6 +242,7 @@ def bowl(radius=6):
                 yMove(focal_diameter, True)
                 # Makes next circle smaller.
                 radius -= focal_diameter
+                input("Press Enter to continue next layer")
 
             if i == num_layers - 1:
                 break  
@@ -253,11 +262,15 @@ def main():
         if sys.argv[1].lower() == "hexagon":
             hexagon(width=6, start_out=True)
         if sys.argv[1].lower() == "circle":
-            circle(radius=3, start_out=False)
+            circle(radius=3, start_out=True)
         if sys.argv[1].lower() == "box2d":
             box2d(x_dist=3, y_dist=3)
     else:
         box3d(x_dist=3, y_dist=2, z_dist=2)
+        cylinder(radius=3, height=3)
+        hexagonal_prism(width=3, height=3)
+        semi_sphere(radius=3)
+        bowl(radius=3)
 
 
 if __name__ == "__main__":
