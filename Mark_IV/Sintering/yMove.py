@@ -23,6 +23,9 @@ def yMove(distance=6, clockwise=True, speed_mod=0.1):
 
     if(speed_mod < 0.001):
         return
+    
+    if distance == 0:
+        return
 
     # Direction pin from controller
     DIR = int(os.getenv("MOTOR_Y_Direction")) #DIR+

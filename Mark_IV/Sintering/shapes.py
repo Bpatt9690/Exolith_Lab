@@ -149,7 +149,7 @@ def hexagon(width=5, start_out=False):
         GPIO.cleanup()
 
 
-def cylinder(radius=6, height=6):
+def cylinder(radius=2, height=3):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     num_layers = int(round(height / layer_height, 0))
     start_out = True
@@ -199,9 +199,9 @@ def hexagonal_prism(width=5, height=5):
         GPIO.cleanup()
 
 
-def semi_sphere(radius=6):
+def semi_sphere(radius=4):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    num_layers = int(round(radius / layer_height, 0))
+    num_layers = int(round(radius / focal_diameter, 0))
     start_out = True
 
     try:
@@ -220,7 +220,11 @@ def semi_sphere(radius=6):
             # Makes next circle smaller.
             radius -= focal_diameter
 
-            input("Press Enter to continue next layer")
+            if start_out:
+                yMove(focal_diameter, True)
+            input("Press Enter to move to start of next layer")
+            
+
             
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -228,10 +232,10 @@ def semi_sphere(radius=6):
         GPIO.cleanup()
 
 
-def bowl(radius=6):
+def bowl(radius=4):
     # Thickness defines how many layers thick the bowl will be.
-    thickness = 2
-    num_layers = int(round(radius / layer_height, 0))
+    thickness = 3
+    num_layers = int(round(radius / focal_diameter, 0))
 
     # True moves linear actuator forward.
     try:
@@ -247,13 +251,15 @@ def bowl(radius=6):
                 yMove(focal_diameter, True)
                 # Makes next circle smaller.
                 radius -= focal_diameter
-                input("Press Enter to continue next layer")
-
+            
             if i == num_layers - 1:
                 break  
             # Moves to start next layer.
             # True moves linear actuator forward.
             zMove(layer_height, False)
+            yMove(focal_diameter * (thickness - 1), False)
+            radius += focal_diameter * (thickness - 1)
+            input("Press Enter to continue next layer")
             
     # Once finished clean everything up
     except KeyboardInterrupt:
@@ -271,11 +277,11 @@ def main():
         if sys.argv[1].lower() == "box2d":
             box2d(x_dist=3, y_dist=3)
     else:
-        box3d(x_dist=3, y_dist=2, z_dist=2)
+        # box3d(x_dist=3, y_dist=2, z_dist=2)
         # cylinder(radius=3, height=3)
         # hexagonal_prism(width=3, height=3)
         # semi_sphere(radius=3)
-        # bowl(radius=3)
+        bowl(radius=3)
 
 
 if __name__ == "__main__":
