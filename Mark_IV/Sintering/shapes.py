@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import sys
+from math import ceil
 from xMove import xMove
 from yMove import yMove
 from zMove import zMove
@@ -12,36 +13,52 @@ ar = axis_reset()
 
 # Defines the diameter of the focal point in cm.
 layer_height = 0.4
-focal_diameter = 0.7
+focal_diameter = 0.9
 
-def box2d(x_dist=7, y_dist=5, flip=False, x_prev_dir=False, y_prev_dir=True):
+# For sintering use 0.1 as default
+speed = 0.35
+
+def box2d(x_dist=5, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
+    # if flip:
+    #     num_lines = int(round(x_dist / focal_diameter, 0))
+    #     y_dist = int(round(y_dist / focal_diameter - 1, 0)) * focal_diameter
+    # else:
+    #     num_lines = int(round(y_dist / focal_diameter, 0))
+    #     x_dist = int(round(x_dist / focal_diameter - 1, 0)) * focal_diameter
+
+    # No rounding, replaces for slight overlap.
     if flip:
-        num_lines = int(round(x_dist / focal_diameter, 0))
-        y_dist = int(round(y_dist / focal_diameter, 0)) * focal_diameter
+        num_lines = ceil(x_dist / focal_diameter)
+        y_dist -= focal_diameter
+        x_dist = (x_dist - focal_diameter) / (num_lines - 1)
     else:
-        num_lines = int(round(y_dist / focal_diameter, 0))
-        x_dist = int(round(x_dist / focal_diameter, 0)) * focal_diameter
+        num_lines = ceil(x_dist / focal_diameter)
+        x_dist -= focal_diameter
+        y_dist = (y_dist - focal_diameter) / (num_lines - 1)
+
     #CW Away from limit switch
     try:
         # Make box with given number of lines.
         if(flip):
             for i in range(num_lines):
-                yMove(y_dist, y_prev_dir)
+                yMove(y_dist, y_prev_dir, speed)
                 y_prev_dir = not(y_prev_dir)
                 if i == num_lines - 1:
                     break
                 
-                xMove(focal_diameter, x_prev_dir)
+                # xMove(focal_diameter, x_prev_dir, speed)
+                xMove(x_dist, x_prev_dir, speed)
             x_prev_dir = not(x_prev_dir)
         else:
             for i in range(num_lines):
-                xMove(x_dist, x_prev_dir)
+                xMove(x_dist, x_prev_dir, speed)
                 x_prev_dir = not(x_prev_dir)
                 if i == num_lines - 1:
                     break
 
-                yMove(focal_diameter, y_prev_dir)
+                # yMove(focal_diameter, y_prev_dir, speed)
+                yMove(y_dist, y_prev_dir, speed)
             y_prev_dir = not(y_prev_dir)
         return (x_prev_dir, y_prev_dir)
                 
@@ -80,31 +97,63 @@ def box3d(x_dist=2, y_dist=3, z_dist=2):
 
 
 def circle(radius=3, start_out=True):
+    num_layers = ceil(radius / focal_diameter)
+    line_width = radius / num_layers
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    num_layers = int(round(radius / focal_diameter, 0))
+    # num_layers = int(round(radius / focal_diameter, 0))
 
     # Start on the outside or center of filled-in circle.
+    # if start_out:
+    #     radius = focal_diameter * (num_layers - 0.5)
+    # else:
+    #     yMove(focal_diameter, False)
+    #     radius = focal_diameter
+
     if start_out:
-        radius = focal_diameter * (num_layers - 0.5)
+        radius = line_width * (num_layers - 0.5)
     else:
-        radius = focal_diameter / 2
+        yMove(line_width, False)
+        radius = line_width
+
 
     try:
+        # for i in range(num_layers):
+        #     # Draw circle outline
+        #     xyCurve(0, 0, 0, radius, True)
+
+        #     if i == num_layers - 1 and not start_out:
+        #         break
+
+        #     # Make next circle smaller if starting on outside of circle.
+        #     # Make next circle larger if starting on inside of circle.
+        #     if start_out and i != num_layers - 1:
+        #         yMove(focal_diameter, start_out)
+        #         radius -= focal_diameter
+        #     elif i >= num_layers - 2:
+        #         yMove(focal_diameter / 2, start_out)
+        #         radius += focal_diameter / 2
+        #     else:
+        #         yMove(focal_diameter, start_out)
+        #         radius += focal_diameter
+        
         for i in range(num_layers):
             # Draw circle outline
             xyCurve(0, 0, 0, radius, True)
 
-            if i == num_layers - 1:
+            if i == num_layers - 1 and not start_out:
                 break
 
             # Make next circle smaller if starting on outside of circle.
             # Make next circle larger if starting on inside of circle.
-            if start_out:
-                yMove(focal_diameter, True)
-                radius -= focal_diameter
+            if start_out and i != num_layers - 1:
+                yMove(line_width, start_out)
+                radius -= line_width
+            elif i >= num_layers - 2:
+                yMove(line_width / 2, start_out)
+                radius += line_width / 2
             else:
-                yMove(focal_diameter, False)
-                radius += focal_diameter
+                yMove(line_width, start_out)
+                radius += line_width
 
     except KeyboardInterrupt:
         print("cleanup")
@@ -253,7 +302,7 @@ def bowl(radius=4):
                 radius -= focal_diameter
             
             if i == num_layers - 1:
-                break  
+                break
             # Moves to start next layer.
             # True moves linear actuator forward.
             zMove(layer_height, False)
@@ -273,15 +322,15 @@ def main():
         if sys.argv[1].lower() == "hexagon":
             hexagon(width=6, start_out=True)
         if sys.argv[1].lower() == "circle":
-            circle(radius=3, start_out=True)
+            circle(radius=2.4, start_out=False)
         if sys.argv[1].lower() == "box2d":
             box2d(x_dist=3, y_dist=3)
     else:
-        # box3d(x_dist=3, y_dist=2, z_dist=2)
-        # cylinder(radius=3, height=3)
+        box3d(x_dist=3, y_dist=3, z_dist=3)
+        # cylinder(radius=2, height=2)
         # hexagonal_prism(width=3, height=3)
         # semi_sphere(radius=3)
-        bowl(radius=3)
+        # bowl(radius=3)
 
 
 if __name__ == "__main__":

@@ -128,7 +128,7 @@ class elevation_tracker:
 
         # Should be set by user, either via flag or direct input
         accuracy = 1
-        degOffset = 1
+        degOffset = 0
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)
