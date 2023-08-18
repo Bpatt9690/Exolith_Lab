@@ -11,7 +11,7 @@ load_dotenv()
 # i2c = board.I2C()
 # dSensor = adafruit_vl53l0x.VL53L0X(i2c)
 
-def zMove(distance=0.15, dir=False, speed_mod=1):
+def zMove(distance=0.3, dir=False, speed_mod=1):
     # Between 0 and 100, controls speed. 50 is medium speed.
     # Need to find speed that matches default speeds for x and y
     cycles = 20
@@ -28,9 +28,9 @@ def zMove(distance=0.15, dir=False, speed_mod=1):
     in2 = int(os.getenv("LINEAR_in2"))
     en = int(os.getenv("LINEAR_en"))
     # NEEDS TESTING. num is a constant that can turn distance to seconds given the linear actuator's speed.
-    num = 0.655
+    num = 0.6715
     if dir:
-        num = 0.3575
+        num = 0.3275
     print(num)
     seconds = distance / (num * speed_mod)
 

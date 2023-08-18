@@ -56,13 +56,13 @@ class azimuth_tracker:
             self.logger.logInfo("Adjusting....")
 
             for x in range(steps):
-                for _ in range(75):
+                for _ in range(100):
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
-                    sleep(0.005)
+                    sleep(0.004)
                     GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.005)
+                    sleep(0.004)
 
                 uv = self.uv_sensor()
 
@@ -170,13 +170,13 @@ class azimuth_tracker:
             for x in range(steps):
                 self.logger.logInfo("Azimuth Adjustment...")
                 
-                for _ in range(75):
+                for _ in range(100):
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
-                    sleep(0.005)
+                    sleep(0.004)
                     GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.005)
+                    sleep(0.004)
 
                 uv = self.uv_sensor()
 
@@ -238,13 +238,13 @@ class azimuth_tracker:
                 for x in range(steps):
                     self.logger.logInfo("Adjusting azimuth....")
 
-                    for _ in range(75):
+                    for _ in range(100):
                         GPIO.output(STEP_1, GPIO.HIGH)
                         # .5 == super slow
                         # .00005 == breaking
-                        sleep(0.005)
+                        sleep(0.004)
                         GPIO.output(STEP_1, GPIO.LOW)
-                        sleep(0.005)
+                        sleep(0.004)
 
                     uvVal = self.uv_sensor()
 

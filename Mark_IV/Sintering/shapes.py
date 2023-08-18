@@ -12,13 +12,13 @@ from axisReset import axis_reset
 ar = axis_reset()
 
 # Defines the diameter of the focal point in cm.
-layer_height = 0.4
-focal_diameter = 0.9
+layer_height = 0.3
+focal_diameter = 0.7
 
 # For sintering use 0.1 as default
-speed = 0.35
+speed = 0.11
 
-def box2d(x_dist=5, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
+def box2d(x_dist=4, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     # if flip:
     #     num_lines = int(round(x_dist / focal_diameter, 0))
@@ -70,7 +70,7 @@ def box2d(x_dist=5, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
         GPIO.cleanup()
     
 
-def box3d(x_dist=2, y_dist=3, z_dist=2):
+def box3d(x_dist=4, y_dist=4, z_dist=4):
     x_prev_dir = True
     y_prev_dir = True
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
@@ -96,7 +96,7 @@ def box3d(x_dist=2, y_dist=3, z_dist=2):
         GPIO.cleanup()
 
 
-def circle(radius=3, start_out=True):
+def circle(radius=2, start_out=True):
     num_layers = ceil(radius / focal_diameter)
     line_width = radius / num_layers
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
@@ -160,7 +160,7 @@ def circle(radius=3, start_out=True):
         GPIO.cleanup()
 
 
-def hexagon(width=5, start_out=False):
+def hexagon(width=3, start_out=False):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     num_layers = int(round((width) / (2 * focal_diameter), 0))
 
@@ -174,23 +174,23 @@ def hexagon(width=5, start_out=False):
         for i in range(num_layers):
             side = width / 4
             # Traces hexagon outline (in xy)
-            xMove(side, True)
-            xyMove(side, side * sqrt(3))
-            xyMove(side * -1, side * sqrt(3))
-            xMove(side * 2, False)
-            xyMove(side * -1, side * sqrt(3) * -1)
-            xyMove(side, side * sqrt(3) * -1)
-            xMove(side, True)
+            xMove(side, True, speed_mod=speed)
+            xyMove(side, side * sqrt(3), speed=speed)
+            xyMove(side * -1, side * sqrt(3), speed=speed)
+            xMove(side * 2, False, speed_mod=speed)
+            xyMove(side * -1, side * sqrt(3) * -1, speed=speed)
+            xyMove(side, side * sqrt(3) * -1, speed=speed)
+            xMove(side, True, speed_mod=speed)
 
             if i == num_layers - 1:
                 break
             
             # Moves to start next hexagon, depending on if that hexagon is starting on inside or outside.
             if start_out:
-                yMove(focal_diameter, True)
+                yMove(focal_diameter, True, speed_mod=speed)
                 width = width - focal_diameter * 2
             else:
-                yMove(focal_diameter, False)
+                yMove(focal_diameter, False, speed_mod=speed)
                 width = width + focal_diameter * 2
         
     except KeyboardInterrupt:
@@ -320,17 +320,17 @@ def main():
     num_args = len(sys.argv)
     if num_args > 1:
         if sys.argv[1].lower() == "hexagon":
-            hexagon(width=6, start_out=True)
+            hexagon(width=3, start_out=True)
         if sys.argv[1].lower() == "circle":
-            circle(radius=2.4, start_out=False)
+            circle(radius=2, start_out=True)
         if sys.argv[1].lower() == "box2d":
             box2d(x_dist=3, y_dist=3)
     else:
-        box3d(x_dist=3, y_dist=3, z_dist=3)
+        box3d(x_dist=4, y_dist=4, z_dist=4)
         # cylinder(radius=2, height=2)
         # hexagonal_prism(width=3, height=3)
-        # semi_sphere(radius=3)
-        # bowl(radius=3)
+        # semi_sphere(radius=2)
+        # bowl(radius=4.5)
 
 
 if __name__ == "__main__":

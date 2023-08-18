@@ -119,7 +119,7 @@ def solarTracking():
     while True:
         azimuth_tracking_status = azimuth_tracker.tracking()
         solar_elevation_status = solarElevationLogic()
-        time.sleep(20)  # sleep for 10 seconds before checking positioning
+        time.sleep(10)  # sleep for 10 seconds before checking positioning
 
 
 def main():

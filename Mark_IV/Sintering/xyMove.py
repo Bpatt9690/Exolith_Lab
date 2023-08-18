@@ -9,9 +9,9 @@ Moves both X and Y axis a specified distance simultaneously and ending at the sa
 Uses multithreading.
 """
 
-def xyMove(x_dist=8, y_dist=8, z_dist=6):
-    x_speed_mod = 1
-    y_speed_mod = 1
+def xyMove(x_dist=8, y_dist=8, z_dist=6, speed=0.3):
+    x_speed_mod = speed
+    y_speed_mod = speed
     z_speed_mod = 1
 
     # x and y rotate determine if motors move clockwise or counterclockwise.
