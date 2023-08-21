@@ -62,141 +62,15 @@ class axis_reset:
 
     def x_axis_reset(self):
         """Responsible for resetting the x axis."""
-        GPIO.setwarnings(False)
-        GPIO.cleanup()
-
-        DIR_1 = int(os.getenv("MOTOR_X_Direction"))  # DIR+
-        STEP_1 = int(os.getenv("MOTOR_X_Pulse"))  # PULL+
-
-        # 0/1 used to signify clockwise or counterclockwise.
-        CW = 0
-        CCW = 1
-
         MAX = 10000
-
-        motor1_flag = 0
-        motor2_flag = 0
-
-        GPIO.setmode(GPIO.BCM)
-        motor1_switch = int(os.getenv("limitSwitchX_1"))
-        motor2_switch = int(os.getenv("limitSwitchX_2"))
-
-        GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-        # Establish Pins in software
-        GPIO.setup(DIR_1, GPIO.OUT)
-        GPIO.setup(STEP_1, GPIO.OUT)
-
-        # Set the first direction
-        GPIO.output(DIR_1, CCW)
-
-        # !!!Not Calling LimitSwitches Class!!!#
-
-        try:
-            while 1:
-
-                for x in range(MAX):
-
-                    GPIO.output(STEP_1, GPIO.HIGH)
-                    # .5 == super slow
-                    # .00005 == breaking
-                    sleep(0.001)  # Dictates how fast stepper motor will run
-                    GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.001)
-
-                    if GPIO.input(motor2_switch) == 0:
-                        motor2_flag += 1
-                    elif GPIO.input(motor1_switch) == 0:
-                        motor1_flag += 1
-                    else:
-                        motor2_flag = 0
-                        motor1_flag = 0
-
-                    if motor2_flag >= 5:
-                        self.logger.logInfo("X Homing Successful")
-                        sleep(1)
-                        return True
-
-                    elif motor1_flag >= 5:
-                        self.logger.logInfo("X Homing Successful")
-                        sleep(1)
-                        return True
-
-        # Once finished clean everything up
-        except Exception as e:
-            self.logger.logError("Failure {}".format(e))
-            GPIO.cleanup()
-            return False
+        xMove(MAX, 0, 0.5)
+        self.logger.logInfo("X Homing Successful")
 
     def y_axis_reset(self):
         """Responsible for resetting the y axis."""
-        GPIO.setwarnings(False)
-        GPIO.cleanup()
-
-        DIR_1 = int(os.getenv("MOTOR_Y_Direction"))  # DIR+
-        STEP_1 = int(os.getenv("MOTOR_Y_Pulse"))  # PULL+
-
-        # 0/1 used to signify clockwise or counterclockwise.
-        CW = 0
-        CCW = 1
-
         MAX = 10000
-
-        motor1_flag = 0
-        motor2_flag = 0
-
-        GPIO.setmode(GPIO.BCM)
-        motor1_switch = int(os.getenv("limitSwitchY_1"))
-        motor2_switch = int(os.getenv("limitSwitchY_2"))
-        GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-        # Establish Pins in software
-        GPIO.setup(DIR_1, GPIO.OUT)
-        GPIO.setup(STEP_1, GPIO.OUT)
-
-        # Set the first direction
-        GPIO.output(DIR_1, CCW)
-
-        try:
-
-            while 1:
-
-                for x in range(MAX):
-
-                    GPIO.output(STEP_1, GPIO.HIGH)
-                    # Allow it to get there.
-                    # .5 == super slow
-                    sleep(0.001)  # Dictates how fast stepper motor will run
-                    GPIO.output(STEP_1, GPIO.LOW)
-
-                    sleep(0.001)
-
-                    if GPIO.input(motor2_switch) == 0:
-                        motor2_flag += 1
-                    elif GPIO.input(motor1_switch) == 0:
-                        motor1_flag += 1
-                    else:
-                        motor2_flag = 0
-                        motor1_flag = 0
-
-                    if motor2_flag >= 5:
-                        self.logger.logInfo("Y Homing Successful")
-                        sleep(1)
-                        return True
-
-                    elif motor1_flag >= 5:
-                        self.logger.logInfo("Y Homing Successful")
-                        sleep(1)
-                        return True
-
-        # Once finished clean everything up
-
-        except Exception as e:
-            self.logger.logError("Failure {}".format(e))
-            GPIO.cleanup()
-            return False
+        yMove(MAX, 0, 0.5)
+        self.logger.logInfo("Y Homing Successful")
     
     def xy_reset(self):
         try:
@@ -216,7 +90,7 @@ class axis_reset:
         self.x_axis_reset()
         try:
             xMove(14)
-            sleep(1)
+            sleep(0.5)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
@@ -227,7 +101,7 @@ class axis_reset:
         self.y_axis_reset()
         try:
             yMove(9.5)
-            sleep(1)
+            sleep(0.5)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
@@ -238,7 +112,7 @@ class axis_reset:
         self.xy_reset()
         try:
             xyMove.xyMove(14, 9.5)
-            sleep(1)
+            sleep(0.5)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))

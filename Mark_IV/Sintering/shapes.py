@@ -16,26 +16,26 @@ layer_height = 0.3
 focal_diameter = 0.7
 
 # For sintering use 0.1 as default
-speed = 0.11
+speed = 0.3
 
 def box2d(x_dist=4, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
-    # if flip:
-    #     num_lines = int(round(x_dist / focal_diameter, 0))
-    #     y_dist = int(round(y_dist / focal_diameter - 1, 0)) * focal_diameter
-    # else:
-    #     num_lines = int(round(y_dist / focal_diameter, 0))
-    #     x_dist = int(round(x_dist / focal_diameter - 1, 0)) * focal_diameter
+    if flip:
+        num_lines = int(round(x_dist / focal_diameter, 0))
+        y_dist = int(round(y_dist / focal_diameter - 1, 0)) * focal_diameter
+    else:
+        num_lines = int(round(y_dist / focal_diameter, 0))
+        x_dist = int(round(x_dist / focal_diameter - 1, 0)) * focal_diameter
 
     # No rounding, replaces for slight overlap.
-    if flip:
-        num_lines = ceil(x_dist / focal_diameter)
-        y_dist -= focal_diameter
-        x_dist = (x_dist - focal_diameter) / (num_lines - 1)
-    else:
-        num_lines = ceil(x_dist / focal_diameter)
-        x_dist -= focal_diameter
-        y_dist = (y_dist - focal_diameter) / (num_lines - 1)
+    # if flip:
+    #     num_lines = ceil(x_dist / focal_diameter)
+    #     y_dist -= focal_diameter
+    #     x_dist = (x_dist - focal_diameter) / (num_lines - 1)
+    # else:
+    #     num_lines = ceil(x_dist / focal_diameter)
+    #     x_dist -= focal_diameter
+    #     y_dist = (y_dist - focal_diameter) / (num_lines - 1)
 
     #CW Away from limit switch
     try:
@@ -47,8 +47,8 @@ def box2d(x_dist=4, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
                 if i == num_lines - 1:
                     break
                 
-                # xMove(focal_diameter, x_prev_dir, speed)
-                xMove(x_dist, x_prev_dir, speed)
+                xMove(focal_diameter, x_prev_dir, speed)
+                # xMove(x_dist, x_prev_dir, speed)
             x_prev_dir = not(x_prev_dir)
         else:
             for i in range(num_lines):
@@ -57,8 +57,8 @@ def box2d(x_dist=4, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
                 if i == num_lines - 1:
                     break
 
-                # yMove(focal_diameter, y_prev_dir, speed)
-                yMove(y_dist, y_prev_dir, speed)
+                yMove(focal_diameter, y_prev_dir, speed)
+                # yMove(y_dist, y_prev_dir, speed)
             y_prev_dir = not(y_prev_dir)
         return (x_prev_dir, y_prev_dir)
                 

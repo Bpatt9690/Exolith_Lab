@@ -17,8 +17,8 @@ DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE
 ls = limitSwitches()
 
 def yMove(distance=10, clockwise=True, speed_mod=0.3):
-    if speed_mod > 2:
-        print("Speed modifier above 1, y motor cannot go above max speed.")
+    if speed_mod > 1.5:
+        print("Speed modifier above 1.5, y motor cannot go above max speed.")
         exit()
 
     if(speed_mod < 0.001):
@@ -35,6 +35,11 @@ def yMove(distance=10, clockwise=True, speed_mod=0.3):
     CCW = 1
     MAX = 10000
     motor_flag = 0
+    y_coord = 0.0
+    file_name = "y_coord.txt"
+
+    # Based on distance traveled each step of the motor.
+    increment = 0.000635
 
     GPIO.setmode(GPIO.BCM)
     motor1_switch = int(os.getenv("limitSwitchY_1"))
@@ -51,11 +56,19 @@ def yMove(distance=10, clockwise=True, speed_mod=0.3):
         GPIO.output(DIR, CW)
     else:
         GPIO.output(DIR, CCW)
+        increment *= -1
 
     #CW Away from limit switch
     try:
+        if(os.path.exists(file_name)) and os.stat(file_name).st_size != 0:
+            with open(file_name, "r") as f:
+                y_coord = float(f.readline())
+        else:
+            with open(file_name, "w") as f:
+                f.write("0\n")
         num_steps = int(round(distance / 0.000635, 0))
         
+        f = open(file_name, "w")
         # # Run for 200 steps. This will change based on how you set you controller
         for x in range(num_steps):
 
@@ -69,12 +82,20 @@ def yMove(distance=10, clockwise=True, speed_mod=0.3):
             GPIO.output(STEP,GPIO.LOW)
             sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
 
+            y_coord += increment
+            f.write(str(y_coord) + "\n")
+            f.seek(0)
+
             if (GPIO.input(motor2_switch) == 0 or GPIO.input(motor1_switch) == 0) and clockwise == False:
                 motor_flag += 1
             else:
                 motor_flag = 0
 
             if motor_flag >= 5:
+                y_coord = 0.0
+                f.close()
+                with open(file_name, "w") as f:
+                    f.write(str(y_coord) + "\n")
                 break
 
         GPIO.cleanup()
@@ -82,6 +103,7 @@ def yMove(distance=10, clockwise=True, speed_mod=0.3):
     # Once finished clean everything up
     except KeyboardInterrupt:
         print("cleanup")
+        f.close()
         GPIO.cleanup()
 
 
