@@ -97,7 +97,7 @@ def xMove(distance=10, clockwise=True, speed_mod=0.3):
                 with open(file_name, "w") as f:
                     f.write(str(x_coord) + "\n")
                 break
-
+        print("x: " + str(x_coord))
         GPIO.cleanup()
 
     # Once finished clean everything up
