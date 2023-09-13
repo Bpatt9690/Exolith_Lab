@@ -22,6 +22,6 @@ class logger:
         with open(f"./logs/{datetime.now().date()}.txt", "a") as f:
             f.write(f"{data}\n")
 
-    def timeStamp(self): 
+    def timeStamp(self):
         datetime_NY = datetime.now(self.tz_NY)
         return str(datetime_NY.strftime("%H:%M:%S"))
