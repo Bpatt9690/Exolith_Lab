@@ -1,6 +1,7 @@
 import usb.core
 import usb.util
 
+
 def read_data():
     # Find the USB device
     dev = usb.core.find(idVendor=0x1a86, idProduct=0x7523)
