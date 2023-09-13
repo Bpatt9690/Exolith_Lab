@@ -44,7 +44,7 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
     y_coord = 0.0
     file_name = "y_coord.txt"
     uv_file_name = "uv_current.txt"
-    os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
+    os.chdir("/home/pi/Exolith_Lab-v1.2.0/Mark_IV/Sintering")
 
     # Based on distance traveled each step of the motor in cm.
     increment = 0.000635

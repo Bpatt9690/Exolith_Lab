@@ -1,21 +1,19 @@
 import time
-import sys
 import math
 from Kalman import KalmanAngle
-import smbus
+import smbus2
 import RPi.GPIO as GPIO
 from time import sleep
 from Logging import logger
 from dotenv import load_dotenv
 import os
-import inspect
 
 # Load environment variables from .env file
 load_dotenv()
 
 class elevation_tracker:
     def __init__(self):
-        self.bus = smbus.SMBus(1)
+        self.bus = smbus2.SMBus(1)
         self.DeviceAddress = 0x68
         self.RestrictPitch = True
         self.radToDeg = 57.2957786

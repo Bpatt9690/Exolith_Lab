@@ -9,14 +9,14 @@ class logger:
         self.tz_NY = arrow.now().to("America/New_York").tzinfo
 
     def logUV(self, data):
-        os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
+        os.chdir("/home/pi/Exolith_Lab-v1.2.0/Mark_IV/Sintering")
         timestamp = self.timeStamp()
         with open("uvsensor.txt", "w") as f:
             f.write(str(data) + "\n")
             f.close()
 
     def logInfo(self, data):
-        os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
+        os.chdir("/home/pi/Exolith_Lab-v1.2.0/Mark_IV/Sintering")
         timestamp = self.timeStamp()
         print(f"{timestamp} INFO: {data}")
         with open(f"./logs/{datetime.now().date()}.txt", "a") as f:
