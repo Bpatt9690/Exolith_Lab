@@ -5,6 +5,7 @@ import board
 # import adafruit_vl53l0x
 from dotenv import load_dotenv
 import os
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -72,7 +73,15 @@ def zMove(distance=0.3, dir=False, speed_mod=1):
 
 
 def main():
-    zMove()
+    num_args = len(sys.argv)
+    if num_args == 2:
+        num = float(sys.argv[1])
+        if num < 0:
+            zMove(abs(num), dir=False)
+        else:
+            zMove(abs(num), dir=True)
+    else:
+        zMove()
     GPIO.cleanup()
 
 

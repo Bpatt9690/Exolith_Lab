@@ -5,22 +5,23 @@ import time
 from dotenv import load_dotenv
 import os
 import sys
+from azimuthTracking import azimuth_tracker
 
 # Load environment variables from .env file
 load_dotenv()
 
 """
 Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
-DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
 """
 
 ls = limitSwitches()
 
+def xMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
+    GPIO.setwarnings(False)
 
-def xMove(distance=10, clockwise=True, speed_mod=0.3):
-    if speed_mod > 1.5:
-        print("Speed modifier above 1.5, x motor cannot go above max speed.")
-        exit()
+    if speed_mod > 1:
+        print("Speed mod too large, set to 1")
+        speed_mod = 1
 
     if speed_mod < 0.001:
         return
@@ -31,15 +32,22 @@ def xMove(distance=10, clockwise=True, speed_mod=0.3):
     # Direction pin from controller
     DIR = int(os.getenv("MOTOR_X_Direction"))  # DIR+
     STEP = int(os.getenv("MOTOR_X_Pulse"))  # PULL+
+    uvMin = float(os.getenv("uvMin"))
+    useGPS = os.getenv("useGPS")
+
+    # Max x coordinate in cm
+    X_MAX = 27
+
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
-    MAX = 10000
     motor_flag = 0
     x_coord = 0.0
-    file_name = "x_coord.txt"
+    x_file_name = "x_coord.txt"
+    uv_file_name = "uv_current.txt"
+    os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
 
-    # Based on distance traveled each step of the motor.
+    # Based on distance traveled each step of the motor in cm.
     increment = 0.000635
 
     GPIO.setmode(GPIO.BCM)
@@ -58,19 +66,44 @@ def xMove(distance=10, clockwise=True, speed_mod=0.3):
     else:
         GPIO.output(DIR, CCW)
         increment *= -1
+
     #CW Away from limit switch
     try:
-        if(os.path.exists(file_name)) and os.stat(file_name).st_size != 0:
-            with open(file_name, "r") as f:
+        if(os.path.exists(x_file_name)) and os.stat(x_file_name).st_size != 0:
+            with open(x_file_name, "r") as f:
                 x_coord = float(f.readline())
         else:
-            with open(file_name, "w") as f:
+            with open(x_file_name, "w") as f:
                 f.write("0\n")
         num_steps = int(round(distance / 0.000635, 0))
         
-        f = open(file_name, "w")
+        f = open(x_file_name, "w")
+        f.write(str(x_coord) + "\n")
+        f.seek(0)
+        uv_file = open(uv_file_name, "r+")
         # # Run for 200 steps. This will change based on how you set you controller
         for x in range(num_steps):
+            if pause and useGPS == "True":
+                if x % 50 == 0:
+                    uvVal = uv_file.readline()
+                    if uvVal != "":
+                        uvVal = float(uvVal)
+                    else:
+                        uvVal = uvVal = uvMin
+                    uv_file.seek(0)
+
+                while(uvVal < uvMin):
+                    time.sleep(0.01)
+                    uvVal = uv_file.readline()
+                    if uvVal != "":
+                        uvVal = float(uvVal)
+                    else:
+                        uvVal = 0
+                    uv_file.seek(0)
+
+            if x_coord + increment > X_MAX:
+                print("X Coordinate out of bounds")
+                return
 
             # Set one coil winding to high
             GPIO.output(STEP,GPIO.HIGH)
@@ -94,9 +127,10 @@ def xMove(distance=10, clockwise=True, speed_mod=0.3):
             if motor_flag >= 5:
                 x_coord = 0.0
                 f.close()
-                with open(file_name, "w") as f:
+                with open(x_file_name, "w") as f:
                     f.write(str(x_coord) + "\n")
                 break
+        f.close()
         print("x: " + str(x_coord))
         GPIO.cleanup()
 

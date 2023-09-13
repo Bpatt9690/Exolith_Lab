@@ -10,11 +10,7 @@ from yMove import yMove
  
 ls = limitSwitches()
 
-def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
-    # Initialize variables
-    speed_mod = 0.15
-    # speed_mod = 0.1
-
+def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True, speed_mod=0.1, pause=False):
     # Tracks the total previous x and y movement
     x_prev = 0
     y_prev = 0
@@ -27,7 +23,7 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
     motor_flag = 0
 
     # Defines how many different lines curve is divided into
-    num_segs = 20
+    num_segs = 100
 
     # Radius of circle that curve being drawn is a part of
     radius = sqrt(x_circle * x_circle + y_circle * y_circle)
@@ -98,8 +94,8 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
             y_rotate = False
 
         # Moves x and y in straight line given a distance, in a given direction, at a given speed
-        xProc = mp.Process(target=xMove, args=(abs(x), x_rotate, x_speed))
-        yProc = mp.Process(target=yMove, args=(abs(y), y_rotate, y_speed))
+        xProc = mp.Process(target=xMove, args=(abs(x), x_rotate, x_speed, pause))
+        yProc = mp.Process(target=yMove, args=(abs(y), y_rotate, y_speed, pause))
         xProc.start()
         yProc.start()
         xProc.join()
@@ -110,7 +106,7 @@ def xyCurve(x_dist=0, y_dist=0, x_circle=0, y_circle=3, rotation=True):
             motor_flag += 1
         else:
             motor_flag = 0
-        if motor_flag == 2:
+        if motor_flag > 2:
             break
 
         # Updates the current displacement from the center of unit circle.

@@ -10,16 +10,17 @@ import sys
 load_dotenv()
 
 '''
-Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
-DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
+Moves both motor 1 and motor 2 of the Y axis. Currently CW || 0 moves the y axis forward
 '''
 
 ls = limitSwitches()
 
-def yMove(distance=10, clockwise=True, speed_mod=0.3):
-    if speed_mod > 1.5:
-        print("Speed modifier above 1.5, y motor cannot go above max speed.")
-        exit()
+def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
+    GPIO.setwarnings(False)
+
+    if speed_mod > 1:
+        print("Speed mod too large, set to 1")
+        speed_mod = 1
 
     if(speed_mod < 0.001):
         return
@@ -30,15 +31,22 @@ def yMove(distance=10, clockwise=True, speed_mod=0.3):
     # Direction pin from controller
     DIR = int(os.getenv("MOTOR_Y_Direction")) #DIR+
     STEP = int(os.getenv("MOTOR_Y_Pulse")) #PULL+
+    uvMin = float(os.getenv("uvMin"))
+    useGPS = os.getenv("useGPS")
+
+    # Max y coordinate in cm
+    Y_MAX = 20
+
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
-    MAX = 10000
     motor_flag = 0
     y_coord = 0.0
     file_name = "y_coord.txt"
+    uv_file_name = "uv_current.txt"
+    os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
 
-    # Based on distance traveled each step of the motor.
+    # Based on distance traveled each step of the motor in cm.
     increment = 0.000635
 
     GPIO.setmode(GPIO.BCM)
@@ -69,8 +77,32 @@ def yMove(distance=10, clockwise=True, speed_mod=0.3):
         num_steps = int(round(distance / 0.000635, 0))
         
         f = open(file_name, "w")
+        f.write(str(y_coord) + "\n")
+        f.seek(0)
+        uv_file = open(uv_file_name, "r+")
         # # Run for 200 steps. This will change based on how you set you controller
         for x in range(num_steps):
+            if pause and useGPS == "True":
+                if x % 50 == 0:
+                    uvVal = uv_file.readline()
+                    if uvVal != "":
+                        uvVal = float(uvVal)
+                    else:
+                        uvVal = uvMin
+                    uv_file.seek(0)
+
+                while(uvVal < uvMin):
+                    time.sleep(0.01)
+                    uvVal = uv_file.readline()
+                    if uvVal != "":
+                        uvVal = float(uvVal)
+                    else:
+                        uvVal = 0
+                    uv_file.seek(0)
+                    
+            if y_coord + increment > Y_MAX:
+                print("Y Coordinate out of bounds")
+                return
 
             # Set one coil winding to high
             GPIO.output(STEP,GPIO.HIGH)
@@ -97,6 +129,7 @@ def yMove(distance=10, clockwise=True, speed_mod=0.3):
                 with open(file_name, "w") as f:
                     f.write(str(y_coord) + "\n")
                 break
+        f.close()
         print("y: " + str(y_coord))
         GPIO.cleanup()
 

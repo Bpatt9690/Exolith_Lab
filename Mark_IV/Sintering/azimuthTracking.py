@@ -52,7 +52,6 @@ class azimuth_tracker:
         uv_low = uv_current
 
         try:
-
             self.logger.logInfo("Adjusting....")
 
             for x in range(steps):
@@ -200,66 +199,72 @@ class azimuth_tracker:
         global uvLower
         global uvUpper
 
-        uvVal = self.uv_sensor()
+        while True:
+            uvVal = self.uv_sensor()
 
-        print(uvLower, uvVal, uvUpper)
+            # LOOK AT
+            with open("uv_current.txt", "w") as f:
+                f.write(str(uvVal))
 
-        if uvLower <= uvVal:
-            self.logger.logInfo("Azimuth adjustment reached...")
-            return True
+            print(uvLower, uvVal, uvUpper)
 
-        else:
+            if uvLower <= uvVal:
+                self.logger.logInfo("Azimuth adjustment reached...")
+                sleep(1)
+                continue
 
-            self.logger.logInfo("Azimuth adjustment required...")
+            else:
+                self.logger.logInfo("Azimuth adjustment required...")
 
-            GPIO.setwarnings(False)
-            GPIO.cleanup()
-
-            DIR_1 = int(os.getenv("AZIMUTH_Direction"))  # DIR+
-            STEP_1 = int(os.getenv("AZIMUTH_Pulse"))  # PULL+
-
-            # 0/1 used to signify clockwise or counterclockwise.
-            CW = 1
-            CCW = 0
-            steps = 10  # small increment of search
-
-            # Setup pin layout on PI
-            GPIO.setmode(GPIO.BCM)
-
-            # Establish Pins in software
-            GPIO.setup(DIR_1, GPIO.OUT)
-            GPIO.setup(STEP_1, GPIO.OUT)
-
-            # Set the first direction you want it to spin
-            GPIO.output(DIR_1, CW)
-
-            try:
-
-                for x in range(steps):
-                    self.logger.logInfo("Adjusting azimuth....")
-
-                    for _ in range(100):
-                        GPIO.output(STEP_1, GPIO.HIGH)
-                        # .5 == super slow
-                        # .00005 == breaking
-                        sleep(0.004)
-                        GPIO.output(STEP_1, GPIO.LOW)
-                        sleep(0.004)
-
-                    uvVal = self.uv_sensor()
-
-                    if uvLower <= uvVal:
-                        uvUpper = uvVal + uvVal * (0.10)
-                        uvLower = uvVal - (uvVal * (0.10))
-                        self.logger.logInfo("Azimuth Adjusted")
-                        return True
-
-                return False
-
-            # Once finished clean everything up
-            except Exception as e:
-                self.logger.logInfo("Tracking Exception: {}".format(e))
+                GPIO.setwarnings(False)
                 GPIO.cleanup()
+
+                DIR_1 = int(os.getenv("AZIMUTH_Direction"))  # DIR+
+                STEP_1 = int(os.getenv("AZIMUTH_Pulse"))  # PULL+
+
+                # 0/1 used to signify clockwise or counterclockwise.
+                CW = 1
+                CCW = 0
+                steps = 5  # small increment of search
+
+                # Setup pin layout on PI
+                GPIO.setmode(GPIO.BCM)
+
+                # Establish Pins in software
+                GPIO.setup(DIR_1, GPIO.OUT)
+                GPIO.setup(STEP_1, GPIO.OUT)
+
+                # Set the first direction you want it to spin
+                GPIO.output(DIR_1, CW)
+
+                try:
+
+                    for x in range(steps):
+                        self.logger.logInfo("Adjusting azimuth....")
+
+                        for _ in range(100):
+                            GPIO.output(STEP_1, GPIO.HIGH)
+                            # .5 == super slow
+                            # .00005 == breaking
+                            sleep(0.004)
+                            GPIO.output(STEP_1, GPIO.LOW)
+                            sleep(0.004)
+
+                        uvVal = self.uv_sensor()
+
+                        if uvLower <= uvVal:
+                            # uvUpper = uvVal + uvVal * (0.10)
+                            # uvLower = uvVal - (uvVal * (0.10))
+                            self.logger.logInfo("Azimuth Adjusted")
+                            sleep(1)
+                            continue
+
+                # Once finished clean everything up
+                except Exception as e:
+                    self.logger.logInfo("Tracking Exception: {}".format(e))
+                    with open("uv_current.txt", "w") as f:
+                        f.write("0")
+                    GPIO.cleanup()
 
 
 def main():

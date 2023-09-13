@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 from elevationTracking import elevation_tracker
 from azimuthTracking import azimuth_tracker
+import multiprocessing as mp
 
 load_dotenv()
 logger = logger()
@@ -20,25 +21,23 @@ gps = GPS_Data()
 
 def axisResets():
     ar = axisReset.axis_reset()
-    xy_status = False
     ev_status = False
 
     try:
-        xy_status = ar.xy_reset()
         ev_status = ar.elevation_reset()
 
     except Exception as e:
         logger.logInfo("Axis Reset Failure: {}".format(e))
 
-    if xy_status and ev_status:
+    if ev_status:
         logger.logInfo("Successful reset")
         return True
 
     else:
         logger.logInfo("Axis Reset Failure")
         logger.logInfo(
-            "xy_axis_status: {}\nev_status: {}".format(
-                xy_status, ev_status
+            "ev_status: {}".format(
+                ev_status
             )
         )
         return False
@@ -115,11 +114,16 @@ def azimuthLogic():
 
 def solarTracking():
     logger.logInfo("Solar Tracking......")
+    try:
+        proc = mp.Process(target=azimuth_tracker.tracking)
+        proc.start()
+        while True:
+            solarElevationLogic()
+            time.sleep(1)
 
-    while True:
-        azimuth_tracking_status = azimuth_tracker.tracking()
-        solar_elevation_status = solarElevationLogic()
-        time.sleep(10)  # sleep for 10 seconds before checking positioning
+    except KeyboardInterrupt:
+        proc.join()
+        
 
 
 def main():
@@ -127,7 +131,7 @@ def main():
     sensorStatus = False
     axisStatus = False
 
-    logger.logInfo("Step 1: Reset axes, checking sensor health")
+    logger.logInfo("Step 1: Reset elevation, checking sensor health")
     axisStatus = axisResets()
     sensorStatus = sensorGroupCheck()
 

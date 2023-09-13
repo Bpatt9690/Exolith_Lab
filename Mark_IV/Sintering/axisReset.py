@@ -4,6 +4,9 @@ import multiprocessing as mp
 from time import sleep
 from xMove import xMove
 from yMove import yMove
+from xMoveCoord import xMoveCoord
+from yMoveCoord import yMoveCoord
+from xyMoveCoord import xyMoveCoord
 import sys
 import xyMove
 from Limit_Switches import limitSwitches
@@ -58,18 +61,18 @@ class axis_reset:
                     GPIO.cleanup()
                     return True
 
-        sleep(0.5)
+        sleep(0.1)
 
     def x_axis_reset(self):
         """Responsible for resetting the x axis."""
         MAX = 10000
-        xMove(MAX, 0, 0.5)
+        xMove(MAX, 0, 0.7)
         self.logger.logInfo("X Homing Successful")
 
     def y_axis_reset(self):
         """Responsible for resetting the y axis."""
         MAX = 10000
-        yMove(MAX, 0, 0.5)
+        yMove(MAX, 0, 0.7)
         self.logger.logInfo("Y Homing Successful")
     
     def xy_reset(self):
@@ -87,10 +90,9 @@ class axis_reset:
             return False
         
     def x_axis_mid(self):
-        self.x_axis_reset()
         try:
-            xMove(14)
-            sleep(0.5)
+            xMoveCoord(13.5, speed_mod=0.7)
+            sleep(0.1)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
@@ -98,10 +100,9 @@ class axis_reset:
             return False
 
     def y_axis_mid(self):
-        self.y_axis_reset()
         try:
-            yMove(9.5)
-            sleep(0.5)
+            yMoveCoord(10, speed_mod=0.7)
+            sleep(0.1)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
@@ -109,10 +110,9 @@ class axis_reset:
             return False
         
     def xy_axis_mid(self):
-        self.xy_reset()
         try:
-            xyMove.xyMove(14, 9.5)
-            sleep(0.5)
+            xyMoveCoord(13.5, 10, speed_mod=0.7)
+            sleep(0.1)
             return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))

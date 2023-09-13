@@ -9,7 +9,7 @@ Moves both X and Y axis a specified distance simultaneously and ending at the sa
 Uses multithreading.
 """
 
-def xyMove(x_dist=8, y_dist=8, speed=0.3):
+def xyMove(x_dist=8, y_dist=8, speed=0.5, pause=False):
     x_speed_mod = speed
     y_speed_mod = speed
 
@@ -33,8 +33,8 @@ def xyMove(x_dist=8, y_dist=8, speed=0.3):
         x_speed_mod = (x_dist / y_dist) * x_speed_mod
 
     # Starts moving x and y simultaneously in different processes.
-    xProc = mp.Process(target=xMove, args=(x_dist, x_rotate, x_speed_mod))
-    yProc = mp.Process(target=yMove, args=(y_dist, y_rotate, y_speed_mod))
+    xProc = mp.Process(target=xMove, args=(x_dist, x_rotate, x_speed_mod, pause))
+    yProc = mp.Process(target=yMove, args=(y_dist, y_rotate, y_speed_mod, pause))
     xProc.start()
     yProc.start()
     xProc.join()
@@ -51,7 +51,7 @@ def main():
     elif num_args == 4:
         xyMove(float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3]))
     else:
-        xyMove()
+        xyMove(pause=True)
 
 if __name__ == "__main__":
     main()

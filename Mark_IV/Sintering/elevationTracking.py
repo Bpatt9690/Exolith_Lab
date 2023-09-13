@@ -127,8 +127,8 @@ class elevation_tracker:
         CCW = 0
 
         # Should be set by user, either via flag or direct input
-        accuracy = 1
-        degOffset = 0
+        accuracy = 0.3
+        degOffset = -2.2
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)
@@ -163,7 +163,7 @@ class elevation_tracker:
 
                 self.logger.logInfo("Adjusting Elevation Angle...")
 
-                degreeDev = (int(degreeDifferenceX)) * 5
+                degreeDev = degreeDifferenceX * (10/3)
 
                 degreeDev = math.floor(degreeDev)
 
