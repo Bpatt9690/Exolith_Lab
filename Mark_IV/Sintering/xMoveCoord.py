@@ -44,7 +44,7 @@ def xMoveCoord(coord=5, speed_mod=0.6, pause=False):
     x_coord = 0.0
     file_name = "x_coord.txt"
     uv_file_name = "uv_current.txt"
-    os.chdir("/home/pi/Exolith_Lab-v1.2.3/Mark_IV/Sintering")
+    os.chdir("/home/pi/Exolith_Lab-1.2.3/Mark_IV/Sintering")
 
     # Based on distance traveled each step of the motor.
     increment = 0.000635

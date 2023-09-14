@@ -13,7 +13,7 @@ from axisReset import axis_reset
 
 ar = axis_reset()
 
-os.chdir("/home/pi/Exolith_Lab-v1.2.3/Mark_IV/Sintering")
+os.chdir("/home/pi/Exolith_Lab-1.2.3/Mark_IV/Sintering")
 x_file_name = "x_coord.txt"
 y_file_name = "y_coord.txt"
 pause_file_name = "pause.txt"
