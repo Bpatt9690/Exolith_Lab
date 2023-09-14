@@ -13,7 +13,7 @@ from axisReset import axis_reset
 
 ar = axis_reset()
 
-os.chdir("/home/pi/Exolith_Lab-v1.2.0/Mark_IV/Sintering")
+os.chdir("/home/pi/Exolith_Lab-v1.2.3/Mark_IV/Sintering")
 x_file_name = "x_coord.txt"
 y_file_name = "y_coord.txt"
 pause_file_name = "pause.txt"
@@ -23,7 +23,7 @@ layer_height = 0.3
 focal_diameter = 0.7
 
 # For sintering use 0.1 as default
-speed = 0.6
+speed = 0.11
 
 def box2d(x_dist=4, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.

@@ -10,7 +10,7 @@ def xyCircleFill(radius=3, speed_mod=0.6, flip=False):
     # Initialize variables
     x_file_name = "x_coord.txt"
     y_file_name = "y_coord.txt"
-    os.chdir("/home/pi/Exolith_Lab-v1.2.0/Mark_IV/Sintering")
+    os.chdir("/home/pi/Exolith_Lab-v1.2.3/Mark_IV/Sintering")
     x_coord = 0
     y_coord = 0
     focal_diameter = 0.7
