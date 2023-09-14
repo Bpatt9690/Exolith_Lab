@@ -1,4 +1,4 @@
-import smbus
+import smbus2
 import board
 import adafruit_ltr390
 
@@ -41,7 +41,7 @@ class sensor_group:
         GYRO_ZOUT_H = 0x47
 
 
-        bus = smbus.SMBus(1)
+        bus = smbus2.SMBus(1)
         DeviceAddress = 0x68
         bus.write_byte_data(DeviceAddress, SMPLRT_DIV, 7)
         bus.write_byte_data(DeviceAddress, PWR_MGMT_1, 1)
