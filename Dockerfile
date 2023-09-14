@@ -2,7 +2,7 @@
 FROM arm32v7/python:3.7.8
 
 # Set the working directory in the container
-WORKDIR /home/pi
+WORKDIR /home/pi/Exolith_Lab-1.2.3
 
 # Copy the requirements.txt file to the container
 COPY requirements.txt .
