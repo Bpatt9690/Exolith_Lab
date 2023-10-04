@@ -131,6 +131,11 @@ def main():
     sensorStatus = False
     axisStatus = False
 
+    os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
+    uv_file = "uv_current.txt"
+    with open(uv_file, "w") as f:
+        f.write("0")
+
     logger.logInfo("Step 1: Reset elevation, checking sensor health")
     axisStatus = axisResets()
     sensorStatus = sensorGroupCheck()

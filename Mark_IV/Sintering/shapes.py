@@ -23,9 +23,9 @@ layer_height = 0.3
 focal_diameter = 0.7
 
 # For sintering use 0.1 as default
-speed = 0.6
+speed = 0.1
 
-def box2d(x_dist=4, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
+def box2d(x_dist=3, y_dist=3, flip=False, x_prev_dir=True, y_prev_dir=True, speed_mod=0.1):
     # Rounds the dimensions to the nearest multiple of the focal point's diameter.
     if flip:
         num_lines = int(round(x_dist / focal_diameter, 0))
@@ -49,22 +49,22 @@ def box2d(x_dist=4, y_dist=4, flip=False, x_prev_dir=False, y_prev_dir=True):
         # Make box with given number of lines.
         if(flip):
             for i in range(num_lines):
-                yMove(y_dist, y_prev_dir, speed, pause=True)
+                yMove(y_dist, y_prev_dir, speed_mod, pause=True)
                 y_prev_dir = not(y_prev_dir)
                 if i == num_lines - 1:
                     break
                 
-                xMove(focal_diameter, x_prev_dir, speed, pause=True)
+                xMove(focal_diameter, x_prev_dir, speed_mod, pause=True)
                 # xMove(x_dist, x_prev_dir, speed, pause=True)
             x_prev_dir = not(x_prev_dir)
         else:
             for i in range(num_lines):
-                xMove(x_dist, x_prev_dir, speed, pause=True)
+                xMove(x_dist, x_prev_dir, speed_mod, pause=True)
                 x_prev_dir = not(x_prev_dir)
                 if i == num_lines - 1:
                     break
 
-                yMove(focal_diameter, y_prev_dir, speed, pause=True)
+                yMove(focal_diameter, y_prev_dir, speed_mod, pause=True)
                 # yMove(y_dist, y_prev_dir, speed, pause=True)
             y_prev_dir = not(y_prev_dir)
         return (x_prev_dir, y_prev_dir)

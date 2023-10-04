@@ -120,8 +120,8 @@ class azimuth_tracker:
         global uvLower
         global uvUpper
 
-        uvUpper = uvMax + (uvMax * (0.10))
-        uvLower = uvMax - (uvMax * (0.10))
+        uvUpper = uvMax + (uvMax * (0.01))
+        uvLower = uvMax - (uvMax * (0.01))
 
         self.logger.logInfo("UV Max: " + str(uvMax))
         self.logger.logInfo("UV Upper: " + str(uvUpper))
@@ -198,6 +198,7 @@ class azimuth_tracker:
         global uvVal
         global uvLower
         global uvUpper
+        os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
 
         while True:
             uvVal = self.uv_sensor()
