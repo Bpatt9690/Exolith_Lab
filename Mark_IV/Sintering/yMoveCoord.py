@@ -108,7 +108,7 @@ def yMoveCoord(coord=5, speed_mod=0.6, pause=False):
                         uvVal = 0
                     uv_file.seek(0)
 
-            if y_coord + increment > Y_MAX:
+            if y_coord + increment > Y_MAX and increment > 0:
                 print("Y Coordinate out of bounds")
                 return
 

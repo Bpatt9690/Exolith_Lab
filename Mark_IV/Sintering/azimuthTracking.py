@@ -55,7 +55,8 @@ class azimuth_tracker:
             self.logger.logInfo("Adjusting....")
 
             for x in range(steps):
-                for _ in range(100):
+                for i in range(50):
+                    print(i)
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
@@ -70,6 +71,7 @@ class azimuth_tracker:
                     uv_high = uv
 
                 self.logger.logUV(uv_high)
+                sleep(0.5)
 
         # Once finished clean everything up
         except Exception as e:

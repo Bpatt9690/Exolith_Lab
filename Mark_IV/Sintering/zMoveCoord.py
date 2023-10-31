@@ -16,7 +16,7 @@ Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis
 
 ls = limitSwitches()
 
-def zMove(distance=0.3, clockwise=True, speed_mod=0.3):
+def zMoveCoord(coord=2, speed_mod=0.3):
     GPIO.setwarnings(False)
 
     if speed_mod > 0.5:
@@ -26,40 +26,33 @@ def zMove(distance=0.3, clockwise=True, speed_mod=0.3):
     if speed_mod < 0.001:
         return
     
-    if distance == 0:
-        return
+    if coord < 0:
+        print("Coordinate less than 0, set to 0")
+        coord = 0
 
     # Direction pin from controller
-    DIR = int(os.getenv("MOTOR_X_Direction"))  # DIR+
-    STEP = int(os.getenv("MOTOR_X_Pulse"))  # PULL+
+    DIR = int(os.getenv("MOTOR_Z_Direction"))  # DIR+
+    STEP = int(os.getenv("MOTOR_Z_Pulse"))  # PULL+
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
     CCW = 1
-    MAX = 10000
+    Z_MAX = 10.6
     motor_flag_top = 0
-    motor_flag_bot = 0
-    x_coord = 0.0
+    z_coord = 0.0
     z_file_name = "z_coord.txt"
+    os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
 
     # Based on distance traveled each step of the motor.
     increment = 0.001
 
     GPIO.setmode(GPIO.BCM)
     motor1_switch = int(os.getenv("limitSwitchZ_1"))
-    motor2_switch = int(os.getenv("limitSwitchZ_2"))
     GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     # Establish Pins in software
     GPIO.setup(DIR, GPIO.OUT)
     GPIO.setup(STEP, GPIO.OUT)
-
-    # Set the first direction you want it to spin
-    if clockwise == True:
-        GPIO.output(DIR, CW)
-    else:
-        GPIO.output(DIR, CCW)
-        increment *= -1
 
     #CW Away from limit switch
     try:
@@ -69,11 +62,29 @@ def zMove(distance=0.3, clockwise=True, speed_mod=0.3):
         else:
             with open(z_file_name, "w") as f:
                 f.write("0\n")
-        num_steps = int(round(distance / 0.000635, 0))
+        distance = abs(coord - z_coord)
+        
+        # Set the first direction you want it to spin
+        if coord > z_coord and distance > increment / 2:
+            GPIO.output(DIR, CCW)
+        elif coord < z_coord and distance > increment / 2:
+            GPIO.output(DIR, CW)
+            increment *= -1
+        else:
+            with open(z_file_name, "w") as f:   
+                f.write(str(z_coord) + "\n")
+            print("y: " + str(z_coord))
+            return
+        
+        num_steps = int(round(distance / abs(increment), 0))
         
         f = open(z_file_name, "w")
         # # Run for 200 steps. This will change based on how you set you controller
         for x in range(num_steps):
+            if z_coord + increment > Z_MAX and increment > 0:
+                print("Y Coordinate out of bounds")
+                return
+            
             # Set one coil winding to high
             GPIO.output(STEP,GPIO.HIGH)
             # Allow it to get there.
@@ -85,33 +96,22 @@ def zMove(distance=0.3, clockwise=True, speed_mod=0.3):
             sleep(.001 / speed_mod) # Dictates how fast stepper motor will run
 
             z_coord += increment
-            f.write(str(x_coord) + "\n")
+            f.write(str(z_coord) + "\n")
             f.seek(0)
 
-            if GPIO.input(motor1_switch) == 0 and clockwise == False:
+            if GPIO.input(motor1_switch) == 0 and increment < 0:
                 motor_flag_top += 1
             else:
                 motor_flag_top = 0
 
-            if GPIO.input(motor2_switch) == 0 and clockwise == False:
-                motor_flag_bot += 1
-            else:
-                motor_flag_bot = 0
-
-            if motor_flag_bot >= 5:
-                z_coord = 0.0
-                f.close()
-                with open(z_file_name, "w") as f:
-                    f.write(str(z_coord) + "\n")
-                break
-            elif motor_flag_top >= 5:
-                z_coord = 11
+            if motor_flag_top >= 5:
+                z_coord = 0
                 f.close()
                 with open(z_file_name, "w") as f:
                     f.write(str(z_coord) + "\n")
                 break
         f.close()
-        print("x: " + str(z_coord))
+        print("z: " + str(z_coord))
         GPIO.cleanup()
 
     # Once finished clean everything up
@@ -124,13 +124,11 @@ def zMove(distance=0.3, clockwise=True, speed_mod=0.3):
 def main():
     num_args = len(sys.argv)
     if num_args == 2:
-        zMove(float(sys.argv[1]))
+        zMoveCoord(float(sys.argv[1]))
     elif num_args == 3:
-        zMove(float(sys.argv[1]), bool(int(sys.argv[2])))
-    elif num_args == 4:
-        zMove(float(sys.argv[1]), bool(sys.argv[2]), float(sys.argv[3]))
+        zMoveCoord(float(sys.argv[1]), float(int(sys.argv[2])))
     else:
-        zMove(pause=True)
+        zMoveCoord()
     
 if __name__ == '__main__':
     main()

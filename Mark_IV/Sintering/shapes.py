@@ -3,7 +3,7 @@ import sys
 import os
 from xMove import xMove
 from yMove import yMove
-from zMove import zMove
+from Sintering.zMoveDeprecated import zMove
 from xyMove import xyMove
 from xy_curve import xyCurve
 from xyMoveCoord import xyMoveCoord

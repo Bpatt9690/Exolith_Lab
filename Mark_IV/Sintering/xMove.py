@@ -36,7 +36,7 @@ def xMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
     useGPS = os.getenv("useGPS")
 
     # Max x coordinate in cm
-    X_MAX = 27
+    X_MAX = 32
 
     # 0/1 used to signify clockwise or counterclockwise.
     CW = 0
@@ -52,9 +52,7 @@ def xMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
 
     GPIO.setmode(GPIO.BCM)
     motor1_switch = int(os.getenv("limitSwitchX_1"))
-    motor2_switch = int(os.getenv("limitSwitchX_2"))
     GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     # Establish Pins in software
     GPIO.setup(DIR, GPIO.OUT)
@@ -101,7 +99,7 @@ def xMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
                         uvVal = 0
                     uv_file.seek(0)
 
-            if x_coord + increment > X_MAX:
+            if x_coord + increment > X_MAX and clockwise:
                 print("X Coordinate out of bounds")
                 return
 
@@ -119,7 +117,7 @@ def xMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
             f.write(str(x_coord) + "\n")
             f.seek(0)
 
-            if (GPIO.input(motor2_switch) == 0 or GPIO.input(motor1_switch) == 0) and clockwise == False:
+            if GPIO.input(motor1_switch) == 0 and clockwise == False:
                 motor_flag += 1
             else:
                 motor_flag = 0
