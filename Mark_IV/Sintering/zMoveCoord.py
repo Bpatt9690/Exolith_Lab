@@ -11,7 +11,7 @@ from azimuthTracking import azimuth_tracker
 load_dotenv()
 
 """
-Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
+Moves motor for Z axis. Currently CCW || 1 moves the z axis down
 """
 
 ls = limitSwitches()

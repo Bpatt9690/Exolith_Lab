@@ -28,6 +28,10 @@ def zMove(distance=0.35, down=True, speed_mod=0.3):
     
     if distance == 0:
         return
+    
+    if distance < 0:
+        distance = abs(distance)
+        down = False
 
     # Direction pin from controller
     DIR = int(os.getenv("MOTOR_Z_Direction"))  # DIR+

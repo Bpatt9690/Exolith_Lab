@@ -4,6 +4,7 @@ import multiprocessing as mp
 from time import sleep
 from xMove import xMove
 from yMove import yMove
+from zMove import zMove
 from xMoveCoord import xMoveCoord
 from yMoveCoord import yMoveCoord
 from xyMoveCoord import xyMoveCoord
@@ -74,6 +75,12 @@ class axis_reset:
         MAX = 10000
         yMove(MAX, 0, 0.7)
         self.logger.logInfo("Y Homing Successful")
+
+    def z_axis_reset(self):
+        """Responsible for resetting the z axis."""
+        MAX = 10000
+        zMove(MAX, 0, 0.3)
+        self.logger.logInfo("Z Homing Successful")
     
     def xy_reset(self):
         try:
