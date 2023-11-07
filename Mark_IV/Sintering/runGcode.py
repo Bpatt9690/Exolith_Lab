@@ -10,7 +10,6 @@ def read_gcode():
     z_speed_mod = 0.3
     pause = 1
     count = 0
-    light_pause = True
 
     file_name = "practice.gcode"
     pause_file_name = "pause.txt"
@@ -19,6 +18,7 @@ def read_gcode():
         f.write("1")
     with open(file_name, "r") as f:
         for line in f:
+            light_pause = True
             if "G28" in line:
                 if "Home" in line:
                     print("Home")
