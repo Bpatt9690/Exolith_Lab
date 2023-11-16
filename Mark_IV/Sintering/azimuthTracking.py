@@ -55,14 +55,19 @@ class azimuth_tracker:
             self.logger.logInfo("Adjusting....")
 
             for x in range(steps):
-                for i in range(50):
-                    print(i)
+                print(x)
+                # About 0.5 degrees each 70 motor steps.
+                # 1-50 gear ratio.
+                # Moves about 1 degree every 2.75 seconds.
+                # 16-17 mins to do 360 degree scan.
+                for i in range(70):
+                    # print(i)
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
-                    sleep(0.004)
+                    sleep(0.001)
                     GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.004)
+                    sleep(0.001)
 
                 uv = self.uv_sensor()
 
@@ -71,7 +76,7 @@ class azimuth_tracker:
                     uv_high = uv
 
                 self.logger.logUV(uv_high)
-                sleep(0.5)
+                sleep(0.3)
 
         # Once finished clean everything up
         except Exception as e:
@@ -171,13 +176,13 @@ class azimuth_tracker:
             for x in range(steps):
                 self.logger.logInfo("Azimuth Adjustment...")
                 
-                for _ in range(100):
+                for _ in range(40):
                     GPIO.output(STEP_1, GPIO.HIGH)
                     # .5 == super slow
                     # .00005 == breaking
-                    sleep(0.004)
+                    sleep(0.001)
                     GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.004)
+                    sleep(0.001)
 
                 uv = self.uv_sensor()
 
@@ -245,13 +250,13 @@ class azimuth_tracker:
                     for x in range(steps):
                         self.logger.logInfo("Adjusting azimuth....")
 
-                        for _ in range(100):
+                        for _ in range(40):
                             GPIO.output(STEP_1, GPIO.HIGH)
                             # .5 == super slow
                             # .00005 == breaking
-                            sleep(0.004)
+                            sleep(0.001)
                             GPIO.output(STEP_1, GPIO.LOW)
-                            sleep(0.004)
+                            sleep(0.001)
 
                         uvVal = self.uv_sensor()
 
