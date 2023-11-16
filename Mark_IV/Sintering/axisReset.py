@@ -1,6 +1,15 @@
 from Logging import logger
 import RPi.GPIO as GPIO
+import multiprocessing as mp
 from time import sleep
+from xMove import xMove
+from yMove import yMove
+from zMove import zMove
+from xMoveCoord import xMoveCoord
+from yMoveCoord import yMoveCoord
+from xyMoveCoord import xyMoveCoord
+import sys
+import xyMove
 from Limit_Switches import limitSwitches
 from dotenv import load_dotenv
 import os
@@ -53,142 +62,79 @@ class axis_reset:
                     GPIO.cleanup()
                     return True
 
-        sleep(0.5)
+        sleep(0.1)
 
     def x_axis_reset(self):
         """Responsible for resetting the x axis."""
-        GPIO.setwarnings(False)
-        GPIO.cleanup()
-
-        DIR_1 = int(os.getenv("MOTOR_X_Direction"))  # DIR+
-        STEP_1 = int(os.getenv("MOTOR_X_Pulse"))  # PULL+
-
-        # 0/1 used to signify clockwise or counterclockwise.
-        CW = 0
-        CCW = 1
-
         MAX = 10000
-
-        motor1_flag = 0
-        motor2_flag = 0
-
-        GPIO.setmode(GPIO.BCM)
-        motor1_switch = int(os.getenv("limitSwitchX_1"))
-        motor2_switch = int(os.getenv("limitSwitchX_2"))
-
-        GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-        # Establish Pins in software
-        GPIO.setup(DIR_1, GPIO.OUT)
-        GPIO.setup(STEP_1, GPIO.OUT)
-
-        # Set the first direction
-        GPIO.output(DIR_1, CCW)
-
-        # !!!Not Calling LimitSwitches Class!!!#
-
-        try:
-            while 1:
-
-                for x in range(MAX):
-
-                    GPIO.output(STEP_1, GPIO.HIGH)
-                    # .5 == super slow
-                    # .00005 == breaking
-                    sleep(0.0005)  # Dictates how fast stepper motor will run
-                    GPIO.output(STEP_1, GPIO.LOW)
-                    sleep(0.0005)
-
-                    if GPIO.input(motor2_switch) == 0:
-                        motor2_flag += 1
-                    elif GPIO.input(motor1_switch) == 0:
-                        motor1_flag += 1
-                    else:
-                        motor2_flag = 0
-                        motor1_flag = 0
-
-                    if motor2_flag >= 5:
-                        self.logger.logInfo("X Homing Successful")
-                        sleep(1)
-                        return True
-
-                    elif motor1_flag >= 5:
-                        self.logger.logInfo("X Homing Successful")
-                        sleep(1)
-                        return True
-
-        # Once finished clean everything up
-        except Exception as e:
-            self.logger.logError("Failure {}".format(e))
-            GPIO.cleanup()
-            return False
+        xMove(MAX, 0, 0.7)
+        self.logger.logInfo("X Homing Successful")
 
     def y_axis_reset(self):
         """Responsible for resetting the y axis."""
-        GPIO.setwarnings(False)
-        GPIO.cleanup()
-
-        DIR_1 = int(os.getenv("MOTOR_Y_Direction"))  # DIR+
-        STEP_1 = int(os.getenv("MOTOR_Y_Pulse"))  # PULL+
-
-        # 0/1 used to signify clockwise or counterclockwise.
-        CW = 0
-        CCW = 1
-
         MAX = 10000
+        yMove(MAX, 0, 0.7)
+        self.logger.logInfo("Y Homing Successful")
 
-        motor1_flag = 0
-        motor2_flag = 0
-
-        GPIO.setmode(GPIO.BCM)
-        motor1_switch = int(os.getenv("limitSwitchY_1"))
-        motor2_switch = int(os.getenv("limitSwitchY_2"))
-        GPIO.setup(motor1_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(motor2_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-        # Establish Pins in software
-        GPIO.setup(DIR_1, GPIO.OUT)
-        GPIO.setup(STEP_1, GPIO.OUT)
-
-        # Set the first direction
-        GPIO.output(DIR_1, CCW)
-
+    def z_axis_reset(self):
+        """Responsible for resetting the z axis."""
+        MAX = 10000
+        zMove(MAX, 0, 0.3)
+        self.logger.logInfo("Z Homing Successful")
+    
+    def xy_reset(self):
         try:
-
-            while 1:
-
-                for x in range(MAX):
-
-                    GPIO.output(STEP_1, GPIO.HIGH)
-                    # Allow it to get there.
-                    # .5 == super slow
-                    sleep(0.0005)  # Dictates how fast stepper motor will run
-                    GPIO.output(STEP_1, GPIO.LOW)
-
-                    sleep(0.0005)
-
-                    if GPIO.input(motor2_switch) == 0:
-                        motor2_flag += 1
-                    elif GPIO.input(motor1_switch) == 0:
-                        motor1_flag += 1
-                    else:
-                        motor2_flag = 0
-                        motor1_flag = 0
-
-                    if motor2_flag >= 5:
-                        self.logger.logInfo("Y Homing Successful")
-                        sleep(1)
-                        return True
-
-                    elif motor1_flag >= 5:
-                        self.logger.logInfo("Y Homing Successful")
-                        sleep(1)
-                        return True
-
-        # Once finished clean everything up
-
+            xProc = mp.Process(target=self.x_axis_reset)
+            yProc = mp.Process(target=self.y_axis_reset)
+            xProc.start()
+            yProc.start()
+            xProc.join()
+            yProc.join()
+            return True
         except Exception as e:
             self.logger.logError("Failure {}".format(e))
             GPIO.cleanup()
             return False
+        
+    def x_axis_mid(self):
+        try:
+            xMoveCoord(13.5, speed_mod=0.7)
+            sleep(0.1)
+            return True
+        except Exception as e:
+            self.logger.logError("Failure {}".format(e))
+            GPIO.cleanup()
+            return False
+
+    def y_axis_mid(self):
+        try:
+            yMoveCoord(10, speed_mod=0.7)
+            sleep(0.1)
+            return True
+        except Exception as e:
+            self.logger.logError("Failure {}".format(e))
+            GPIO.cleanup()
+            return False
+        
+    def xy_axis_mid(self):
+        try:
+            xyMoveCoord(13.5, 10, speed_mod=0.7)
+            sleep(0.1)
+            return True
+        except Exception as e:
+            self.logger.logError("Failure {}".format(e))
+            GPIO.cleanup()
+            return False
+
+
+def main():
+    ar = axis_reset()
+    num_args = len(sys.argv)
+    if num_args > 1 and sys.argv[1] == "mid":
+        ar.xy_axis_mid()
+    else:
+        ar.xy_reset()
+    
+
+if __name__ == "__main__":
+    main()

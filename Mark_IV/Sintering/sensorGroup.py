@@ -1,8 +1,7 @@
-import time
 import smbus
 import board
 import adafruit_ltr390
-
+import os
 
 class sensor_group:
     def __init__(self):

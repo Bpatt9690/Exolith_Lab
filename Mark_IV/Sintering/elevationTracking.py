@@ -1,4 +1,5 @@
 import time
+import sys
 import math
 from Kalman import KalmanAngle
 import smbus
@@ -7,6 +8,7 @@ from time import sleep
 from Logging import logger
 from dotenv import load_dotenv
 import os
+import inspect
 
 # Load environment variables from .env file
 load_dotenv()
@@ -125,19 +127,27 @@ class elevation_tracker:
         CCW = 0
 
         # Should be set by user, either via flag or direct input
-        accuracy = 1.5
+        accuracy = 0.3
+        degOffset = -2.2
 
         # Setup pin layout on RPI
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(DIR, GPIO.OUT)
         GPIO.setup(STEP, GPIO.OUT)
 
-        time.sleep(1)
+        # GPIO.output(DIR, CW)
+
+        # for x in range(1000):
+        #     GPIO.output(STEP, GPIO.HIGH)
+        #     sleep(0.02)  # Dictates how fast stepper motor will run
+        #     GPIO.output(STEP, GPIO.LOW)
+
+        # time.sleep(1)
 
         currentTiltAngleX, currentTiltAngleY = self.tiltAngle()
 
         # Gathering current tilt angle from sensor
-        currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
+        currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) + degOffset
 
         self.logger.logInfo(
             "Current Tilt Elevation Angle: {}".format(currentTiltAngleX)
@@ -153,7 +163,7 @@ class elevation_tracker:
 
                 self.logger.logInfo("Adjusting Elevation Angle...")
 
-                degreeDev = (int(degreeDifferenceX)) * 5
+                degreeDev = degreeDifferenceX * (10/3)
 
                 degreeDev = math.floor(degreeDev)
 
@@ -162,19 +172,18 @@ class elevation_tracker:
                 if degreeDifferenceX > 0:
                     GPIO.output(DIR, CW)
                 else:
-                    sleep(1.0)
                     GPIO.output(DIR, CCW)
 
                 for x in range(int(degreeDev)):
                     GPIO.output(STEP, GPIO.HIGH)
-                    sleep(0.05)  # Dictates how fast stepper motor will run
+                    sleep(0.2)  # Dictates how fast stepper motor will run
                     GPIO.output(STEP, GPIO.LOW)
 
                 time.sleep(1)
 
                 # New Angle Readings
                 currentTiltAngleX, currentTiltAngleY = self.tiltAngle()
-                currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1))
+                currentTiltAngleX = 90 - (float(currentTiltAngleX) * (-1)) + degOffset
                 self.logger.logInfo("Lens Tilt angle: {}".format(currentTiltAngleX))
                 self.logger.logInfo("Solar Elevation: {}".format(elevation))
 
@@ -199,10 +208,13 @@ class elevation_tracker:
 
         time.sleep(1)
 
+        accX_offset = -300
+        accY_offset = -200
+        accZ_offset = -1200
         # Read Accelerometer raw value
-        accX = self.read_raw_data(self.ACCEL_XOUT_H)
-        accY = self.read_raw_data(self.ACCEL_YOUT_H)
-        accZ = self.read_raw_data(self.ACCEL_ZOUT_H)
+        accX = self.read_raw_data(self.ACCEL_XOUT_H) + accX_offset
+        accY = self.read_raw_data(self.ACCEL_YOUT_H) + accY_offset
+        accZ = self.read_raw_data(self.ACCEL_ZOUT_H) + accZ_offset
 
         if self.RestrictPitch:
             roll = math.atan2(accY, accZ) * self.radToDeg
@@ -232,9 +244,9 @@ class elevation_tracker:
                 continue
             try:
                 # Read Accelerometer raw value
-                accX = self.read_raw_data(self.ACCEL_XOUT_H)
-                accY = self.read_raw_data(self.ACCEL_YOUT_H)
-                accZ = self.read_raw_data(self.ACCEL_ZOUT_H)
+                accX = self.read_raw_data(self.ACCEL_XOUT_H) + accX_offset
+                accY = self.read_raw_data(self.ACCEL_YOUT_H) + accY_offset
+                accZ = self.read_raw_data(self.ACCEL_ZOUT_H) + accZ_offset
 
                 # Read Gyroscope raw value
                 gyroX = self.read_raw_data(self.GYRO_XOUT_H)

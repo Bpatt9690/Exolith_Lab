@@ -1,17 +1,16 @@
 import RPi.GPIO as GPIO
 import time
 from datetime import date, datetime
-# import pytz
 import arrow
 from GPS import GPS_Data
-import smbus
 from Logging import logger
-from axisReset import axis_reset
+import axisReset
 from sensorGroup import sensor_group
 import os
 from dotenv import load_dotenv
 from elevationTracking import elevation_tracker
 from azimuthTracking import azimuth_tracker
+import multiprocessing as mp
 
 load_dotenv()
 logger = logger()
@@ -21,28 +20,24 @@ gps = GPS_Data()
 
 
 def axisResets():
-    ar = axis_reset()
-    x_axis_status = False
-    y_axis_status = False
+    ar = axisReset.axis_reset()
     ev_status = False
 
     try:
-        x_axis_status = ar.x_axis_reset()
-        y_axis_status = ar.y_axis_reset()
         ev_status = ar.elevation_reset()
 
     except Exception as e:
         logger.logInfo("Axis Reset Failure: {}".format(e))
 
-    if x_axis_status and y_axis_status and ev_status:
+    if ev_status:
         logger.logInfo("Successful reset")
         return True
 
     else:
         logger.logInfo("Axis Reset Failure")
         logger.logInfo(
-            "x_axis_status: {} \ny_axis_status: {} \nev_status: {}".format(
-                x_axis_status, y_axis_status, ev_status
+            "ev_status: {}".format(
+                ev_status
             )
         )
         return False
@@ -74,10 +69,10 @@ def sensorGroupCheck():
 
 
 def solarElevationLogic():
-    if(bool(os.getenv("useGPS"))):
-        gps_dict = gps.userDefinedCoordinates()
-    else:
+    if(os.getenv("useGPS") == "True"):
         gps_dict = gps.getCurrentCoordinates()
+    else:
+        gps_dict = gps.userDefinedCoordinates()
     
     today, year, day, month = gps.getDate()
 
@@ -91,15 +86,12 @@ def solarElevationLogic():
     location = (gps_dict["Lattitude"], longitude)
     when = (year, month, day, int(hour), int(minutes), int(seconds), 0)
 
-    # tz_NY = pytz.timezone("America/New_York")
-    # datetime_NY = datetime.now(tz_NY)
     tz_NY = arrow.now().to('America/New_York').tzinfo
     datetime_NY = datetime.now(tz_NY)
 
     azimuth, elevation = elevation_tracker.sunpos(when, location, True)
 
     logger.logInfo("Current UTC: {}".format(now))
-    #Need to fix#logger.logInfo(("EST timezone: {}:{}:{}".format(hour, minutes, seconds)))
 
     status = elevation_tracker.solarElevationPositioning(elevation)
 
@@ -110,9 +102,7 @@ def azimuthLogic():
     azimuth_status = False
 
     try:
-        azimuth_tracker.stepMovement(1, 100)
-        time.sleep(1)
-        azimuth_tracker.stepMovement(0, 100)
+        azimuth_tracker.stepMovement(1, int(os.getenv("AZIMUTH_Steps")))
         uvMax = azimuth_tracker.maxValue()
         azimuth_status = azimuth_tracker.azimuthPositioning(uvMax)
         return azimuth_status
@@ -124,11 +114,16 @@ def azimuthLogic():
 
 def solarTracking():
     logger.logInfo("Solar Tracking......")
+    try:
+        proc = mp.Process(target=azimuth_tracker.tracking)
+        proc.start()
+        while True:
+            solarElevationLogic()
+            time.sleep(1)
 
-    while True:
-        azimuth_tracking_status = azimuth_tracker.tracking()
-        solar_elevation_status = solarElevationLogic()
-        time.sleep(10)  # sleep for 10 seconds before checking positioning
+    except KeyboardInterrupt:
+        proc.join()
+        
 
 
 def main():
@@ -136,7 +131,12 @@ def main():
     sensorStatus = False
     axisStatus = False
 
-    logger.logInfo("Step 1: Reset axes, checking sensor health")
+    os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
+    uv_file = "uv_current.txt"
+    with open(uv_file, "w") as f:
+        f.write("0")
+
+    logger.logInfo("Step 1: Reset elevation, checking sensor health")
     axisStatus = axisResets()
     sensorStatus = sensorGroupCheck()
 

@@ -9,24 +9,24 @@ import sys
 # Load environment variables from .env file
 load_dotenv()
 
-'''
-Moves both motor 1 and motor 2 of the Y axis. Currently CW || 0 moves the y axis forward
-'''
+"""
+Moves both motor 1 and motor 2 of the X axis. Currently CW || 0 moves the x axis forward
+DOES NOT HAVE LIMIT SWITCH FUNCTIONALITY INCLUDED. POTENTIALLY DESTRUCTIVE 
+"""
 
 ls = limitSwitches()
 
-def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
-    GPIO.setwarnings(False)
 
+def yMoveCoord(coord=5, speed_mod=0.6, pause=False):
+    GPIO.setwarnings(False)
+    
     if speed_mod > 1:
         print("Speed mod too large, set to 1")
         speed_mod = 1
-
-    if(speed_mod < 0.001):
-        return
     
-    if distance == 0:
-        return
+    if coord < 0:
+        print("Coordinate less than 0, set to 0")
+        coord = 0
 
     # Direction pin from controller
     DIR = int(os.getenv("MOTOR_Y_Direction")) #DIR+
@@ -46,7 +46,7 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
     uv_file_name = "uv_current.txt"
     os.chdir("/home/pi/Exolith_Lab/Mark_IV/Sintering")
 
-    # Based on distance traveled each step of the motor in cm.
+    # Based on distance traveled each step of the motor.
     increment = 0.000635
 
     GPIO.setmode(GPIO.BCM)
@@ -59,14 +59,8 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
     GPIO.setup(DIR, GPIO.OUT)
     GPIO.setup(STEP, GPIO.OUT)
 
-    # Set the first direction you want it to spin
-    if clockwise == True:
-        GPIO.output(DIR, CW)
-    else:
-        GPIO.output(DIR, CCW)
-        increment *= -1
-
     #CW Away from limit switch
+
     try:
         if(os.path.exists(file_name)) and os.stat(file_name).st_size != 0:
             with open(file_name, "r") as f:
@@ -74,6 +68,20 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
         else:
             with open(file_name, "w") as f:
                 f.write("0\n")
+
+        distance = abs(coord - y_coord)
+        # Set the first direction you want it to spin
+        if coord > y_coord and distance > increment / 2:
+            GPIO.output(DIR, CW)
+        elif coord < y_coord and distance > increment / 2:
+            GPIO.output(DIR, CCW)
+            increment *= -1
+        else:
+            with open(file_name, "w") as f:   
+                f.write(str(y_coord) + "\n")
+            print("y: " + str(y_coord))
+            return
+
         num_steps = int(round(distance / 0.000635, 0))
         
         f = open(file_name, "w")
@@ -88,7 +96,7 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
                     if uvVal != "":
                         uvVal = float(uvVal)
                     else:
-                        uvVal = uvMin
+                        uvVal = uvVal = uvMin
                     uv_file.seek(0)
 
                 while(uvVal < uvMin):
@@ -99,8 +107,8 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
                     else:
                         uvVal = 0
                     uv_file.seek(0)
-                    
-            if y_coord + increment > Y_MAX and clockwise:
+
+            if y_coord + increment > Y_MAX and increment > 0:
                 print("Y Coordinate out of bounds")
                 return
 
@@ -118,18 +126,16 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
             f.write(str(y_coord) + "\n")
             f.seek(0)
 
-            if (GPIO.input(motor2_switch) == 0 or GPIO.input(motor1_switch) == 0) and clockwise == False:
+            if (GPIO.input(motor2_switch) == 0 or GPIO.input(motor1_switch) == 0) and increment < 0:
                 motor_flag += 1
             else:
                 motor_flag = 0
 
             if motor_flag >= 5:
-                y_coord = 0.0
                 f.close()
                 with open(file_name, "w") as f:
                     f.write(str(y_coord) + "\n")
                 break
-        f.close()
         print("y: " + str(y_coord))
         GPIO.cleanup()
 
@@ -143,13 +149,11 @@ def yMove(distance=10, clockwise=True, speed_mod=0.6, pause=False):
 def main():
     num_args = len(sys.argv)
     if num_args == 2:
-        yMove(float(sys.argv[1]))
+        yMoveCoord(float(sys.argv[1]))
     elif num_args == 3:
-        yMove(float(sys.argv[1]), bool(int(sys.argv[2])))
-    elif num_args == 4:
-        yMove(float(sys.argv[1]), bool(sys.argv[2]), float(sys.argv[3]))
+        yMoveCoord(float(sys.argv[1]), float(sys.argv[2]))
     else:
-        yMove()
-
+        yMoveCoord()
+    
 if __name__ == '__main__':
     main()
